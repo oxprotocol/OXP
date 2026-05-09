@@ -1,0 +1,36 @@
+[package]
+name        = "oxp-runtime"
+version     = "0.1.0"
+edition     = "2024"
+rust-version = "1.85"
+description = "Standalone wasm component runtime that hosts OXP extensions. Speaks JSON-RPC 2.0 over stdio (see spec/v1/host-runtime-rpc.md)."
+license     = "Apache-2.0"
+publish     = false
+
+[[bin]]
+name = "oxp-runtime"
+path = "src/main.rs"
+
+[dependencies]
+serde         = { version = "1", features = ["derive"] }
+serde_json    = "1"
+tokio         = { version = "1", features = ["rt-multi-thread", "macros", "io-util", "io-std", "sync", "signal", "fs"] }
+anyhow        = "1"
+thiserror     = "2"
+tracing       = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+bytes         = "1"
+async-trait   = "0.1"
+base64        = "0.22"
+
+# wasm component runtime (phase 2)
+wasmtime      = { version = "26", features = ["component-model", "async", "cranelift", "runtime"] }
+wasmtime-wasi = "26"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["test-util"] }
+
+[profile.release]
+lto         = "thin"
+codegen-units = 1
+strip       = "symbols"

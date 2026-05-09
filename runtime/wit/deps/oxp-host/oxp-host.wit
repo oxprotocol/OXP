@@ -1,0 +1,136 @@
+// oxp:host@0.1.0
+//
+// Capability interfaces the OXP host provides to extension components.
+// Every interface here is a *gated* import: an extension only resolves
+// the interfaces named in its manifest's `permissions` list, and even
+// then individual operations are filtered by the scope passed to the
+// host capability broker.
+//
+// Stability: pinned. Breaking changes go to oxp:host@0.2.0 and require
+// a coordinated runtime + manifest spec bump.
+
+package oxp:host@0.1.0;
+
+// ─────────────────────────────────────────────────────────────────────
+// Common types
+// ─────────────────────────────────────────────────────────────────────
+
+interface types {
+  // Opaque, host-issued handle. Extensions never construct these.
+  type handle = u64;
+
+  record diagnostic {
+    code: string,
+    message: string,
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// log — always available, never gated
+// ─────────────────────────────────────────────────────────────────────
+
+interface log {
+  enum level { trace, debug, info, warn, error }
+  log: func(lvl: level, message: string);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// storage — always available; namespaced per (publisher, slug)
+// ─────────────────────────────────────────────────────────────────────
+
+interface storage {
+  get:    func(key: string) -> option<list<u8>>;
+  set:    func(key: string, value: list<u8>);
+  delete: func(key: string);
+  keys:   func() -> list<string>;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// ui — always available; the host renders, the component owns state
+// ─────────────────────────────────────────────────────────────────────
+
+interface ui {
+  // Push a serialized oxp-ui-v1 tree (msgpack or JSON; host decides).
+  render: func(tree: list<u8>);
+
+  // Update a status-bar item this extension owns.
+  set-status: func(text: string, tooltip: option<string>);
+
+  // Show a toast notification. Returns the user's choice if buttons given.
+  notify: func(message: string, buttons: list<string>) -> option<string>;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// fs — gated by manifest.permissions[fs.read | fs.write | fs.delete]
+//     paths are pre-filtered against permission scope by the host
+// ─────────────────────────────────────────────────────────────────────
+
+interface fs {
+  variant fs-error {
+    not-found,
+    forbidden(string),         // path outside granted scope
+    io(string),
+    too-large(u64),            // bytes
+  }
+
+  record file-stat {
+    size: u64,
+    is-dir: bool,
+    mtime-ms: u64,
+  }
+
+  read-file:  func(path: string)                       -> result<list<u8>, fs-error>;
+  write-file: func(path: string, bytes: list<u8>)       -> result<_,        fs-error>;
+  delete:     func(path: string)                        -> result<_,        fs-error>;
+  stat:       func(path: string)                        -> result<file-stat, fs-error>;
+  list-dir:   func(path: string)                        -> result<list<string>, fs-error>;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// net — gated by manifest.permissions[net.fetch]
+//     origins are pre-filtered against permission scope by the host
+// ─────────────────────────────────────────────────────────────────────
+
+interface net {
+  record http-request {
+    method:  string,
+    url:     string,
+    headers: list<tuple<string, string>>,
+    body:    option<list<u8>>,
+  }
+
+  record http-response {
+    status:  u16,
+    headers: list<tuple<string, string>>,
+    body:    list<u8>,
+  }
+
+  variant net-error {
+    forbidden(string),         // origin not in granted scope
+    timeout,
+    transport(string),
+    too-large(u64),
+  }
+
+  fetch: func(req: http-request) -> result<http-response, net-error>;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// secrets — gated by manifest.permissions[secrets.read | secrets.write]
+//     keys are namespaced per (publisher, slug); host stores at-rest enc.
+// ─────────────────────────────────────────────────────────────────────
+
+interface secrets {
+  get:    func(key: string) -> option<string>;
+  set:    func(key: string, value: string);
+  delete: func(key: string);
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// commands — gated by manifest.permissions[commands.executeHost]
+// ─────────────────────────────────────────────────────────────────────
+
+interface commands {
+  // Run a host-registered command by id. Args are JSON-encoded.
+  execute: func(id: string, args-json: string) -> result<string, string>;
+}

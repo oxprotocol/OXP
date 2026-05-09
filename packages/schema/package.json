@@ -1,0 +1,35 @@
+{
+  "name": "@oxprotocol/schema",
+  "version": "0.1.4",
+  "description": "OXP manifest JSON Schema (spec v1) and an Ajv validator.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./manifest.schema.json": "./src/manifest.schema.json"
+  },
+  "files": [
+    "dist",
+    "src/manifest.schema.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node ./scripts/sync-schema.mjs && tsc -p tsconfig.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "test": "vitest run --passWithNoTests",
+    "sync-schema": "node ./scripts/sync-schema.mjs"
+  },
+  "dependencies": {
+    "@oxprotocol/types": "workspace:*",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}

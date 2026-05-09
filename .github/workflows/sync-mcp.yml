@@ -1,0 +1,61 @@
+name: Sync MCP registry
+
+# Crawls every public MCP server source (official registry, github
+# modelcontextprotocol/servers, npm keyword search, mcp.so, glama.ai) and
+# refreshes apps/web/lib/mcp-servers.json. Runs daily at 06:00 UTC and opens
+# a PR if anything changed. Also runnable manually from the Actions tab.
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Crawl MCP sources
+        working-directory: apps/web
+        env:
+          # Lifts the GitHub API rate limit while crawling
+          # github.com/modelcontextprotocol/servers contents.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm sync:mcp
+
+      - name: Open PR if snapshot changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(mcp): sync registry snapshot"
+          title: "chore(mcp): sync registry snapshot"
+          body: |
+            Automated daily multi-source sync of the public MCP ecosystem into
+            `apps/web/lib/mcp-servers.json`.
+
+            Sources crawled:
+            - registry.modelcontextprotocol.io
+            - github.com/modelcontextprotocol/servers
+            - npm registry (`keywords:mcp-server`)
+            - mcp.so
+            - glama.ai/mcp/servers
+
+            Triggered by `.github/workflows/sync-mcp.yml`.
+          branch: chore/sync-mcp
+          delete-branch: true
+          add-paths: apps/web/lib/mcp-servers.json

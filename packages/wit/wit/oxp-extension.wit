@@ -1,0 +1,71 @@
+// oxp:extension@0.1.0
+//
+// Interfaces an OXP extension component must export and the world
+// it targets. The host calls these functions; the component never
+// drives the host loop directly.
+//
+// Stability: pinned. Breaking changes go to oxp:extension@0.2.0 and
+// require a coordinated runtime + manifest spec bump.
+
+package oxp:extension@0.1.0;
+
+interface lifecycle {
+  record activate-ctx {
+    extension-id: string,        // "@publisher/slug"
+    version:      string,        // semver
+    host:         string,        // "vscode" | "piye" | "cli" | …
+    host-version: string,
+  }
+
+  // Called once after install or reload, before any other export.
+  // Return err(reason) to abort activation.
+  activate:   func(ctx: activate-ctx) -> result<_, string>;
+
+  // Called on uninstall, host shutdown, or eviction. Best effort —
+  // the host may kill the instance if this exceeds its fuel budget.
+  deactivate: func() -> result<_, string>;
+}
+
+interface ui-handler {
+  // Serialized oxp-ui-v1 event (msgpack or JSON; same encoding as render).
+  variant event-error {
+    unknown-target(string),
+    invalid-payload(string),
+    internal(string),
+  }
+
+  on-event: func(event: list<u8>) -> result<_, event-error>;
+}
+
+interface command-handler {
+  // Args + return are JSON-encoded for forward compatibility.
+  on-command: func(id: string, args-json: string) -> result<string, string>;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// The single world OXP extensions target in spec v1.
+//
+// Imports listed here are the *maximum* a component may use. The
+// concrete set actually linked at instantiate time is restricted by
+// manifest.permissions; declaring an import here that is not granted
+// will cause the component to be rejected at install with a clear
+// "permission not granted" diagnostic — never a silent stub.
+// ─────────────────────────────────────────────────────────────────────
+
+world extension {
+  // always-on imports
+  import oxp:host/log@0.1.0;
+  import oxp:host/storage@0.1.0;
+  import oxp:host/ui@0.1.0;
+
+  // gated imports (unlocked by manifest.permissions)
+  import oxp:host/fs@0.1.0;
+  import oxp:host/net@0.1.0;
+  import oxp:host/secrets@0.1.0;
+  import oxp:host/commands@0.1.0;
+
+  // exports the host calls
+  export lifecycle;
+  export ui-handler;
+  export command-handler;
+}

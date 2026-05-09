@@ -1,0 +1,178 @@
+name: jetbrains-plugin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hosts/jetbrains/**"
+      - "runtime/**"
+      - "examples/hello-rust/**"
+      - ".github/workflows/jetbrains-plugin.yml"
+  pull_request:
+    paths:
+      - "hosts/jetbrains/**"
+      - "runtime/**"
+
+jobs:
+  # Cross-compile oxp-runtime for all six release targets using cargo-zigbuild,
+  # which gives us hermetic cross builds without needing the actual MSVC /
+  # Linux toolchains. Each target is uploaded as an artifact and consumed by
+  # the package job below.
+  build-runtime:
+    name: build runtime (${{ matrix.triple }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {
+              triple: aarch64-apple-darwin,
+              runner: macos-14,
+              plugin: macos-aarch64,
+              exe: oxp-runtime,
+            }
+          - {
+              triple: x86_64-apple-darwin,
+              runner: macos-14,
+              plugin: macos-x86_64,
+              exe: oxp-runtime,
+            }
+          - {
+              triple: aarch64-unknown-linux-gnu,
+              runner: ubuntu-24.04,
+              plugin: linux-aarch64,
+              exe: oxp-runtime,
+            }
+          - {
+              triple: x86_64-unknown-linux-gnu,
+              runner: ubuntu-24.04,
+              plugin: linux-x86_64,
+              exe: oxp-runtime,
+            }
+          - {
+              triple: aarch64-pc-windows-msvc,
+              runner: windows-2022,
+              plugin: windows-aarch64,
+              exe: oxp-runtime.exe,
+            }
+          - {
+              triple: x86_64-pc-windows-msvc,
+              runner: windows-2022,
+              plugin: windows-x86_64,
+              exe: oxp-runtime.exe,
+            }
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.triple }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: runtime
+
+      # zigbuild gives us reproducible cross-compilation on Linux and macOS.
+      # On Windows runners we compile natively for both x86_64 and aarch64.
+      - name: install zig (Linux/macOS)
+        if: runner.os != 'Windows'
+        uses: mlugg/setup-zig@v1
+        with: { version: 0.13.0 }
+
+      - name: install cargo-zigbuild (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: cargo install --locked cargo-zigbuild
+
+      - name: build (Linux/macOS — zigbuild)
+        if: runner.os != 'Windows'
+        working-directory: runtime
+        run: cargo zigbuild --release --target ${{ matrix.triple }}
+
+      - name: build (Windows — native)
+        if: runner.os == 'Windows'
+        working-directory: runtime
+        run: cargo build --release --target ${{ matrix.triple }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runtime-${{ matrix.plugin }}
+          path: runtime/target/${{ matrix.triple }}/release/${{ matrix.exe }}
+          if-no-files-found: error
+
+  # Builds the hello-rust component once. Every host smoke test consumes it.
+  build-hello-rust:
+    name: build hello-rust component
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-wasip2
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: examples/hello-rust
+      - name: build component
+        working-directory: examples/hello-rust
+        run: cargo build --release --target wasm32-wasip2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hello-rust-wasm
+          path: examples/hello-rust/target/wasm32-wasip2/release/hello_rust.wasm
+          if-no-files-found: error
+
+  # Stages all six runtime binaries into hosts/jetbrains/runtime-bin/<triple>/
+  # then runs the full Gradle build, which produces the shippable plugin .zip
+  # and runs the JUnit integration test against the freshly-built runtime.
+  package-plugin:
+    name: package plugin
+    needs: [build-runtime, build-hello-rust]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: download all runtime artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: stage runtime binaries into plugin
+        run: |
+          set -euo pipefail
+          for d in artifacts/runtime-*; do
+            triple="${d#artifacts/runtime-}"
+            dest="hosts/jetbrains/runtime-bin/$triple"
+            mkdir -p "$dest"
+            cp "$d"/* "$dest/"
+            chmod +x "$dest"/* 2>/dev/null || true
+          done
+          ls -lR hosts/jetbrains/runtime-bin
+
+      - name: stage hello-rust for integration test
+        run: |
+          mkdir -p examples/hello-rust/target/wasm32-wasip2/release
+          cp artifacts/hello-rust-wasm/hello_rust.wasm \
+             examples/hello-rust/target/wasm32-wasip2/release/
+
+      # Build a debug runtime for the integration test (it expects
+      # runtime/target/debug/oxp-runtime). Cheaper than re-cross-compiling.
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: runtime }
+      - name: build debug runtime for tests
+        working-directory: runtime
+        run: cargo build
+
+      - name: gradle build + test
+        working-directory: hosts/jetbrains
+        run: ./gradlew --no-daemon buildPlugin test verifyPlugin
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oxp-jetbrains-plugin
+          path: hosts/jetbrains/build/distributions/*.zip
+          if-no-files-found: error

@@ -1,3 +1,11 @@
+# OXP
+
+> **🔒 Security lock active.** All non-security feature work is paused until Phase A + B + C of [`ROADMAP-SECURITY.md`](./ROADMAP-SECURITY.md) are complete. See [`SECURITY.md`](./SECURITY.md) for current threat model and posture, and [`ROADMAP-FEATURES.md`](./ROADMAP-FEATURES.md) for the bookmark of paused feature work.
+
+**New here?** → [QUICKSTART.md](./QUICKSTART.md) — build a `.wasm` extension once, run it in VS Code _and_ JetBrains in 10 minutes.
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

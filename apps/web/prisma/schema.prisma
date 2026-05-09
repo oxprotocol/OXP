@@ -1,0 +1,753 @@
+// OXP — Postgres schema (Prisma).
+//
+// Migrated from MongoDB Atlas → Neon Postgres on 2026-05-02.
+// Auth lives in `auth.ts` (NextAuth v5 + Credentials + JWT strategy).
+//
+// Generate client:        pnpm exec prisma generate
+// Create migration:       pnpm exec prisma migrate dev --name <name>
+// Apply in production:    pnpm exec prisma migrate deploy
+//
+// Notes:
+//  • IDs are cuid() strings. Stable, sortable, URL-safe. No DB-side seq.
+//  • directUrl is required for `prisma migrate` (PgBouncer/pooled
+//    connections do not support session-level features migrations need).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("NEON_DATABASE_URL")
+  directUrl = env("NEON_DIRECT_URL")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Identity
+// ──────────────────────────────────────────────────────────────────────
+
+enum AccountKind {
+  user
+  org
+}
+
+enum OrgRole {
+  owner
+  admin
+  contributor
+  reader
+}
+
+enum Plan {
+  free
+  pro
+  teams
+  enterprise
+}
+
+enum SubscriptionStatus {
+  active
+  trialing
+  past_due
+  canceled
+}
+
+/// Phase B.8 — denormalized verification level cached on User / Organization.
+/// Source of truth is `PublisherVerification` rows; these columns are kept
+/// in sync by `recomputePublisherLevel()` whenever a verification flips state.
+///   unverified — no proof on file (default).
+///   github     — GitHub OAuth login matches the handle.
+///   domain     — DNS TXT proof on the handle’s claimed apex domain.
+enum VerificationLevel {
+  unverified
+  github
+  domain
+}
+
+/// Global namespace — every handle resolves to a user OR an org.
+model NamespaceHandle {
+  id       String      @id @default(cuid())
+  handle   String      @unique
+  kind     AccountKind
+  ownerId  String
+  reserved Boolean     @default(false)
+  /// Phase B.8 — brand-protected namespaces (anthropic, microsoft…).
+  /// Self-claim is denied even with valid GitHub/DNS proof; the OXP team
+  /// completes the transfer manually after KYC. Source of truth is the
+  /// `RESERVED_BRANDS` list in `lib/reserved-handles.ts`; this column is
+  /// the SQL-queryable mirror so registrar UIs can `WHERE` on it.
+  requiresManualReview Boolean @default(false)
+
+  @@index([ownerId])
+  @@map("namespace_handles")
+}
+
+model User {
+  id             String    @id @default(cuid())
+  handle         String    @unique
+  email          String    @unique
+  emailVerified  DateTime?
+  passwordHash   String
+  displayName    String
+  avatarSeed     String
+  /// Optional uploaded avatar. When null the UI falls back to the
+  /// `avatarSeed` initials chip. Stored as a relative URL served by
+  /// `/api/avatars/[userId]` so the path is stable across CDN swaps.
+  avatarUrl        String?
+  avatarUpdatedAt  DateTime?
+  bio            String?
+  location       String?
+  website        String?
+  joinedAt       DateTime  @default(now())
+  subscriptionId String?   @unique
+
+  // Phase B.7 — TOTP 2FA. `totpSecret` is base32 (otplib default). When
+  // present, all api-token publishes require a recent TOTP proof recorded
+  // on the token row (`ApiToken.lastTwoFactorAt`). `recoveryCodesHash`
+  // stores bcrypt hashes of single-use recovery codes; emptied as consumed.
+  totpSecret           String?
+  totpEnrolledAt       DateTime?
+  recoveryCodesHash    String[]  @default([])
+
+  // Phase B.8 — publisher verification. Denormalized from
+  // `PublisherVerification` rows; recomputed on every verify/revoke.
+  // `githubLogin` is the verified login (lowercase) used to match VSX
+  // claim flows; `githubId` is the immutable numeric id from GitHub so a
+  // user renaming on GitHub doesn’t silently change identity.
+  verificationLevel    VerificationLevel @default(unverified)
+  verifiedAt           DateTime?
+  githubLogin          String?
+  githubId             String?           @unique
+
+  apiTokens   ApiToken[]
+  deviceAuths DeviceAuth[]
+  installs    Install[]
+  stars       Star[]
+  events      AuditEvent[]
+
+  @@map("users")
+}
+
+model Organization {
+  id              String   @id @default(cuid())
+  handle          String   @unique
+  displayName     String
+  description     String?
+  website         String?
+  verified        Boolean  @default(false)
+  /// Phase B.8 — denormalized verification tier (mirror of
+  /// `PublisherVerification`).
+  verificationLevel VerificationLevel @default(unverified)
+  verifiedAt        DateTime?
+  createdByUserId String
+  joinedAt        DateTime @default(now())
+  subscriptionId  String?  @unique
+
+  memberships Membership[]
+
+  @@map("organizations")
+}
+
+model Membership {
+  id     String  @id @default(cuid())
+  orgId  String
+  userId String
+  role   OrgRole
+
+  org Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, userId])
+  @@index([userId])
+  @@map("memberships")
+}
+
+/// Pending invitation for a user (by email) to join an org. Created by an
+/// owner/admin via the members panel. Single-use: redeeming consumes the
+/// row. Tokens are 32-byte hex; we hash them at rest so a leaked DB row
+/// can't be redeemed.
+model OrgInvite {
+  id          String   @id @default(cuid())
+  orgId       String
+  email       String
+  role        OrgRole  @default(contributor)
+  /// SHA-256(token) — never store the raw token.
+  tokenHash   String   @unique
+  invitedById String
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  acceptedById String?
+  revokedAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  @@index([orgId])
+  @@index([email])
+  @@map("org_invites")
+}
+
+model Subscription {
+  id               String             @id @default(cuid())
+  plan             Plan               @default(free)
+  status           SubscriptionStatus @default(active)
+  subjectUserId    String?            @unique
+  subjectOrgId     String?            @unique
+  seats            Int                @default(1)
+  /// Free plan rows use a far-future sentinel; paid rows track the real
+  /// renewal date received from Paddle's `subscription.current_billing_period`.
+  currentPeriodEnd DateTime
+  /// Set when the user has scheduled cancellation but the period hasn't ended.
+  cancelAt         DateTime?
+  /// Paddle Billing identifiers. Stripe columns are kept for the rare
+  /// historical record but are no longer written to.
+  paddleCustomerId String?            @unique
+  paddleSubId      String?            @unique
+  paddlePriceId    String?
+  /// Legacy / unused — kept to avoid a destructive migration.
+  stripeCustomerId String?            @unique
+  stripeSubId      String?            @unique
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@map("subscriptions")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// API tokens
+// ──────────────────────────────────────────────────────────────────────
+
+model ApiToken {
+  id         String    @id @default(cuid())
+  userId     String
+  name       String
+  tokenHash  String    @unique
+  scopes     String[]
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+  expiresAt  DateTime?
+
+  /// Phase B.7 — timestamp of the most recent successful TOTP proof bound
+  /// to this token. Publish endpoint compares against `now - 10 min`.
+  /// Null = no proof on file; gate denies if user has 2FA enrolled.
+  lastTwoFactorAt DateTime?
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceAuths DeviceAuth[]
+
+  @@index([userId])
+  @@map("api_tokens")
+}
+
+/// OAuth 2.0 device-authorization-grant (RFC 8628) state. The CLI starts a
+/// session, the user approves it in the browser, the CLI polls until the
+/// session yields a freshly-minted ApiToken. One-shot: consumedAt prevents
+/// the same deviceCode from ever exchanging twice.
+model DeviceAuth {
+  id              String    @id @default(cuid())
+  /// sha256 of the long opaque device_code. We never store the raw value.
+  deviceCodeHash  String    @unique
+  /// short human-friendly code, e.g. "ABCD-1234". Indexed for the approve page.
+  userCode        String    @unique
+  /// scopes the CLI is requesting; user can narrow at approve time.
+  requestedScopes String[]
+  /// Filled in once the signed-in user approves. Null while pending / denied.
+  userId          String?
+  /// Set when the user explicitly denies. Mutually exclusive with userId.
+  deniedAt        DateTime?
+  /// Set when the user clicks Approve. Token is minted at the same time.
+  approvedAt      DateTime?
+  /// Set once the CLI has retrieved the token (one-shot exchange).
+  consumedAt      DateTime?
+  /// The minted ApiToken this session yielded. Null while pending.
+  tokenId         String?   @unique
+  createdAt       DateTime  @default(now())
+  expiresAt       DateTime
+
+  user  User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token ApiToken? @relation(fields: [tokenId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("device_auth")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Extensions
+// ──────────────────────────────────────────────────────────────────────
+
+enum ExtensionVisibility {
+  public
+  private
+}
+
+enum ExtensionStatus {
+  active
+  archived
+  dmca_holding
+}
+
+enum ExtensionAvailability {
+  available
+  planned
+}
+
+model Extension {
+  id            String                @id @default(cuid())
+  ownerHandle   String
+  ownerKind     AccountKind
+  ownerId       String
+  slug          String
+  title         String
+  description   String
+  visibility    ExtensionVisibility   @default(public)
+  status        ExtensionStatus       @default(active)
+  availability  ExtensionAvailability @default(available)
+  tags          String[]
+  repositoryUrl String?
+  readme        String?
+
+  latestVersion String?
+  downloads     BigInt  @default(0)
+  stars         Int     @default(0)
+
+  /// For VSX-mirrored placeholders: GitHub org/user parsed from
+  /// `repositoryUrl` at import time. Used by the claim flow to decide
+  /// the required GitHub identity (e.g. `microsoft`, not the VSX
+  /// namespace `ms-python`). Null = unknown / not VSX-mirrored.
+  sourceGithubOrg String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  versions Version[]
+  aliases  ExtensionAlias[]
+  installs Install[]
+  starred  Star[]
+
+  @@unique([ownerHandle, slug])
+  @@index([ownerId])
+  @@index([visibility, status])
+  @@map("extensions")
+}
+
+model Version {
+  id             String    @id @default(cuid())
+  extensionId    String
+  semver         String
+  publishedAt    DateTime  @default(now())
+  bundleSha256   String
+  bundleSize     BigInt
+  bundleMimeType String    @default("application/vnd.oxp.bundle.v1.tar+zstd")
+  signedByUserId String
+  signatureKeyId String
+  signatureAlgo  String    @default("ed25519")
+  signatureJson  Json
+  /// Phase B.5b — full Sigstore bundle (cert chain + signature + Rekor
+  /// inclusion proof). When present, this version was *additionally*
+  /// signed via Sigstore keyless OIDC and is publicly auditable on the
+  /// Rekor transparency log. The Ed25519 layer is always present.
+  sigstoreBundle Json?
+  /// Rekor transparency-log entry index. Search at
+  /// https://search.sigstore.dev/?logIndex=...
+  rekorLogIndex  String?
+  /// Verified OIDC subject from the Fulcio cert SAN
+  /// (e.g. `alice@acme.com`, or a GitHub workflow ref).
+  signerIdentity String?
+  /// OIDC issuer URL (e.g. `https://accounts.google.com`,
+  /// `https://token.actions.githubusercontent.com`).
+  signerIssuer   String?
+  manifestJson   Json
+  /** Phase B.4 — copy of `manifest.provenance` for fast queries / display. */
+  provenanceJson Json?
+  /** Phase B.5 — DSSE/in-toto attestation envelope, if supplied at publish. */
+  attestationJson Json?
+  yankedAt       DateTime?
+  changelog      String    @default("")
+
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@unique([extensionId, semver])
+  @@index([bundleSha256])
+  @@map("versions")
+}
+
+/// Ed25519 public key registered to a publisher (user or org handle).
+model PublisherKey {
+  id                 String    @id @default(cuid())
+  publisherHandle    String
+  algorithm          String    @default("ed25519")
+  publicKeyPem       String
+  keyId              String    @unique
+  registeredAt       DateTime  @default(now())
+  registeredByUserId String
+  revokedAt          DateTime?
+
+  @@index([publisherHandle, revokedAt])
+  @@map("publisher_keys")
+}
+
+/// Legacy flat id -> scoped reference. Powers /packages/[id] redirects.
+model ExtensionAlias {
+  id          String @id @default(cuid())
+  alias       String @unique
+  extensionId String
+  ownerHandle String
+  slug        String
+
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@map("extension_aliases")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Engagement
+// ──────────────────────────────────────────────────────────────────────
+
+model Install {
+  id          String   @id @default(cuid())
+  userId      String
+  extensionId String
+  editor      String
+  version     String
+  installedAt DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, extensionId, editor])
+  @@index([extensionId])
+  @@map("installs")
+}
+
+model Star {
+  id          String   @id @default(cuid())
+  userId      String
+  extensionId String
+  starredAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, extensionId])
+  @@index([extensionId])
+  @@map("stars")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// MCP registry mirror (synced by scripts/sync-mcp.mjs)
+// ──────────────────────────────────────────────────────────────────────
+
+model McpServerSnapshot {
+  id          String   @id // upstream id
+  name        String
+  publisher   String
+  description String
+  homepage    String?
+  repository  String?
+  transports  String[]
+  tags        String[]
+  featured    Boolean  @default(false)
+  syncedAt    DateTime @default(now())
+  source      String
+
+  @@index([publisher])
+  @@map("mcp_server_snapshots")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Audit log
+// ──────────────────────────────────────────────────────────────────────
+
+model AuditEvent {
+  id        String   @id @default(cuid())
+  actorId   String?
+  /// Org scope, if the action targets org resources. Null = personal scope.
+  orgId     String?
+  action    String
+  subject   String
+  metadata  Json
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([subject, createdAt])
+  @@index([actorId, createdAt])
+  @@index([orgId, createdAt])
+  @@index([action, createdAt])
+  @@map("audit_events")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Phase B.1 — Publisher verification (domain TXT proof + GitHub OAuth)
+// ──────────────────────────────────────────────────────────────────────
+
+enum PublisherVerificationMethod {
+  /// DNS TXT record on `_oxp-challenge.<domain>` containing the token.
+  dns_txt
+  /// GitHub OAuth login matching the claimed handle (login or org membership).
+  github_oauth
+}
+
+enum PublisherVerificationStatus {
+  pending
+  verified
+  failed
+  expired
+  revoked
+}
+
+/// One verification attempt per (handle, method, target). A handle may have
+/// multiple successful verifications (e.g. two domains, or DNS + GitHub).
+/// The "verified" badge in the UI is shown when ANY active verification
+/// exists for the handle. Tokens are challenge-scoped — never reused.
+model PublisherVerification {
+  id        String                       @id @default(cuid())
+  /// The handle being verified (e.g. "anthropic"). Lowercase.
+  handle    String
+  method    PublisherVerificationMethod
+  /// For dns_txt: apex domain (e.g. "anthropic.com").
+  /// For github_oauth: github login or org name.
+  target    String
+  /// Random 256-bit token the verifier compares against. Never displayed
+  /// after creation — UI shows the full record once on the challenge page.
+  token     String                       @unique
+  status    PublisherVerificationStatus  @default(pending)
+  /// Who initiated the challenge.
+  createdByUserId String
+  createdAt DateTime                     @default(now())
+  /// Deadline for completion. Past this, status flips to expired.
+  expiresAt DateTime
+  /// Set when the verifier confirms.
+  verifiedAt DateTime?
+  /// Set when an admin / handle owner revokes the proof (e.g. domain sold).
+  revokedAt  DateTime?
+  /// Free-text reason for failure / revocation (operator-visible).
+  reason     String?
+
+  @@unique([handle, method, target])
+  @@index([handle, status])
+  @@map("publisher_verifications")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Teams: custom domain (vanity host on the registry, e.g. oxp.acme.com)
+// ──────────────────────────────────────────────────────────────────────
+
+enum DomainStatus {
+  pending      // record created, DNS not yet verified
+  verified     // DNS TXT proof confirmed, ready for cert
+  active       // certificate issued and serving
+  failed       // verification failed; user can retry
+}
+
+/// One row per (org, hostname). The host application terminates TLS at the
+/// edge (Vercel / Caddy) and routes by Host header. We are the source of
+/// truth for which hostname belongs to which org. The verification token
+/// must appear in a TXT record at `_oxp-verify.<host>`.
+model OrgDomain {
+  id           String       @id @default(cuid())
+  orgId        String
+  hostname     String       @unique
+  /// 32 bytes hex. Pre-shared with the org admin who pastes it into DNS.
+  verifyToken  String
+  status       DomainStatus @default(pending)
+  /// Last time we ran a TXT lookup.
+  lastCheckedAt DateTime?
+  /// Reason on failure (NXDOMAIN / TXT mismatch / ...).
+  lastError     String?
+  verifiedAt    DateTime?
+  activatedAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([orgId])
+  @@map("org_domains")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Teams: SAML / OIDC single sign-on (per-org IdP)
+// ──────────────────────────────────────────────────────────────────────
+
+enum SsoProtocol {
+  saml
+  oidc
+}
+
+/// One IdP per org. SAML stores parsed metadata (entityID, ssoUrl, x509);
+/// OIDC stores discovery + client credentials. `clientSecret` is encrypted
+/// with `OXP_KMS_DATA_KEY` at write time (envelope: AES-256-GCM).
+model OrgSsoConfig {
+  id           String      @id @default(cuid())
+  orgId        String      @unique
+  protocol     SsoProtocol
+  /// SAML: IdP entityID. OIDC: issuer URL.
+  issuer       String
+  /// SAML: IdP SSO POST endpoint. OIDC: authorization_endpoint.
+  ssoUrl       String
+  /// SAML: PEM-encoded x509 cert(s), `\n`-joined. OIDC: empty.
+  x509Certs    String      @default("")
+  /// OIDC: client_id. SAML: empty.
+  clientId     String      @default("")
+  /// OIDC: encrypted (KMS-wrapped) client_secret. SAML: empty.
+  clientSecretEnc String   @default("")
+  /// OIDC: token_endpoint. SAML: empty.
+  tokenUrl     String      @default("")
+  /// OIDC: userinfo_endpoint. SAML: empty.
+  userinfoUrl  String      @default("")
+  /// SAML attribute / OIDC claim that yields the user's email.
+  emailAttr    String      @default("email")
+  /// If true, only members provisioned via SSO can sign in (no password).
+  enforced     Boolean     @default(false)
+  enabledAt    DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@map("org_sso_configs")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Enterprise: bring-your-own object storage
+// ──────────────────────────────────────────────────────────────────────
+
+enum StorageProvider {
+  s3            // AWS S3
+  r2            // Cloudflare R2 (S3-compatible)
+  azure_blob    // Azure Blob Storage
+  gcs           // Google Cloud Storage
+  minio         // S3-compatible self-hosted
+}
+
+/// Per-org object storage backend. When set, all bundle reads/writes for
+/// that org's extensions are served from the customer's bucket. Credentials
+/// are stored encrypted (envelope, same scheme as SSO secrets).
+model OrgStorageBackend {
+  id           String          @id @default(cuid())
+  orgId        String          @unique
+  provider     StorageProvider
+  /// S3/R2/MinIO: bucket name. Azure: container. GCS: bucket.
+  bucket       String
+  /// S3/R2: region. Others: empty or defaulted by SDK.
+  region       String          @default("")
+  /// Custom endpoint URL (R2/MinIO). Empty for native S3/GCS/Azure.
+  endpoint     String          @default("")
+  /// Access key id (S3/R2/MinIO) or account name (Azure) or service-account
+  /// email (GCS).
+  accessKeyId  String
+  /// Encrypted secret (envelope).
+  secretEnc    String
+  /// Optional KMS key id for SSE-KMS.
+  sseKmsKeyId  String?
+  /// Optional path prefix inside the bucket.
+  prefix       String          @default("oxp/")
+  /// Last time we ran a write+read smoke test.
+  lastHealthAt DateTime?
+  lastError    String?
+  enabledAt    DateTime?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@map("org_storage_backends")
+}
+
+// ──────────────────────────────────────────────────────────────────────
+// Enterprise: customer-managed signing key (KMS)
+// ──────────────────────────────────────────────────────────────────────
+
+enum KmsProvider {
+  aws_kms
+  gcp_kms
+  azure_kv
+  hashicorp_vault
+}
+
+/// Per-org signing key. When set, every release published under the org is
+/// signed by calling KMS Sign (asymmetric RSA_PSS_SHA_256 / ECDSA_P256_SHA_256).
+/// We never see the private material. Public key is cached for verification.
+model OrgKmsKey {
+  id            String      @id @default(cuid())
+  orgId         String      @unique
+  provider      KmsProvider
+  /// AWS: key ARN. GCP: projects/.../keyRings/.../cryptoKeys/.../cryptoKeyVersions/N.
+  /// Azure: vault url + key name + version. Vault: transit/keys/<name>.
+  keyRef        String
+  /// AWS region / GCP location / Azure vault host.
+  region        String      @default("")
+  /// One of: rsa_pss_sha256, ecdsa_p256_sha256.
+  algorithm     String      @default("ecdsa_p256_sha256")
+  /// Encrypted IAM credentials (access key id + secret) used to call Sign.
+  /// For workload identity / IRSA leave empty.
+  credentialsEnc String     @default("")
+  /// PEM SPKI public key, fetched once via KMS GetPublicKey and cached.
+  publicKeyPem  String      @default("")
+  /// Sigstore Rekor entry uuid for the public key, for transparency log
+  /// pinning. Filled after first successful sign.
+  rekorUuid     String?
+  lastSignAt    DateTime?
+  lastError     String?
+  enabledAt     DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("org_kms_keys")
+}
+
+
+// ──────────────────────────────────────────────────────────────────────
+// Phase 1 — CDN bandwidth metering
+// ──────────────────────────────────────────────────────────────────────
+
+/// Per-subject monthly bandwidth counter. Keyed by (subjectKind, subjectId,
+/// yearMonth) where yearMonth is "YYYY-MM" (UTC). Updated by the bundle
+/// download endpoint via an atomic upsert + increment. Read by:
+///   • assertBandwidthAvailable() — gate before serving bytes (402 at cap).
+///   • dashboard usage card — current-month GB used.
+/// Old months are kept for analytics; pruning is a separate job.
+model BandwidthUsage {
+  id          String      @id @default(cuid())
+  subjectKind AccountKind
+  subjectId   String
+  /// "YYYY-MM" in UTC, e.g. "2026-05".
+  yearMonth   String
+  bytesServed BigInt      @default(0)
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([subjectKind, subjectId, yearMonth])
+  @@index([subjectId])
+  @@map("bandwidth_usage")
+}
+
+
+// ──────────────────────────────────────────────────────────────────────
+// Email verification + password reset tokens (credentials auth)
+// ──────────────────────────────────────────────────────────────────────
+
+/// Single-use token sent when a user signs up with email/password or
+/// requests a fresh verification email. The raw token lives only in the
+/// outbound email; the row stores SHA-256(token). Consuming the token sets
+/// `users.emailVerified` and marks the row `consumedAt`.
+model EmailVerificationToken {
+  id         String   @id @default(cuid())
+  userId     String
+  email      String
+  /// SHA-256(token), hex-encoded. Never store the raw token.
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+/// Single-use password-reset token. Same hashing model as above. Issuing
+/// a new one for the same user invalidates older unconsumed rows.
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}

@@ -1,0 +1,53 @@
+{
+  "name": "@oxprotocol/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "prisma generate && next build --webpack",
+    "postinstall": "prisma generate",
+    "start": "next start",
+    "lint": "eslint",
+    "sync:mcp": "node scripts/sync-mcp.mjs",
+    "db:push": "dotenv -e .env.local -- prisma db push",
+    "db:generate": "dotenv -e .env.local -- prisma generate",
+    "db:migrate": "dotenv -e .env.local -- prisma migrate dev",
+    "db:deploy": "dotenv -e .env.local -- prisma migrate deploy",
+    "db:studio": "dotenv -e .env.local -- prisma studio"
+  },
+  "dependencies": {
+    "@oxprotocol/bundle": "workspace:*",
+    "@oxprotocol/schema": "workspace:*",
+    "@oxprotocol/types": "workspace:*",
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "lucide-react": "^1.14.0",
+    "next": "16.2.4",
+    "next-auth": "5.0.0-beta.31",
+    "otplib": "^13.4.0",
+    "postmark": "^4.0.7",
+    "qrcode": "^1.5.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
+    "shiki": "^4.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
+    "dotenv-cli": "^11.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "mongodb": "^7.2.0",
+    "pg": "^8.20.0",
+    "prisma": "^6.19.3",
+    "tailwindcss": "^4",
+    "tsx": "^4.21.0",
+    "typescript": "^5"
+  }
+}

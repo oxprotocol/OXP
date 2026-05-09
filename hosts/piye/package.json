@@ -1,0 +1,36 @@
+{
+  "name": "@oxprotocol/host-piye",
+  "version": "0.1.0",
+  "description": "Piye host adapter for OXP. Mounts verified extensions natively (Worker-per-extension + Shadow DOM) inside Piye's renderer instead of an iframe/webview.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./worker": {
+      "types": "./dist/worker/extension-worker.d.ts",
+      "default": "./dist/worker/extension-worker.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@oxprotocol/host-core": "workspace:*",
+    "@oxprotocol/types": "workspace:*",
+    "@oxprotocol/ui": "workspace:*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
+    "typescript": "5.9.3",
+    "vitest": "^2.1.8"
+  }
+}

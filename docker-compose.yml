@@ -1,0 +1,45 @@
+# Local dev infra. Postgres + MinIO so the app can flip off mock mode.
+#
+# Usage:
+#   docker compose up -d
+#   pnpm exec prisma migrate dev --name init
+#
+# Data persists in ./.docker/ (gitignored). `docker compose down -v` to wipe.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: oxp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: oxp
+      POSTGRES_PASSWORD: oxp
+      POSTGRES_DB: oxp
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.docker/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oxp -d oxp"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: oxp-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./.docker/minio:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 3

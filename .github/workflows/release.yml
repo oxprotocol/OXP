@@ -1,0 +1,210 @@
+name: release
+
+# Build-only release pipeline. Triggered on `v*` tag push:
+#   git tag v0.1.0 && git push origin v0.1.0
+#
+# Produces a GitHub Release with two assets:
+#   - oxp-vscode-<version>.vsix       (VS Code extension)
+#   - oxp-jetbrains-<version>.zip     (JetBrains plugin, all 6 runtime triples bundled)
+#
+# Nothing is published to any marketplace — humans pick up the assets manually.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write # needed to create the release + upload assets
+
+jobs:
+  # --- 1. Cross-compile the Rust runtime for every supported triple --------
+  build-runtime:
+    name: build runtime (${{ matrix.triple }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {
+              triple: aarch64-apple-darwin,
+              runner: macos-14,
+              plugin: macos-aarch64,
+              exe: oxp-runtime,
+            }
+          - {
+              triple: x86_64-apple-darwin,
+              runner: macos-14,
+              plugin: macos-x86_64,
+              exe: oxp-runtime,
+            }
+          - {
+              triple: aarch64-unknown-linux-gnu,
+              runner: ubuntu-24.04,
+              plugin: linux-aarch64,
+              exe: oxp-runtime,
+            }
+          - {
+              triple: x86_64-unknown-linux-gnu,
+              runner: ubuntu-24.04,
+              plugin: linux-x86_64,
+              exe: oxp-runtime,
+            }
+          - {
+              triple: aarch64-pc-windows-msvc,
+              runner: windows-2022,
+              plugin: windows-aarch64,
+              exe: oxp-runtime.exe,
+            }
+          - {
+              triple: x86_64-pc-windows-msvc,
+              runner: windows-2022,
+              plugin: windows-x86_64,
+              exe: oxp-runtime.exe,
+            }
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.triple }}
+      - uses: Swatinem/rust-cache@v2
+        with: { workspaces: runtime }
+
+      - name: install zig (Linux/macOS)
+        if: runner.os != 'Windows'
+        uses: mlugg/setup-zig@v1
+        with: { version: 0.13.0 }
+
+      - name: install cargo-zigbuild (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: cargo install --locked cargo-zigbuild
+
+      - name: build (Linux/macOS — zigbuild)
+        if: runner.os != 'Windows'
+        working-directory: runtime
+        run: cargo zigbuild --release --target ${{ matrix.triple }}
+
+      - name: build (Windows — native)
+        if: runner.os == 'Windows'
+        working-directory: runtime
+        run: cargo build --release --target ${{ matrix.triple }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runtime-${{ matrix.plugin }}
+          path: runtime/target/${{ matrix.triple }}/release/${{ matrix.exe }}
+          if-no-files-found: error
+
+  # --- 2. Package JetBrains plugin (.zip with all 6 runtime triples) -------
+  package-jetbrains:
+    name: package JetBrains plugin
+    needs: build-runtime
+    runs-on: ubuntu-24.04
+    outputs:
+      zip-name: ${{ steps.locate.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: download runtime artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: runtime-*
+
+      - name: stage runtime binaries into plugin
+        run: |
+          set -euo pipefail
+          for d in artifacts/runtime-*; do
+            triple="${d#artifacts/runtime-}"
+            dest="hosts/jetbrains/runtime-bin/$triple"
+            mkdir -p "$dest"
+            cp "$d"/* "$dest/"
+            chmod +x "$dest"/* 2>/dev/null || true
+          done
+
+      - name: gradle buildPlugin
+        working-directory: hosts/jetbrains
+        run: ./gradlew --no-daemon buildPlugin -x buildSearchableOptions
+
+      - name: locate plugin zip
+        id: locate
+        run: |
+          set -euo pipefail
+          zip=$(ls hosts/jetbrains/build/distributions/*.zip | head -n1)
+          echo "name=$(basename "$zip")" >> "$GITHUB_OUTPUT"
+          echo "Found: $zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jetbrains-plugin
+          path: hosts/jetbrains/build/distributions/*.zip
+          if-no-files-found: error
+
+  # --- 3. Package VS Code extension (.vsix) --------------------------------
+  package-vscode:
+    name: package VS Code extension
+    runs-on: ubuntu-24.04
+    outputs:
+      vsix-name: ${{ steps.locate.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9 }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: pnpm
+
+      - name: install workspace deps
+        run: pnpm install --frozen-lockfile
+
+      - name: build VS Code bundle
+        working-directory: hosts/vscode
+        run: pnpm build
+
+      - name: package .vsix
+        working-directory: hosts/vscode
+        run: pnpm dlx @vscode/vsce@latest package --no-dependencies --allow-missing-repository
+
+      - name: locate vsix
+        id: locate
+        working-directory: hosts/vscode
+        run: |
+          set -euo pipefail
+          vsix=$(ls *.vsix | head -n1)
+          echo "name=$vsix" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vscode-extension
+          path: hosts/vscode/*.vsix
+          if-no-files-found: error
+
+  # --- 4. Create GitHub Release and attach both assets ---------------------
+  release:
+    name: create GitHub Release
+    needs: [package-jetbrains, package-vscode]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: "{jetbrains-plugin,vscode-extension}"
+
+      - name: list assets
+        run: ls -lR dist
+
+      - name: create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            dist/jetbrains-plugin/*.zip
+            dist/vscode-extension/*.vsix

@@ -1,0 +1,39 @@
+{
+  "name": "@oxprotocol/ui",
+  "version": "0.1.4",
+  "description": "Frozen V1 component vocabulary for OXP extensions. Authors compose Box/Stack/Text/Button/VirtualList/CodeBlock trees; hosts render natively (Piye) or via the DOM backend (VS Code webview).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./dom": {
+      "types": "./dist/dom.d.ts",
+      "default": "./dist/dom.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@oxprotocol/types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "^2.1.8"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false
+}

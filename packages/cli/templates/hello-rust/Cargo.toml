@@ -1,0 +1,19 @@
+[package]
+name = "__SLUG_UNDERSCORED__"
+version = "0.0.1"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wit-bindgen = "0.36"
+
+[profile.release]
+# These flags shrink the resulting .wasm dramatically. Hello-world
+# components built with this profile land under 50 KB.
+opt-level = "s"
+lto = true
+strip = true
+codegen-units = 1

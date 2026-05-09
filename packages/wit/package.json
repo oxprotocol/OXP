@@ -1,0 +1,32 @@
+{
+  "name": "@oxprotocol/wit",
+  "version": "0.1.4",
+  "description": "WIT (WebAssembly Interface Types) contracts for the OXP Component Model runtime. Source of truth for the oxp:host and oxp:extension worlds (WASI Preview 2).",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./wit/*": "./wit/*"
+  },
+  "files": [
+    "dist",
+    "wit",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "test": "vitest run --passWithNoTests"
+  },
+  "devDependencies": {
+    "vitest": "^2.1.8"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}

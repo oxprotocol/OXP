@@ -1,0 +1,42 @@
+{
+  "name": "@oxprotocol/bundle",
+  "version": "0.1.4",
+  "description": "Pack, unpack, sign and verify .oxp extension bundles per spec/v1/bundle.md.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./wit-imports": {
+      "types": "./dist/wit-imports.d.ts",
+      "default": "./dist/wit-imports.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@mongodb-js/zstd": "^2.0.1",
+    "@oxprotocol/schema": "workspace:*",
+    "@oxprotocol/types": "workspace:*",
+    "@oxprotocol/wit": "workspace:*",
+    "sigstore": "^3.1.0",
+    "tar-stream": "^3.1.7"
+  },
+  "devDependencies": {
+    "@types/tar-stream": "^3.1.4"
+  },
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}

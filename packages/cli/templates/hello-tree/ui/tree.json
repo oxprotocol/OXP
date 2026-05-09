@@ -1,0 +1,27 @@
+{
+  "kind": "stack",
+  "axis": "vertical",
+  "gap": 3,
+  "children": [
+    { "kind": "text", "value": "__DISPLAY_NAME__", "variant": "heading" },
+    {
+      "kind": "text",
+      "value": "Authored with the frozen V1 component vocabulary.",
+      "variant": "caption"
+    },
+    {
+      "kind": "stack",
+      "axis": "horizontal",
+      "gap": 2,
+      "children": [
+        { "kind": "button", "label": "Run", "action": "run", "variant": "primary" },
+        { "kind": "button", "label": "Cancel", "action": "cancel", "variant": "secondary" }
+      ]
+    },
+    {
+      "kind": "code",
+      "language": "json",
+      "value": "{ \"hello\": \"oxp-ui-v1\" }"
+    }
+  ]
+}

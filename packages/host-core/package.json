@@ -1,0 +1,40 @@
+{
+  "name": "@oxprotocol/host-core",
+  "version": "0.1.4",
+  "description": "Runtime-agnostic core for OXP host implementations: resolve, verify, unpack, and install pipeline shared by VS Code, Piye, and any future host.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@oxprotocol/types": "workspace:*",
+    "@oxprotocol/wit": "workspace:*",
+    "@oxprotocol/host-runtime": "workspace:*",
+    "fzstd": "^0.1.1",
+    "tar-stream": "^3.1.7"
+  },
+  "devDependencies": {
+    "@oxprotocol/bundle": "workspace:*",
+    "@types/node": "^22.10.2",
+    "@types/tar-stream": "^3.1.3",
+    "typescript": "5.9.3",
+    "vitest": "^2.1.8"
+  }
+}

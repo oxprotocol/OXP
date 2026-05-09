@@ -1,0 +1,420 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oxp.sh/spec/v1/manifest.schema.json",
+  "title": "OXP Manifest",
+  "description": "The oxp.json file at the root of every OXP extension bundle. Spec version 1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "specVersion",
+    "id",
+    "version",
+    "displayName",
+    "publisher",
+    "license",
+    "engines",
+    "main"
+  ],
+  "properties": {
+    "$schema": {
+      "description": "Optional pointer to this schema for editor autocomplete. Ignored by the OXP CLI.",
+      "type": "string",
+      "format": "uri"
+    },
+    "specVersion": {
+      "description": "OXP spec version this manifest conforms to. Must be '1'.",
+      "type": "string",
+      "const": "1"
+    },
+    "kind": {
+      "description": "Bundle kind (Phase A.10 / WASM pivot). Controls which artifacts may ship inside the bundle. If omitted, the host derives it from the legacy fields: ui.components == 'oxp-ui-v1' → 'ui-v1'; main.wasm with no main.ui → 'component-v1'; both → 'hybrid-v1'.",
+      "type": "string",
+      "enum": ["ui-v1", "component-v1", "hybrid-v1"]
+    },
+    "id": {
+      "description": "Globally unique extension id: '@<publisher>/<slug>'. Lowercase, kebab-case slug.",
+      "type": "string",
+      "pattern": "^@[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])?/[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$"
+    },
+    "version": {
+      "description": "Strict semver 2.0.0. Pre-release tags allowed (e.g. 1.0.0-beta.3).",
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"
+    },
+    "displayName": {
+      "description": "Human-readable name shown in IDE chrome and the registry.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "description": {
+      "description": "One-sentence summary. Plain text. Shown in search results.",
+      "type": "string",
+      "maxLength": 280
+    },
+    "publisher": {
+      "description": "Publisher handle. Must match the publisher segment of `id` and resolve to a verified publisher on oxp.sh.",
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])?$"
+    },
+    "license": {
+      "description": "SPDX license identifier (e.g. 'MIT', 'Apache-2.0', 'AGPL-3.0-only') or 'UNLICENSED'.",
+      "type": "string",
+      "minLength": 1
+    },
+    "homepage":   { "type": "string", "format": "uri" },
+    "repository": { "type": "string", "format": "uri" },
+    "bugs":       { "type": "string", "format": "uri" },
+
+    "provenance": {
+      "description": "Optional reproducible-build provenance hints (Phase B.4). Lets the registry / consumers re-build the bundle from source and compare hashes. The fields are advisory; cryptographic attestation goes in the publish-time `attestation` multipart field (Phase B.5).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "description": "Source commit SHA the bundle was built from.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,64}$"
+        },
+        "buildCommand": {
+          "description": "Single shell command that reproduces the bundle from a clean checkout of `commit` (e.g. 'pnpm install --frozen-lockfile && pnpm build && oxp pack').",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "builder": {
+          "description": "Free-form identifier of the builder (e.g. 'github-actions', 'local').",
+          "type": "string",
+          "maxLength": 100
+        },
+        "sourceUrl": {
+          "description": "Source-tree URL pinned to the build commit (e.g. https://github.com/org/repo/tree/<sha>).",
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+
+    "scripts": {
+      "description": "Author-defined build hooks. `oxp pack` runs `scripts.build` (when set) before walking the bundle directory; `oxp publish` runs `scripts.prepublish` after a successful pack and before upload. Each value is a single shell command executed via `sh -c` with the project root as cwd. Skip with `--no-build` / `--no-prepublish`.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "build": {
+          "description": "Shell command that produces the bundle artefacts (compiles WASM, copies assets, etc.). Must place all output under paths declared in the manifest before exiting.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "prepublish": {
+          "description": "Shell command run after pack and before upload. Useful for running tests or attestation tooling against the freshly-built bundle.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+
+    "engines": {
+      "description": "Minimum OXP runtime version supported.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["oxp"],
+      "properties": {
+        "oxp": {
+          "description": "Semver range (e.g. '^1.0.0').",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+
+    "categories": {
+      "description": "Discovery categories. At most 5.",
+      "type": "array",
+      "maxItems": 5,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "ai",
+          "database",
+          "data-tools",
+          "debuggers",
+          "devops",
+          "editor",
+          "education",
+          "formatters",
+          "language-support",
+          "linters",
+          "notebooks",
+          "other",
+          "productivity",
+          "scm",
+          "snippets",
+          "testing",
+          "themes",
+          "visualization"
+        ]
+      }
+    },
+
+    "keywords": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 32 }
+    },
+
+    "icon": {
+      "description": "Path within the bundle to a square SVG (preferred) or PNG ≥128px.",
+      "type": "string",
+      "pattern": "^[^/].*\\.(svg|png)$"
+    },
+
+    "main": {
+      "description": "Entry points within the bundle. At least one of `ui` or `wasm` is required.",
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["ui"] },
+        { "required": ["wasm"] }
+      ],
+      "properties": {
+        "ui": {
+          "description": "Path to the UI entry within the bundle. `.html` for HTML extensions, or `.json` when `ui.components` is `oxp-ui-v1` (a static component tree).",
+          "type": "string",
+          "pattern": "^[^/].*\\.(html|json)$"
+        },
+        "wasm": {
+          "description": "Path to the logic Wasm component (WASI Component Model, Preview 2).",
+          "type": "string",
+          "pattern": "^[^/].*\\.wasm$"
+        }
+      }
+    },
+
+    "activationEvents": {
+      "description": "When the host should activate this extension. 'onStartup' is discouraged and warned at publish.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "anyOf": [
+          { "pattern": "^onCommand:[a-zA-Z0-9._-]+$" },
+          { "pattern": "^onView:[a-zA-Z0-9._-]+$" },
+          { "pattern": "^onLanguage:[a-zA-Z0-9._-]+$" },
+          { "pattern": "^onFileSystem:[a-zA-Z0-9._-]+$" },
+          { "pattern": "^onUri:[a-zA-Z0-9._-]+$" },
+          { "const": "onStartup" }
+        ]
+      }
+    },
+
+    "permissions": {
+      "description": "Capabilities this extension requests. Shown to the user at install time. Sensitive capabilities additionally prompt at first use.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/permission" }
+    },
+
+    "contributes": {
+      "description": "Static contributions to the host UI. Each value is a path to a contributions JSON file in the bundle.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "commands":    { "type": "string", "pattern": "^[^/].*\\.json$" },
+        "views":       { "type": "string", "pattern": "^[^/].*\\.json$" },
+        "menus":       { "type": "string", "pattern": "^[^/].*\\.json$" },
+        "keybindings": { "type": "string", "pattern": "^[^/].*\\.json$" },
+        "languages":   { "type": "string", "pattern": "^[^/].*\\.json$" },
+        "themes":      { "type": "string", "pattern": "^[^/].*\\.json$" },
+        "snippets":    { "type": "string", "pattern": "^[^/].*\\.json$" },
+        "settings":    { "type": "string", "pattern": "^[^/].*\\.json$" }
+      }
+    },
+
+    "ui": {
+      "description": "UI rendering hints.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "description": "Render mode. 'oxp-ui-only' is a promise to author with @oxprotocol/ui factories (V0). 'oxp-ui-v1' opts into the frozen V1 component tree (Box/Stack/Text/Button/VirtualList/CodeBlock) and unlocks the Piye native renderer. 'escape-hatch' allows raw HTML in webview hosts only.",
+          "type": "string",
+          "enum": ["oxp-ui-only", "oxp-ui-v1", "escape-hatch"],
+          "default": "oxp-ui-only"
+        },
+        "preferredSurface": {
+          "description": "Default surface to mount the UI on.",
+          "type": "string",
+          "enum": ["sidebar", "panel", "editor", "modal", "statusbar"],
+          "default": "sidebar"
+        },
+        "themeable": {
+          "description": "Honor host theme tokens (--oxp-bg, --oxp-fg, …).",
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+
+    "hosts": {
+      "description": "Host compatibility matrix. Hosts not listed are assumed compatible at L0 (sideload).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vscode":    { "$ref": "#/$defs/hostCompat" },
+        "cursor":    { "$ref": "#/$defs/hostCompat" },
+        "windsurf":  { "$ref": "#/$defs/hostCompat" },
+        "vscodium":  { "$ref": "#/$defs/hostCompat" },
+        "jetbrains": { "$ref": "#/$defs/hostCompat" },
+        "zed":       { "$ref": "#/$defs/hostCompat" },
+        "theia":     { "$ref": "#/$defs/hostCompat" },
+        "gitpod":    { "$ref": "#/$defs/hostCompat" },
+        "coder":     { "$ref": "#/$defs/hostCompat" },
+        "piye":      { "$ref": "#/$defs/hostCompat" }
+      }
+    },
+
+    "telemetry": {
+      "description": "Optional, opt-in telemetry endpoint. Users may revoke per-extension at any time.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["optIn", "endpoint"],
+      "properties": {
+        "optIn":    { "type": "boolean", "const": true },
+        "endpoint": { "type": "string", "format": "uri", "pattern": "^https://" }
+      }
+    },
+
+    "integrity": {
+      "description": "Set by `oxp publish`. Do not author by hand.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundleSha256", "signedBy", "signatureAlgo"],
+      "properties": {
+        "bundleSha256":  { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "signedBy":      { "type": "string" },
+        "signatureAlgo": { "type": "string", "enum": ["sigstore", "ed25519"] },
+        "rekorLogIndex": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "wit": {
+      "description": "WIT contract pin (Phase A.11). Required for bundles that ship a Wasm component; optional for declarative-only `oxp-ui-v1` bundles. The registry recomputes the canonical sha256 of the bundled `wit/world.wit` at publish time and rejects mismatches; hosts refuse to instantiate components pinned to a package@version they do not ship.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package", "version", "sha256"],
+      "properties": {
+        "package": {
+          "description": "The WIT package the component targets. v1 ships exactly one supported value.",
+          "type": "string",
+          "enum": ["oxp:extension"]
+        },
+        "version": {
+          "description": "Pinned package version. v1 ships exactly one supported value.",
+          "type": "string",
+          "enum": ["0.1.0"]
+        },
+        "sha256": {
+          "description": "Hex sha256 over the canonical form of the bundled WIT world (see @oxprotocol/wit canonicalWorldSha256).",
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+
+    "limits": {
+      "description": "Per-call resource limits applied by the host runtime (Phase A.12 / A.13). The host enforces a wall-clock cap on every host→component call (timeMsPerCall). The maxMemoryMb hint is enforced by wasmtime-backed hosts; jco-backed hosts log a warning when set above the default.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timeMsPerCall": {
+          "description": "Maximum wall-clock duration of a single host→component call in milliseconds. Default 100, max 5000.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5000
+        },
+        "maxMemoryMb": {
+          "description": "Maximum linear memory the component may grow to, in MiB. Default 64, max 256.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 256
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "permission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "rationale"],
+      "properties": {
+        "id": {
+          "description": "Capability identifier. See spec/v1/permissions.md for the full list.",
+          "type": "string",
+          "enum": [
+            "fs.read",
+            "fs.write",
+            "fs.delete",
+            "fs.watch",
+            "workspace.read",
+            "workspace.write",
+            "terminal.spawn",
+            "terminal.shell",
+            "process.kill",
+            "net.fetch",
+            "secrets.read",
+            "secrets.write",
+            "clipboard.read",
+            "clipboard.write",
+            "notifications.show",
+            "commands.executeHost",
+            "events.publish",
+            "events.subscribe"
+          ]
+        },
+        "scope": {
+          "description": "Glob list scoping the capability. Allowed context vars: ${workspace}, ${extdata}, ${tmp}. URL-pattern globs for net.fetch.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "rationale": {
+          "description": "Plain-text reason shown to the user at the consent prompt. Required.",
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 240
+        },
+        "sensitivity": {
+          "description": "Author-declared. Registry will override to 'sensitive' for fs.delete, fs.write outside ${extdata}, terminal.shell, secrets.*, net.fetch with wildcard host, process.kill.",
+          "type": "string",
+          "enum": ["ambient", "install-time", "sensitive"],
+          "default": "install-time"
+        }
+      }
+    },
+
+    "hostCompat": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minVersion": { "type": "string" },
+        "maxVersion": { "type": "string" },
+        "compatible": { "type": "boolean", "default": true },
+        "tier": {
+          "description": "Highest integration tier this extension targets on this host. L0 sideload always works; L1 surfaces in native discovery; L2 uses the host's native renderer.",
+          "type": "string",
+          "enum": ["L0", "L1", "L2"],
+          "default": "L0"
+        },
+        "reason": {
+          "description": "If `compatible` is false, the human-readable reason.",
+          "type": "string",
+          "maxLength": 240
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+<idea-plugin>
+    <id>dev.oxp.jetbrains</id>
+    <name>OXP — Open Extension Protocol</name>
+    <vendor email="hi@oxprotocol.org" url="https://oxprotocol.org">OXP</vendor>
+
+    <description><![CDATA[
+        <p>Run universal <a href="https://oxprotocol.org">OXP</a> extensions
+        (WebAssembly components) inside any JetBrains IDE.</p>
+        <p>One extension binary, every editor — IntelliJ IDEA, PyCharm,
+        WebStorm, GoLand, Rider, RustRover, CLion, DataGrip.</p>
+        <p>Extensions are sandboxed by the OXP runtime (Rust + wasmtime) and
+        speak a single JSON-RPC protocol to the IDE.</p>
+    ]]></description>
+
+    <!--
+      Depending only on `com.intellij.modules.platform` makes this plugin
+      install into every IDE built on the IntelliJ Platform. Do NOT add
+      language-specific module dependencies here unless we actually start
+      calling into them.
+    -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <applicationService
+            serviceImplementation="dev.oxp.jetbrains.runtime.OxpRuntimeService"/>
+        <notificationGroup
+            id="OXP"
+            displayType="BALLOON"
+            isLogByDefault="true"/>
+        <toolWindow
+            id="OXP"
+            anchor="right"
+            icon="AllIcons.Nodes.Plugin"
+            factoryClass="dev.oxp.jetbrains.ui.OxpToolWindowFactory"/>
+    </extensions>
+
+    <actions>
+        <group id="dev.oxp.jetbrains.MainMenu" text="OXP" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <action
+                id="dev.oxp.jetbrains.InstallBundleAction"
+                class="dev.oxp.jetbrains.actions.InstallBundleAction"
+                text="Install OXP Bundle…"
+                description="Load and activate an OXP .wasm extension bundle."/>
+            <action
+                id="dev.oxp.jetbrains.RuntimeStatusAction"
+                class="dev.oxp.jetbrains.actions.RuntimeStatusAction"
+                text="Runtime Status"
+                description="Show OXP runtime process status and loaded extensions."/>
+        </group>
+    </actions>
+</idea-plugin>

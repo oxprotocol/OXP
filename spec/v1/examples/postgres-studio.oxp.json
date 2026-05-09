@@ -1,0 +1,60 @@
+{
+  "$schema": "https://oxp.sh/spec/v1/manifest.schema.json",
+  "specVersion": "1",
+  "id": "@acme/postgres",
+  "version": "1.4.2",
+  "displayName": "Postgres Studio",
+  "description": "Query, browse, and visualize Postgres databases without leaving your IDE.",
+  "publisher": "acme",
+  "license": "MIT",
+  "homepage": "https://acme.dev/oxp/postgres",
+  "repository": "https://github.com/acme/oxp-postgres",
+  "engines": { "oxp": "^1.0.0" },
+  "categories": ["database", "data-tools"],
+  "keywords": ["postgres", "sql", "database"],
+  "icon": "icons/icon.svg",
+  "main": {
+    "ui":   "ui/index.html",
+    "wasm": "wasm/core.wasm"
+  },
+  "activationEvents": [
+    "onCommand:postgres.connect",
+    "onView:postgres.explorer",
+    "onLanguage:sql"
+  ],
+  "permissions": [
+    {
+      "id": "fs.read",
+      "scope": ["${workspace}/**/*.sql", "${workspace}/.oxp/postgres/**"],
+      "rationale": "Open and parse .sql files in your workspace."
+    },
+    {
+      "id": "net.fetch",
+      "scope": ["https://api.acme.dev/*"],
+      "rationale": "Sync schema snapshots with Acme cloud."
+    },
+    {
+      "id": "secrets.read",
+      "scope": ["postgres.connection.*"],
+      "rationale": "Read saved Postgres connection strings."
+    }
+  ],
+  "contributes": {
+    "commands": "contributions/commands.json",
+    "views":    "contributions/views.json",
+    "menus":    "contributions/menus.json"
+  },
+  "ui": {
+    "components": "oxp-ui-only",
+    "preferredSurface": "sidebar",
+    "themeable": true
+  },
+  "hosts": {
+    "vscode":    { "minVersion": "1.95.0", "tier": "L0" },
+    "cursor":    { "minVersion": "0.45.0", "tier": "L0" },
+    "windsurf":  { "minVersion": "1.0.0",  "tier": "L0" },
+    "jetbrains": { "minVersion": "2024.3", "tier": "L1" },
+    "zed":       { "compatible": false, "reason": "no extension UI surface yet" },
+    "piye":      { "minVersion": "0.1.0",  "tier": "L2" }
+  }
+}

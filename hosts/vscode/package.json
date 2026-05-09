@@ -1,0 +1,82 @@
+{
+  "name": "oxp-vscode",
+  "displayName": "OXP Host",
+  "description": "Install and run OXP extensions inside VS Code.",
+  "version": "0.1.0",
+  "publisher": "oxp",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oxprotocol/oxp"
+  },
+  "categories": ["Other"],
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onCommand:oxp.install",
+    "onCommand:oxp.list",
+    "onCommand:oxp.open",
+    "onCommand:oxp.uninstall",
+    "onCommand:oxp.dev",
+    "onCommand:oxp.runtime.show",
+    "onCommand:oxp.runtime.stop",
+    "onCommand:oxp.runtime.installFromUrl",
+    "onCommand:oxp.runtime.pickUrlInstall"
+  ],
+  "contributes": {
+    "commands": [
+      { "command": "oxp.install", "title": "OXP: Install Extension…" },
+      { "command": "oxp.list", "title": "OXP: Show Installed Extensions" },
+      { "command": "oxp.open", "title": "OXP: Open Extension…" },
+      { "command": "oxp.uninstall", "title": "OXP: Uninstall Extension…" },
+      { "command": "oxp.dev", "title": "OXP: Attach to Dev Server…" },
+      { "command": "oxp.reload", "title": "OXP: Reload Installed Extensions" },
+      { "command": "oxp.runtime.show", "title": "OXP: Open Runtime Panel" },
+      { "command": "oxp.runtime.stop", "title": "OXP: Stop Runtime" },
+      { "command": "oxp.runtime.installFromUrl", "title": "OXP: Install Extension from URL…" },
+      { "command": "oxp.runtime.pickUrlInstall", "title": "OXP: Activate URL Extension from CLI…" }
+    ],
+    "configuration": {
+      "title": "OXP",
+      "properties": {
+        "oxp.registry": {
+          "type": "string",
+          "default": "http://localhost:3000",
+          "description": "Base URL of the OXP registry."
+        },
+        "oxp.useSharedStore": {
+          "type": "boolean",
+          "default": true,
+          "description": "Read extensions from the shared store at $OXP_HOME/host-store (~/.oxp/host-store) so a single `oxp install` shows up across every IDE. Disable to keep extensions per-VS-Code-instance."
+        },
+        "oxp.runtimePath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to the oxp-runtime binary. If empty, falls back to $OXP_RUNTIME, then a sibling runtime/target build, then ~/.oxp/bin/oxp-runtime."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "vscode:prepublish": "node esbuild.mjs --production"
+  },
+  "dependencies": {
+    "@oxprotocol/host-core": "workspace:*",
+    "@oxprotocol/host-runtime": "workspace:*",
+    "@oxprotocol/types": "workspace:*",
+    "@oxprotocol/ui": "workspace:*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/tar-stream": "^3.1.3",
+    "@types/vscode": "^1.95.0",
+    "@types/ws": "^8.5.13",
+    "esbuild": "^0.25.0",
+    "typescript": "5.9.3"
+  }
+}

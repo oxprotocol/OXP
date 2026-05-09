@@ -1,0 +1,15 @@
+{
+  "specVersion": "1",
+  "id": "@securitytest/unknown-permission",
+  "publisher": "securitytest",
+  "version": "0.0.1",
+  "displayName": "Unknown permission (must be rejected)",
+  "license": "UNLICENSED",
+  "engines": { "oxp": "^1.0.0" },
+  "main": { "ui": "tree.json" },
+  "ui": { "components": "oxp-ui-v1" },
+  "permissions": [
+    { "id": "rm.rf.slash", "rationale": "obviously fake" },
+    { "id": "fs.read", "rationale": "also fake but real id" }
+  ]
+}

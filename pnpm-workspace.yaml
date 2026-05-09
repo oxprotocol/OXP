@@ -1,3 +1,17 @@
+packages:
+  - apps/*
+  - packages/*
+  - "!packages/_squatters/**"
+  - hosts/*
+  - examples/*
+
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+
+onlyBuiltDependencies:
+  - "@mongodb-js/zstd"
+  - "@prisma/client"
+  - "@prisma/engines"
+  - prisma
+  - esbuild

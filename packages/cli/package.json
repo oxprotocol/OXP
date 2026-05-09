@@ -1,0 +1,48 @@
+{
+  "name": "@oxprotocol/cli",
+  "version": "0.1.4",
+  "description": "Command-line tool for the Open eXtensions Protocol.",
+  "type": "module",
+  "bin": {
+    "oxp": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./create": {
+      "types": "./dist/commands/create.d.ts",
+      "default": "./dist/commands/create.js"
+    }
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/cli.js",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@oxprotocol/bundle": "workspace:*",
+    "@oxprotocol/host-core": "workspace:*",
+    "@oxprotocol/schema": "workspace:*",
+    "@oxprotocol/types": "workspace:*",
+    "@oxprotocol/wit": "workspace:*",
+    "chokidar": "^4.0.3",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.20.6",
+    "typescript": "5.9.3",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: typecheck + test + bundle-size (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm -r --filter "./packages/*" --filter "./hosts/*" build
+
+      - name: Typecheck workspace
+        # `create-oxp` is a JS-only bin shim with no tsconfig — skip it.
+        run: pnpm -r --filter "./packages/*" --filter "!create-oxp" --filter "./hosts/*" exec tsc --noEmit
+
+      - name: Run tests
+        run: pnpm -r --filter "./packages/*" --filter "./hosts/*" test
+
+      - name: Production build — vscode host extension
+        # The default `build` script bundles with sourcemaps + no minification
+        # (good for `code --extensionDevelopmentPath`). For the size check we
+        # need the production output that actually ships to users.
+        run: cd hosts/vscode && node esbuild.mjs --production
+
+      - name: Bundle size — vscode host extension
+        # Regression guard, not a hard performance budget — the *real* size cap
+        # work is Pillar 8.3 (`oxp pack` + registry-side enforcement). Keep the
+        # ceiling close to current production (1.1 MB) so a sudden jump trips
+        # CI; tighten as 8.3 lands.
+        run: |
+          set -e
+          MAX_KB=1500
+          ACTUAL_BYTES=$(node -e "process.stdout.write(String(require('node:fs').statSync('hosts/vscode/dist/extension.js').size))")
+          ACTUAL_KB=$((ACTUAL_BYTES / 1024))
+          echo "vscode host bundle: ${ACTUAL_KB} KB (limit ${MAX_KB} KB)"
+          if [ "$ACTUAL_KB" -gt "$MAX_KB" ]; then
+            echo "::error::vscode host bundle exceeds ${MAX_KB} KB budget"
+            exit 1
+          fi

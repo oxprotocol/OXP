@@ -1,0 +1,22 @@
+{
+  "specVersion": "1",
+  "id": "@__PUBLISHER__/__SLUG__",
+  "publisher": "__PUBLISHER__",
+  "version": "0.0.1",
+  "displayName": "__DISPLAY_NAME__",
+  "description": "OXP component-v1 extension written in Rust.",
+  "license": "MIT",
+  "categories": ["other"],
+  "engines": { "oxp": "^1.0.0" },
+  "kind": "component-v1",
+  "main": { "wasm": "build/__SLUG_UNDERSCORED__.wasm" },
+  "scripts": {
+    "build": "cargo build --release --target wasm32-wasip2 && mkdir -p build && cp target/wasm32-wasip2/release/__SLUG_UNDERSCORED__.wasm build/"
+  },
+  "permissions": [],
+  "wit": {
+    "package": "oxp:extension",
+    "version": "0.1.0",
+    "sha256": "__WIT_SHA__"
+  }
+}

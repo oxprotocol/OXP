@@ -1,26 +1,40 @@
 {
-  "name": "oxp",
-  "version": "0.1.0",
+  "name": "oxp-monorepo",
+  "version": "0.0.0",
   "private": true,
+  "description": "Open eXtension Protocol — monorepo root",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
-  "dependencies": {
-    "next": "16.2.4",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "build": "pnpm run build:packages && pnpm run build:web",
+    "build:packages": "pnpm -r --filter='./packages/*' build",
+    "build:web": "pnpm --filter @oxprotocol/web build",
+    "build:runtime": "cargo build --manifest-path runtime/Cargo.toml",
+    "build:runtime:release": "cargo build --release --manifest-path runtime/Cargo.toml",
+    "build:hello-rust": "cargo build --release --target wasm32-wasip2 --manifest-path examples/hello-rust/Cargo.toml",
+    "build:vscode": "pnpm --filter oxp-vscode build",
+    "build:jetbrains": "cd hosts/jetbrains && ./gradlew --no-daemon assemble",
+    "build:all": "pnpm run build:packages && pnpm run build:runtime && pnpm run build:vscode && pnpm run build:jetbrains",
+    "dev": "pnpm --filter @oxprotocol/web dev",
+    "lint": "pnpm -r lint",
+    "test": "pnpm run test:ts && pnpm run test:rust && pnpm run test:jetbrains",
+    "test:ts": "pnpm -r test",
+    "test:rust": "cargo test --manifest-path runtime/Cargo.toml",
+    "test:jetbrains": "cd hosts/jetbrains && ./gradlew --no-daemon test",
+    "test:neovim": "cd hosts/neovim && nvim --headless -u NONE -c \"lua package.path='./lua/?.lua;./lua/?/init.lua;'..package.path; assert(require('oxp')); assert(require('oxp.permissions')); assert(require('oxp.capabilities')); print('ok')\" -c qa",
+    "test:conformance": "pnpm run build:runtime && pnpm run build:hello-rust && bash scripts/cross-host-conformance.sh",
+    "test:all": "pnpm run test:ts && pnpm run test:rust && pnpm run test:neovim && pnpm run test:conformance",
+    "clean": "pnpm -r exec rm -rf dist .next .turbo tsconfig.tsbuildinfo && cargo clean --manifest-path runtime/Cargo.toml && cargo clean --manifest-path examples/hello-rust/Cargo.toml",
+    "release:dry": "pnpm run build:packages && pnpm -r --filter='./packages/*' publish --dry-run --no-git-checks",
+    "release": "pnpm run build:packages && pnpm -r --filter='./packages/*' publish --access public --no-git-checks",
+    "version:packages": "pnpm -r --filter='./packages/*' exec node -e \"const v=process.argv[1];const p=require('./package.json');p.version=v;require('fs').writeFileSync('./package.json',JSON.stringify(p,null,2)+'\\n');console.log(p.name,'->',v)\""
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.4",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5.6.3",
+    "@types/node": "^20.14.0",
+    "tsx": "^4.21.0",
+    "vitest": "^2.1.8"
+  },
+  "packageManager": "pnpm@10.18.2",
+  "engines": {
+    "node": ">=22"
   }
 }
