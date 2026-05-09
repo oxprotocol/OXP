@@ -22,11 +22,7 @@
 
 import { promises as fs } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import {
-  put as blobPut,
-  head as blobHead,
-  del as blobDel,
-} from "@vercel/blob";
+import { put as blobPut, head as blobHead, del as blobDel } from "@vercel/blob";
 
 type Backend = "vercel-blob" | "fs";
 

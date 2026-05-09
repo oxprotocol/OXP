@@ -25,8 +25,24 @@ import { keygen } from "./commands/keygen.js";
 import { token } from "./commands/token.js";
 import { protocolRegister } from "./commands/protocol-register.js";
 import { doctor } from "./commands/doctor.js";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const VERSION = "0.1.0";
+function readVersion(): string {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    // dist/cli.js → ../package.json
+    const pkg = JSON.parse(
+      readFileSync(join(here, "..", "package.json"), "utf8"),
+    ) as { version?: string };
+    return pkg.version ?? "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+}
+
+const VERSION = readVersion();
 
 const HELP = `oxp ${VERSION} — Open eXtensions Protocol
 
