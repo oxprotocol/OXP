@@ -8,23 +8,12 @@ export function oxpHome(): string {
   return process.env.OXP_HOME ?? join(homedir(), ".oxp");
 }
 
-const DEFAULT_REGISTRY = "http://localhost:3000";
-let warnedDefaultRegistry = false;
+const DEFAULT_REGISTRY = "https://oxp.sh";
 
 export function registryUrl(): string {
   const fromEnv = process.env.OXP_REGISTRY;
   if (fromEnv && fromEnv.trim().length > 0) {
     return fromEnv.replace(/\/+$/, "");
-  }
-  // Localhost default is convenient for self-host / dev, but if you're trying
-  // to publish or install against the public registry it's almost always a
-  // mistake. Warn once per process so it's visible without becoming spammy.
-  if (!warnedDefaultRegistry) {
-    warnedDefaultRegistry = true;
-    process.stderr.write(
-      `[oxp] OXP_REGISTRY not set — defaulting to ${DEFAULT_REGISTRY}. ` +
-        `Set OXP_REGISTRY=https://… to target a different host.\n`,
-    );
   }
   return DEFAULT_REGISTRY;
 }
