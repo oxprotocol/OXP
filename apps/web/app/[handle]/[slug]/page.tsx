@@ -59,7 +59,7 @@ export default async function RepoOverviewPage({
   const scopedId = `@${ext.ownerHandle}/${ext.slug}`;
   const vsx = parseVsxMeta(ext.readme);
   const appBaseUrl = (
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    process.env.NEXT_PUBLIC_APP_URL || "https://oxp.sh"
   ).replace(/\/$/, "");
   const bundleUrl = latest?.semver
     ? `${appBaseUrl}/api/v1/extensions/${ext.ownerHandle}/${ext.slug}/versions/${latest.semver}/bundle`

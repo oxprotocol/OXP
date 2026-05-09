@@ -24,9 +24,10 @@ import {
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const APP_URL = (
-  process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-).replace(/\/$/, "");
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://oxp.sh").replace(
+  /\/$/,
+  "",
+);
 
 function safeNext(raw: string | null): string {
   // Reject open-redirects: only allow same-origin paths.

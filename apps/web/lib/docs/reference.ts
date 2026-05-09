@@ -5,7 +5,8 @@ export const referenceDocs: DocSection[] = [
     slug: "cli-reference",
     title: "CLI Reference",
     category: "Reference",
-    summary: "Complete reference for every oxp subcommand with flags, examples, and environment variables.",
+    summary:
+      "Complete reference for every oxp subcommand with flags, examples, and environment variables.",
     body: `The \`oxp\` CLI is the primary tool for creating, developing, packing, and publishing OXP extensions. It ships as a single npm package with no external dependencies.
 
 ## Installation
@@ -26,7 +27,7 @@ pnpm add -g @oxprotocol/cli
 
 | Variable | Default | Description |
 |---|---|---|
-| \`OXP_REGISTRY\` | \`http://localhost:3000\` | Registry base URL |
+| \`OXP_REGISTRY\` | \`https://oxp.sh\` | Registry base URL |
 | \`OXP_HOME\` | \`~/.oxp\` | Config + credentials directory |
 | \`OXP_DEV_PORT\` | \`7373\` | Default port for \`oxp dev\` |
 
@@ -177,7 +178,8 @@ const code = await create(["my-ext", "-t", "hello-rust"]);
     slug: "registry-api",
     title: "Registry API",
     category: "Reference",
-    summary: "REST API reference for the OXP registry: resolve, download, publish, and manage extensions.",
+    summary:
+      "REST API reference for the OXP registry: resolve, download, publish, and manage extensions.",
     body: `The OXP registry exposes a REST API at \`/api/v1/\` for extension resolution, download, publishing, and token management. All responses are JSON unless otherwise noted.
 
 ## Base URL
@@ -312,7 +314,8 @@ All errors follow a consistent shape:
     slug: "contributing",
     title: "Contributing",
     category: "Reference",
-    summary: "Set up the monorepo from source, run tests, and contribute to OXP.",
+    summary:
+      "Set up the monorepo from source, run tests, and contribute to OXP.",
     body: `OXP is open source and contributions are welcome. This guide covers setting up the monorepo, understanding the codebase, and submitting changes.
 
 ## Prerequisites

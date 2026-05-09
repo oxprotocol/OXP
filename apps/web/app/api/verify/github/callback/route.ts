@@ -34,9 +34,10 @@ import { setSessionCookie } from "@/lib/session-mint";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const APP_URL = (
-  process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-).replace(/\/$/, "");
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://oxp.sh").replace(
+  /\/$/,
+  "",
+);
 
 function dashRedirect(query: string): Response {
   return NextResponse.redirect(`${APP_URL}/dashboard/security?${query}`);

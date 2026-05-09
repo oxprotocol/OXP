@@ -38,8 +38,7 @@ export function readOauthEnv(): OauthEnv | null {
   const clientId = process.env.GITHUB_OAUTH_CLIENT_ID;
   const clientSecret = process.env.GITHUB_OAUTH_CLIENT_SECRET;
   const appUrl =
-    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ||
-    "http://localhost:3000";
+    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || "https://oxp.sh";
   const authSecret = process.env.AUTH_SECRET;
   if (!clientId || !clientSecret || !authSecret) return null;
   return { clientId, clientSecret, appUrl, authSecret };

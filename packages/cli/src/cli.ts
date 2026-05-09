@@ -73,7 +73,7 @@ Usage:
   oxp version                Print version
 
 Environment:
-  OXP_REGISTRY               Registry base URL (default http://localhost:3000)
+  OXP_REGISTRY               Registry base URL (default https://oxp.sh)
   OXP_HOME                   Config dir (default ~/.oxp)
 `;
 

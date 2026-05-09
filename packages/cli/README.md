@@ -56,7 +56,7 @@ as `Authorization: Bearer <raw>`. Rotate any time with `oxp token rotate`.
 
 | Var            | Default                  | Purpose                       |
 | -------------- | ------------------------ | ----------------------------- |
-| `OXP_REGISTRY` | `http://localhost:3000`  | Registry base URL             |
+| `OXP_REGISTRY` | `https://oxp.sh`         | Registry base URL             |
 | `OXP_HOME`    | `~/.oxp`                 | Config + credentials directory |
 
 ## Programmatic use

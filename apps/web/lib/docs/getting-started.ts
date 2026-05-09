@@ -79,7 +79,7 @@ The CLI respects two environment variables for configuration:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| \`OXP_REGISTRY\` | \`http://localhost:3000\` | Base URL of the OXP registry |
+| \`OXP_REGISTRY\` | \`https://oxp.sh\` | Base URL of the OXP registry |
 | \`OXP_HOME\` | \`~/.oxp\` | Config + credentials directory |
 
 For production use, set the registry to the public instance:

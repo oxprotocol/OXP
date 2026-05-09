@@ -9,7 +9,7 @@ import { existsSync } from "node:fs";
 import { resolveAndVerify, Store, VerifyError } from "@oxprotocol/host-core";
 
 const ROOT = "/tmp/oxp-host/store";
-const REGISTRY = process.env.OXP_REGISTRY ?? "http://localhost:3000";
+const REGISTRY = process.env.OXP_REGISTRY ?? "https://oxp.sh";
 const ID = process.env.OXP_TEST_ID ?? "@aldgar/first-extension";
 
 const nodeFs = {

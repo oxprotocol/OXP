@@ -33,7 +33,7 @@ let notifyWatcher: fsSync.FSWatcher | undefined;
 function registry(): string {
   return (
     vscode.workspace.getConfiguration("oxp").get<string>("registry") ??
-    "http://localhost:3000"
+    "https://oxp.sh"
   );
 }
 

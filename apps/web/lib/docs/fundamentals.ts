@@ -5,7 +5,8 @@ export const fundamentalsDocs: DocSection[] = [
     slug: "manifest",
     title: "The Manifest",
     category: "Fundamentals",
-    summary: "Complete field-by-field reference for oxp.json — the heart of every OXP extension.",
+    summary:
+      "Complete field-by-field reference for oxp.json — the heart of every OXP extension.",
     body: `Every OXP extension is defined by a single \`oxp.json\` file at its root. This manifest declares identity, permissions, entry points, compatibility, and more. It conforms to the JSON Schema at \`spec/v1/manifest.schema.json\`.
 
 ## Minimal Example
@@ -167,7 +168,8 @@ These are set by \`oxp publish\` — do **not** write them by hand:
     slug: "ui-components",
     title: "UI Components",
     category: "Fundamentals",
-    summary: "Build rich extension UIs with the @oxprotocol/ui component vocabulary.",
+    summary:
+      "Build rich extension UIs with the @oxprotocol/ui component vocabulary.",
     body: `\`@oxprotocol/ui\` provides a **frozen V1 component vocabulary** for building extension interfaces. Authors compose a tree of typed components; hosts render them natively (Piye) or via the DOM backend (VS Code webview).
 
 ## The Component Set
@@ -295,7 +297,8 @@ The beauty of the component vocabulary is that your extension **doesn't need to 
     slug: "sdk",
     title: "Extension SDK",
     category: "Fundamentals",
-    summary: "Use @oxprotocol/sdk to define extensions with typed APIs for host interaction.",
+    summary:
+      "Use @oxprotocol/sdk to define extensions with typed APIs for host interaction.",
     body: `\`@oxprotocol/sdk\` is the author-facing SDK for OXP extensions. It provides \`defineExtension()\`, the \`HostApi\` interface, and typed wrappers around host capabilities. It works across VS Code webviews, Piye Workers, and \`oxp dev\`.
 
 ## defineExtension
@@ -392,7 +395,8 @@ Both are optional, but at least \`activate\` should be provided to do anything u
     slug: "permissions",
     title: "Permissions",
     category: "Fundamentals",
-    summary: "The capability catalog, sensitivity tiers, and how permissions protect users.",
+    summary:
+      "The capability catalog, sensitivity tiers, and how permissions protect users.",
     body: `OXP's permission system is built on the principle of **least privilege**. Extensions declare what they need in the manifest, users consent at install time, and the capability broker enforces grants at runtime. An extension literally cannot call APIs it wasn't granted — the WIT import is simply not linked.
 
 ## The Capability Catalog
@@ -578,7 +582,8 @@ oras copy oci.oxp.sh/acme/postgres:1.4.2 internal.corp/oxp/acme/postgres:1.4.2
     slug: "host-adapters",
     title: "Host Adapters",
     category: "Fundamentals",
-    summary: "How OXP integrates with VS Code, Cursor, and other IDEs through host adapters.",
+    summary:
+      "How OXP integrates with VS Code, Cursor, and other IDEs through host adapters.",
     body: `A **host adapter** is a small module that bridges OXP into a specific IDE. It knows how to install, activate, render, and manage OXP extensions using that IDE's own APIs. The adapter is the only OXP-specific code an IDE needs.
 
 ## Supported Hosts
@@ -619,7 +624,7 @@ The VS Code host adapter (\`hosts/vscode/\`) is a standard VS Code extension tha
 
 | Setting | Default | Description |
 |---|---|---|
-| \`oxp.registry\` | \`http://localhost:3000\` | Registry base URL |
+| \`oxp.registry\` | \`https://oxp.sh\` | Registry base URL |
 | \`oxp.useSharedStore\` | \`true\` | Use \`~/.oxp/host-store/\` so one \`oxp install\` works across all IDEs |
 
 ## The Shared Store

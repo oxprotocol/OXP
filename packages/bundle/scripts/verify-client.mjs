@@ -9,12 +9,17 @@ import { join } from "node:path";
 import { createHash, createPublicKey, verify } from "node:crypto";
 import { decompress } from "@mongodb-js/zstd";
 
-const REGISTRY = process.env.OXP_REGISTRY ?? "http://localhost:3000";
+const REGISTRY = process.env.OXP_REGISTRY ?? "https://oxp.sh";
 const ID = process.argv[2] ?? "@aldgar/hello-oxp";
 
-function fail(msg) { console.error("FAIL:", msg); process.exit(1); }
+function fail(msg) {
+  console.error("FAIL:", msg);
+  process.exit(1);
+}
 
-const r = await fetch(`${REGISTRY}/api/v1/install/resolve?id=${encodeURIComponent(ID)}`);
+const r = await fetch(
+  `${REGISTRY}/api/v1/install/resolve?id=${encodeURIComponent(ID)}`,
+);
 if (!r.ok) fail(`resolve ${r.status}`);
 const meta = await r.json();
 console.log(`resolved ${meta.id}@${meta.version}`);
@@ -36,12 +41,14 @@ const { keys } = await keysRes.json();
 const headerDigest = bundleRes.headers.get("x-oxp-bundle-sha256");
 const tarBytes = Buffer.from(await decompress(bundleBytes));
 const tarSha = createHash("sha256").update(tarBytes).digest("hex");
-if (headerDigest !== tarSha) fail(`tar sha mismatch: ${tarSha} vs header ${headerDigest}`);
+if (headerDigest !== tarSha)
+  fail(`tar sha mismatch: ${tarSha} vs header ${headerDigest}`);
 console.log(`✓ tar sha256 matches header: ${tarSha}`);
 
 // 2. Signature payload digest matches
 const expectedDigest = `sha256:${tarSha}`;
-if (sig.payload.digest !== expectedDigest) fail(`sig payload digest ${sig.payload.digest} ≠ ${expectedDigest}`);
+if (sig.payload.digest !== expectedDigest)
+  fail(`sig payload digest ${sig.payload.digest} ≠ ${expectedDigest}`);
 console.log(`✓ signature payload digest matches`);
 
 // 3. Look up the publisher key by keyId, verify Ed25519
