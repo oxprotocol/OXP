@@ -1,7 +1,9 @@
 /**
  * /verify/[token] — consume an email verification token and sign the user
- * in via the trusted SSO intent. We render a minimal status page; on
- * success we redirect to /dashboard, on failure we offer a resend link.
+ * in. The token is single-use, expires after a short window, and is bound
+ * to the userId — possessing it is proof of email control, equivalent to
+ * a successful sign-in. We mint the NextAuth session cookie directly and
+ * land them on the dashboard. No re-login required.
  */
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -9,6 +11,7 @@ import { AlertCircle } from "lucide-react";
 import { consumeEmailVerification } from "@/lib/email-tokens";
 import { sendEmail, welcomeEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
+import { setSessionCookie } from "@/lib/session-mint";
 
 export const dynamic = "force-dynamic";
 
@@ -21,12 +24,18 @@ export default async function VerifyTokenPage({
   const result = await consumeEmailVerification(decodeURIComponent(token));
 
   if (result.ok) {
-    // Send the welcome email now that we know the address is real.
     const u = await prisma.user.findUnique({
       where: { id: result.userId },
-      select: { email: true, handle: true, displayName: true },
+      select: {
+        id: true,
+        email: true,
+        handle: true,
+        displayName: true,
+        avatarSeed: true,
+      },
     });
     if (u) {
+      // Welcome email — fire-and-forget; failures don't block sign-in.
       void sendEmail({
         to: u.email,
         template: welcomeEmail({
@@ -35,10 +44,17 @@ export default async function VerifyTokenPage({
         }),
         tag: "welcome",
       });
+      // Auto sign-in: set the NextAuth session cookie and go to dashboard.
+      await setSessionCookie({
+        id: u.id,
+        email: u.email,
+        handle: u.handle,
+        displayName: u.displayName,
+        avatarSeed: u.avatarSeed,
+      });
+      redirect("/dashboard?welcome=1");
     }
-    // Send them to sign-in so they can enter their password and start
-    // a real session. We don't auto-sign-in from this GET because it
-    // would be an open redirect risk if the link leaked.
+    // User row vanished between consume and read — fall through to signin.
     redirect("/signin?verified=1");
   }
 
