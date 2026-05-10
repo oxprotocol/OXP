@@ -10,7 +10,7 @@ export default async function CreatedPage({
 }) {
   const { handle = "you", slug = "your-extension" } = await searchParams;
   const installId = `@${handle}/${slug}`;
-  const cmd = `npx @oxprotocol/cli init ${slug}`;
+  const cmd = `npx @oxprotocol/cli create ${slug}`;
 
   return (
     <section className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">

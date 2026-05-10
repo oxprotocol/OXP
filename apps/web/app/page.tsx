@@ -260,20 +260,70 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Install command */}
-          <div className="mt-12 mx-auto max-w-xl">
-            <div className="hud-card hud-corners px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Terminal className="w-4 h-4 text-[#7DD3FC]/40" />
-                <code className="text-sm font-mono text-[#f8fafc]/60">
-                  <span className="text-[#7DD3FC]/40">$</span> npx
-                  @oxprotocol/cli init my-extension
-                </code>
-              </div>
-              <button className="text-[10px] font-mono text-[#f8fafc]/25 hover:text-[#7DD3FC] transition-colors tracking-wider uppercase border border-[#7DD3FC]/10 px-3 py-1 rounded hover:border-[#7DD3FC]/30">
-                Copy
+          {/* Build-an-extension CTA — two-step path so users don't just
+              copy a CLI snippet and hit `unknown command`. Step 1 reserves
+              the slug on the registry, step 2 scaffolds locally. */}
+          <div className="mt-12 mx-auto max-w-2xl">
+            <div className="grid sm:grid-cols-2 gap-3">
+              {/* Step 1 — Reserve */}
+              <Link
+                href="/new"
+                className="hud-card hud-corners group px-5 py-4 flex items-center justify-between hover:border-[#7DD3FC]/40 transition-colors"
+              >
+                <div className="flex items-center gap-3 text-left">
+                  <div className="flex h-7 w-7 items-center justify-center rounded border border-[#7DD3FC]/30 bg-[#7DD3FC]/5 text-[10px] font-mono font-bold text-[#7DD3FC]">
+                    1
+                  </div>
+                  <div>
+                    <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#7DD3FC]/60">
+                      Reserve a slug
+                    </div>
+                    <div className="text-sm font-mono text-[#f8fafc]/70">
+                      @you/your-extension
+                    </div>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 text-[#7DD3FC]/40 group-hover:translate-x-1 group-hover:text-[#7DD3FC] transition-all" />
+              </Link>
+
+              {/* Step 2 — Scaffold locally */}
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard
+                    .writeText("npx @oxprotocol/cli create my-extension")
+                    .catch(() => {});
+                }}
+                className="hud-card hud-corners group px-5 py-4 flex items-center justify-between text-left hover:border-[#7DD3FC]/40 transition-colors"
+                title="Copy command"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex h-7 w-7 items-center justify-center rounded border border-[#7DD3FC]/30 bg-[#7DD3FC]/5 text-[10px] font-mono font-bold text-[#7DD3FC]">
+                    2
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#7DD3FC]/60">
+                      Scaffold locally
+                    </div>
+                    <code className="block text-sm font-mono text-[#f8fafc]/70 truncate">
+                      <span className="text-[#7DD3FC]/40">$</span> npx
+                      @oxprotocol/cli create my-ext
+                    </code>
+                  </div>
+                </div>
+                <span className="text-[10px] font-mono text-[#f8fafc]/30 tracking-wider uppercase border border-[#7DD3FC]/10 px-2 py-1 rounded group-hover:text-[#7DD3FC] group-hover:border-[#7DD3FC]/30 flex-shrink-0">
+                  Copy
+                </span>
               </button>
             </div>
+            <p className="mt-3 text-center text-[10px] font-mono text-[#f8fafc]/30 tracking-wider">
+              <Link
+                href="/docs/getting-started"
+                className="hover:text-[#7DD3FC] transition-colors"
+              >
+                Full getting-started guide →
+              </Link>
+            </p>
           </div>
         </section>
       )}
