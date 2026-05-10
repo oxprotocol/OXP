@@ -53,6 +53,21 @@ function safeNext(raw: string | undefined): string {
 }
 
 export async function GET(req: Request): Promise<Response> {
+  try {
+    return await handle(req);
+  } catch (err) {
+    // Without this, any thrown error becomes an opaque 500 with no
+    // breadcrumb. Log it for Vercel and bounce to /signin with a hint.
+    const msg = err instanceof Error ? err.message : String(err);
+    const stack = err instanceof Error ? err.stack : undefined;
+    console.error("[github/callback] crashed:", msg, stack);
+    return signinRedirect(
+      `error=${encodeURIComponent(`Sign-in failed: ${msg.slice(0, 160)}`)}`,
+    );
+  }
+}
+
+async function handle(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");

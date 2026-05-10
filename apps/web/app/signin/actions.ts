@@ -85,6 +85,23 @@ export async function signUp(
   _prev: AuthResult | undefined,
   formData: FormData,
 ): Promise<AuthResult> {
+  try {
+    return await signUpInner(_prev, formData);
+  } catch (err) {
+    if (isRedirect(err)) throw err;
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[signUp] crashed:", msg, err);
+    return {
+      ok: false,
+      error: `Signup failed: ${msg.slice(0, 200)}`,
+    };
+  }
+}
+
+async function signUpInner(
+  _prev: AuthResult | undefined,
+  formData: FormData,
+): Promise<AuthResult> {
   // Phase B.6 — per-IP signup rate limit. Cheap pre-check before any DB work.
   const ip = clientIpFromHeaders(await headers());
   const rl = consume(
