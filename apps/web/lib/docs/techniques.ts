@@ -231,26 +231,76 @@ Move to \`component-v1\` (Rust) when you need:
     slug: "dev-workflow",
     title: "Development Workflow",
     category: "Techniques",
-    summary: "Master oxp dev: file watching, hot-reload, and the full development loop.",
-    body: `\`oxp dev\` is your primary development tool. It watches your project, re-packs on every change, and pushes updates to connected hosts over WebSocket — giving you instant hot-reload without going through publish.
+    summary:
+      "Master oxp dev: automatic Extension Development Host, hot-reload, and the full development loop.",
+    body: `\`oxp dev\` is your primary development tool. **You run one command** — the CLI packs your extension, spawns a fresh **Extension Development Host (EDH)** window of your IDE, attaches it to the dev session, and starts watching files. Save anything → re-pack → live reload. No "attach" command. No WebSocket URL to remember. No configuration.
 
-## Starting the Dev Server
+## Starting a Dev Session
 
 \`\`\`bash
-oxp dev              # default port 7373
-oxp dev --port 8080  # custom port
-oxp dev ./my-ext     # explicit project directory
+oxp dev                    # default: open the IDE you ran it from
+oxp dev --host vscode      # force a specific host family
+oxp dev --host jetbrains   # spawn an IntelliJ-family EDH
+oxp dev ./my-ext           # explicit project directory
+oxp dev --port 8080        # custom dev-server port (default 7373)
 \`\`\`
 
-## What Happens
+The CLI auto-detects your IDE family from \`$TERM_PROGRAM\`, \`$VSCODE_PID\`, or by walking up the process tree. Pass \`--host\` to override.
 
-1. **Initial build** — \`oxp dev\` packs your extension and starts serving it
-2. **File watching** — chokidar watches your project directory (ignoring \`.git\`, \`node_modules\`, \`dist/*.oxp\`, \`.next\`)
-3. **Auto-repack** — on any file change, debounced at 100ms, the bundle is rebuilt
-4. **WebSocket push** — connected hosts receive a \`reload\` message with the new bundle
-5. **HTTP endpoints** — for hosts that prefer polling over WebSocket
+## What Happens, In Order
 
-## Endpoints
+1. **Initial build** — the project is packed once. Schema validation and policy checks run; failures abort before any window opens.
+2. **Dev server up** — an HTTP + WebSocket server binds on \`localhost:7373\` (or \`--port\`).
+3. **EDH spawn** — the CLI writes an autostart marker (\`$OXP_HOME/edh/autostart.json\`) and launches a new IDE window with the marker workspace. The host extension reads the marker on activation and attaches automatically.
+4. **Native render** — your extension appears in the OXP **activity-bar icon → sidebar view**. UI panels, commands, status-bar items, and registered MCP servers are all live.
+5. **Watch + reload** — chokidar watches the project (ignoring \`.git\`, \`node_modules\`, \`dist/*.oxp\`, \`.next\`, \`target\`). On any change, debounced 100 ms, the bundle is re-packed and pushed to the EDH over WebSocket. The host disposes the previous instance and re-instantiates the new one in place — no window reload needed.
+6. **End session** — press \`Ctrl+C\` in the terminal. The dev server shuts down, the EDH window closes itself, and the autostart marker is cleared.
+
+## The Status Bar
+
+Every connected host shows a session indicator in the status bar:
+
+| Indicator | Meaning |
+|---|---|
+| \`$(plug) OXP Dev\` | Connected, idle |
+| \`$(sync~spin) OXP Dev\` | Re-pack in progress |
+| \`$(check) OXP Dev · v0.1.2\` | Last reload succeeded, shows packed version |
+| \`$(error) OXP Dev\` | Last pack failed — click to open the output channel |
+
+Click the status item to focus the **OXP Dev Host** output channel.
+
+## The Output Channel
+
+A dedicated output channel — **OXP Dev Host** in VS Code, **OXP Dev Host** tool window in JetBrains — streams every event:
+
+\`\`\`
+[12:04:01.022] pack ok · 184 KB · sha256:a1b2c3…
+[12:04:01.041] reload → 1 client(s) connected
+[12:04:18.503] file changed · src/panel.tsx
+[12:04:18.612] pack failed · TS2304: Cannot find name 'Foo'
+\`\`\`
+
+This is the first place to look when something behaves unexpectedly.
+
+## The Error Boundary
+
+Runtime errors inside your extension are caught by the host's error boundary and surfaced in the sidebar as a structured panel:
+
+- Error message and stack
+- Manifest version and bundle digest
+- A **Restart** button that re-instantiates the extension without losing your dev session
+
+If a pack fails, the **previous good bundle remains loaded** — you keep working with the last-known-good version until your next save succeeds.
+
+## Hot Reload Semantics
+
+Hot reload **re-instantiates** your extension — it does not preserve in-memory state. If you want stateful reloads, write your state to disk via the \`storage/*\` capability and re-hydrate on activation.
+
+UI panels keep their scroll position and form values across reloads when their \`id\` is stable.
+
+## Endpoints (for tooling)
+
+The dev server exposes a small HTTP/WS API. You generally don't touch these directly — the host adapter does — but they're useful for custom tooling:
 
 | Endpoint | Method | Response |
 |---|---|---|
@@ -259,48 +309,177 @@ oxp dev ./my-ext     # explicit project directory
 | \`http://localhost:7373/manifest\` | GET | Raw oxp.json |
 | \`http://localhost:7373/bundle\` | GET | Raw .oxp bytes |
 
-## WebSocket Protocol
+## Signature Bypass in Dev
 
-Connected hosts receive JSON messages:
+:::warning
+Dev mode skips Ed25519 signing for speed. The EDH paints a **"DEV: signature bypass"** badge in the sidebar header for the entire session. The production \`oxp publish\` flow is unchanged — every published bundle is signed and verified.
+:::
 
-\`\`\`json
-{
-  "kind": "reload",
-  "manifest": { ... },
-  "digest": "sha256:a1b2c3...",
-  "bundle": "<base64>",
-  "builtAt": 1714820400000,
-  "dev": true
-}
+## VS Code Family vs JetBrains
+
+| Behavior | VS Code / Cursor / Windsurf / VSCodium | JetBrains (IDEA / PyCharm / WebStorm / …) |
+|---|---|---|
+| EDH spawn mechanism | \`code --new-window <marker-workspace>\` | \`idea --line 1 <marker-workspace>\` via runtime-bin launcher |
+| Sidebar location | Activity bar, \`OXP\` icon | Right tool window, \`OXP\` stripe button |
+| Output channel name | \`OXP Dev Host\` (Output panel) | \`OXP Dev Host\` (Run tool window) |
+| Hot-reload mechanism | WebSocket → \`Extension.dispose()\` + re-instantiate | WebSocket → coroutine cancel + re-instantiate |
+
+The wire protocol is identical. The same \`.oxp\` bundle, the same WIT contract, the same host calls.
+
+## Common Patterns
+
+- **Multiple IDEs at once** — start \`oxp dev\` in one terminal, then run \`oxp dev attach --host jetbrains\` in another. Both EDHs reload from the same dev server.
+- **Network dev server** — use \`--bind 0.0.0.0\` and \`--port 7373\` to attach a remote host (e.g. a JetBrains EDH on another machine).
+- **Pack-only mode** — run \`oxp dev --no-spawn\` if you want the server but want to attach the EDH yourself with \`oxp dev attach\`.
+- **Recovering a stuck session** — \`oxp dev clean\` removes \`$OXP_HOME/edh/autostart.json\` if a window was force-closed and refuses to re-attach.
+
+## Next Steps
+
+- [Extension Development Host](/docs/edh) — full reference for the EDH window: chrome, commands, output channel.
+- [Publishing](/docs/publishing) — when you're ready to ship.`,
+  },
+  {
+    slug: "edh",
+    title: "Extension Development Host",
+    category: "Techniques",
+    summary:
+      "The EDH window: how oxp dev spawns it, its chrome, commands, output channel, error boundary, and lifecycle.",
+    body: `The **Extension Development Host (EDH)** is the IDE window in which your in-development extension runs. It is a real, full-fidelity instance of your IDE — VS Code, Cursor, Windsurf, VSCodium, or any IntelliJ-family product — with the OXP host adapter loaded and your extension auto-attached to the running dev session.
+
+You never spawn the EDH manually. \`oxp dev\` does it for you.
+
+## Why a Separate Window?
+
+Running your extension in the same window where you edit its source has historically been the standard "F5" experience — but it has real costs:
+
+- **State pollution** — your dev environment (open files, debug sessions) collides with your extension's runtime state.
+- **Crash blast radius** — a bug in your extension can take down your editor.
+- **Indistinguishable bundles** — it's hard to tell what version of your extension is running.
+
+The OXP EDH puts your extension in its own pristine window, with its own activity-bar icon, its own permissions, and a loud header indicating it's a dev session. Your source window stays untouched.
+
+## Automatic Spawn
+
+When you run \`oxp dev\`:
+
+1. The CLI packs your extension.
+2. It writes an **autostart marker** to \`$OXP_HOME/edh/autostart.json\` (default \`~/.oxp/edh/autostart.json\`). The marker contains: dev-server URL, project path, IDE family, host PID, and an expiry timestamp.
+3. It launches the IDE with a clean workspace (no folder, no SCM context). Example: \`code --new-window /tmp/oxp-edh-<sessionId>\`.
+4. The OXP host extension activates in the new window, reads the marker (only if its expiry is fresh and PID is alive), and **connects to the dev server immediately**. No command palette step. No prompt.
+5. Your extension renders in the sidebar.
+
+If the marker is missing or expired, the new window starts as a normal editor — no auto-attach. Run \`oxp dev clean\` to clear stale markers.
+
+## Anatomy of an EDH Window
+
+\`\`\`
+┌──────────────────────────────────────────────────────────────────┐
+│ File  Edit  …                                  OXP Dev (v0.1.2) │ ← title bar tag
+├───┬──────────────────────────────────────────────────────────────┤
+│ ⓘ │   Your extension's sidebar view                              │
+│ 🔍│   ─────────────────────────────                              │
+│ 📦│   DEV: signature bypass                                      │ ← header chip
+│ ▶ │                                                              │
+│ 🅾 │ ◄── OXP activity-bar icon (clicked, sidebar visible)         │
+│   │                                                              │
+├───┴──────────────────────────────────────────────────────────────┤
+│ $(plug) OXP Dev · v0.1.2 · session 4f3a   …other status items…  │ ← status bar
+└──────────────────────────────────────────────────────────────────┘
 \`\`\`
 
-On pack failure:
+Key elements:
 
-\`\`\`json
-{
-  "kind": "error",
-  "message": "Schema validation failed: ..."
-}
-\`\`\`
+- **Activity-bar / tool-window icon** — labelled \`OXP\`. The host adds it the moment a dev session attaches.
+- **Sidebar view** — renders \`oxp-ui-v1\` or \`hybrid-v1\` UI natively. For \`webview-v1\`, an isolated webview iframe is mounted here.
+- **DEV chip** — always visible in dev mode; the production install path never shows this.
+- **Status bar / status widget** — connection state, session id, packed version (see [Development Workflow](/docs/dev-workflow#the-status-bar) for the icon legend).
+- **Title-bar suffix** — \`OXP Dev (vX.Y.Z)\` so you can tell EDH windows apart at a glance.
 
-## Signature Bypass
+## Command Palette
 
-> **Important:** Dev mode skips Ed25519 signing for speed. The host displays a loud "DEV: signature bypass" badge while connected. The production publish flow is unchanged.
+The EDH exposes a small set of commands under the \`OXP:\` prefix:
 
-## Connecting VS Code
+| Command | What it does |
+|---|---|
+| **OXP: Restart Dev Session** | Disposes the extension, reconnects to the dev server, re-loads the latest bundle |
+| **OXP: Reload Bundle** | Asks the dev server for the current bundle and re-instantiates without reconnecting |
+| **OXP: Open Output (Dev Host)** | Focuses the **OXP Dev Host** output channel |
+| **OXP: Show Manifest** | Opens the active bundle's \`oxp.json\` read-only |
+| **OXP: Show Bundle Info** | Pops a modal with digest, size, signedBy (or \`unsigned (dev)\`), packed-at timestamp |
+| **OXP: Detach Dev Session** | Disconnects but leaves the window open; useful for inspecting the last-known state |
 
-1. Start \`oxp dev\` in your terminal
-2. Open VS Code
-3. Run command **OXP: Attach to Dev Server…**
-4. Enter the WebSocket URL (\`ws://localhost:7373/dev\`)
-5. Your extension panel appears and hot-reloads on every save
+In JetBrains hosts, the same commands are reachable via **Help → Find Action** (\`Ctrl/Cmd+Shift+A\`).
 
-## Tips
+## Output Channel
 
-- **Fast feedback loop** — save → see changes in ~100ms
-- **Multiple hosts** — connect VS Code, Cursor, and Piye simultaneously
-- **Error recovery** — if a pack fails, dev keeps running and shows the error; fix the issue and save again
-- **Port conflicts** — use \`--port\` or set \`OXP_DEV_PORT\` env var`,
+The **OXP Dev Host** channel logs everything: file events, pack results, reload pushes, RPC call traces (at info level), and unhandled errors.
+
+In VS Code family: **View → Output → OXP Dev Host**.
+In JetBrains: **OXP Dev Host** tool window (bottom dock).
+
+Set \`OXP_LOG=debug\` before \`oxp dev\` to include per-RPC tracing.
+
+## Error Boundary
+
+Every host call (\`storage/*\`, \`http/*\`, \`editor/*\`, …) is wrapped in an error boundary on the host side. When your extension throws:
+
+1. The boundary catches the error and serializes it (message, stack, RPC method, args).
+2. The sidebar view switches to an **error panel** showing the structured failure.
+3. The status bar turns red: \`$(error) OXP Dev\`.
+4. The error is appended to the output channel.
+5. A **Restart** button re-instantiates the extension without restarting the IDE.
+
+The host extension itself never crashes. The blast radius of a misbehaving extension is exactly one sidebar view.
+
+## Hot Reload
+
+When the dev server pushes a new bundle:
+
+1. The host receives the WebSocket \`reload\` message.
+2. The current extension instance's \`dispose()\` is awaited (up to 2 s).
+3. The new bundle is verified (digest match, manifest schema, policy).
+4. A new instance is constructed; \`activate()\` is invoked.
+5. The sidebar is re-rendered in place.
+
+Total time, typical: **100–250 ms** from save to visible update.
+
+State across reload: UI form values and scroll positions are preserved for views with stable \`id\`s. In-memory JS variables are **not** — persist them through \`storage/*\` if you need durability.
+
+## Ending the Session
+
+Press \`Ctrl+C\` in the terminal where \`oxp dev\` is running. The CLI:
+
+1. Sends a \`shutdown\` frame to every connected host.
+2. The EDH window dismisses its sidebar, removes the activity-bar icon, and closes itself.
+3. The dev server stops listening.
+4. The autostart marker is deleted.
+
+You can also use **OXP: Detach Dev Session** in the EDH if you want the window to stay open after the server stops — the extension stays loaded as a frozen snapshot of the last bundle (useful for screenshots).
+
+## VS Code Family vs JetBrains
+
+| Aspect | VS Code / Cursor / Windsurf / VSCodium | JetBrains (any IntelliJ-Platform IDE) |
+|---|---|---|
+| Window launch | \`code --new-window\` (or \`cursor\`, \`windsurf\`, \`codium\`) | \`idea\` / \`pycharm\` / \`webstorm\` / … via \`runtime-bin/\` launcher |
+| Sidebar | Activity bar, OXP icon | Right tool window, OXP stripe button |
+| Detach gesture | Close window or \`OXP: Detach Dev Session\` | Close window or **Tools → OXP → Detach** |
+| Output | Output panel, \`OXP Dev Host\` channel | Tool window, \`OXP Dev Host\` |
+| Restart shortcut | Command palette → **OXP: Restart Dev Session** | Find Action → **OXP: Restart Dev Session** |
+
+The contract is identical. Bundle, manifest, signature, WIT pin, RPC calls — all bit-equivalent across families.
+
+## Troubleshooting
+
+- **Window opened but extension didn't appear** — check the **OXP Dev Host** output channel. Most often a pack/validation error.
+- **EDH won't attach** — run \`oxp dev clean\` and start again. A stale autostart marker can block re-attach.
+- **Wrong IDE launched** — pass \`--host vscode\` or \`--host jetbrains\` explicitly.
+- **Port in use** — \`oxp dev --port 8080\` (or set \`OXP_DEV_PORT\`).
+- **Auto-detected wrong launcher** (e.g. \`code\` instead of \`cursor\`) — set \`OXP_IDE_LAUNCHER=cursor\` in your shell environment.
+
+## Next Steps
+
+- [Development Workflow](/docs/dev-workflow) — the surrounding loop.
+- [Publishing](/docs/publishing) — graduate from EDH to the real registry.`,
   },
   {
     slug: "publishing",

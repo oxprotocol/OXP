@@ -2,6 +2,138 @@ import type { DocSection } from "../docs";
 
 export const overviewDocs: DocSection[] = [
   {
+    slug: "overview",
+    title: "Overview",
+    category: "Overview",
+    summary:
+      "What OXP is today, what ships in v0.1, what's coming in v0.2 and v1.0, and the developer journey from create to install.",
+    body: `**OXP** is the **Open eXtension Protocol** — an open, neutral specification for IDE extensions. Write your extension once, sign it, publish it to a signed registry, and install it into any IDE that ships an OXP host adapter. **No editor lock-in. No marketplace gatekeeping. No N×M integration tax.**
+
+This page is the honest, level-headed view: what OXP is, what works **today** in v0.1, what's actively shipping in v0.2, and the longer arc toward v1.0.
+
+## What OXP Is
+
+OXP is three things working together:
+
+1. **A protocol** — the v1 specification (\`spec/v1/\`) covering the manifest, bundle format, WIT contracts, and JSON-RPC host calls.
+2. **A signed registry** — \`oxp.sh\` distributes \`.oxp\` bundles signed with Ed25519, with TOFU key pinning and OCI-compatible storage.
+3. **A cross-IDE runtime** — host adapters that run the **same** \`.oxp\` bundle in **VS Code, Cursor, Windsurf, VSCodium, and JetBrains** with bit-identical conformance fingerprints.
+
+Everything else — the CLI, the SDK, the UI component vocabulary — is composition over those three.
+
+## What v0.1 Supports Today
+
+These features are shipped, tested by the cross-host conformance suite, and live in production.
+
+| Capability | VS Code family | JetBrains | Notes |
+|---|---|---|---|
+| **UI panels** (\`oxp-ui-v1\` tree or HTML) | ✅ | ✅ | Native render path in both |
+| **Commands** (\`contributes.commands\`) | ✅ | ✅ | Title + when + handler |
+| **Status bar items** | ✅ | ✅ | Text + tooltip + click handler |
+| **MCP servers** (\`contributes.mcpServers\`) | ✅ | ✅ | Auto-registered with the IDE's MCP client |
+| **Extension Development Host** (\`oxp dev\`) | ✅ | ✅ | Auto-spawned, hot-reload, error boundary |
+| **WASI components** (Rust / TS via jco) | ✅ | ✅ | WASI Preview 2, capability broker |
+| **Signed publish** (\`oxp publish\`) | ✅ | ✅ | Ed25519, TOFU pinning, scoped tokens |
+
+Hosts: \`hosts/vscode\` covers **VS Code, Cursor, Windsurf, and VSCodium**. \`hosts/jetbrains\` covers **IntelliJ IDEA, WebStorm, PyCharm, GoLand, RustRover, and the rest of the IntelliJ Platform family**.
+
+## On the Roadmap for v0.2
+
+Specified in WIT, in active integration. Rolls out as conformance tests go green — not on a fixed calendar.
+
+- **\`contributes.viewsContainers\`** — declarative activity-bar / tool-window icons that produce native chrome on every host.
+- **\`editor/*\` API** — read selections, apply edits, decorate ranges, register code lenses.
+- **\`stream/*\` RPCs** — long-running streaming for log tail, build output, incremental search.
+- **Tree views** — virtualized trees with native renderers (currently HTML-only).
+- **Webview messaging API** — typed bidirectional postMessage for full-screen editors.
+- **Neovim host adapter** — third reference host. WIT is identical; Lua adapter in progress.
+
+## Looking Toward v1.0
+
+The v1 milestone is about depth, not new surfaces.
+
+- **L2 native renderers everywhere** — every host paints \`@oxprotocol/ui\` components with the IDE's native toolkit (no webview fallback).
+- **Spec donated to a neutral foundation** (CNCF Sandbox or Eclipse) once three external IDE vendors ship L1 or higher.
+- **Marketplace adapters** — first-class read-side bridges from \`oxp.sh\` into VS Code Marketplace, JetBrains Marketplace, and Open VSX.
+- **Reproducible builds** — every bundle's tar+zstd output is byte-identical from source, with a public \`oxp reproduce\` verifier.
+- **Enterprise registries** — fully documented self-hosting path on any OCI registry, with SAML/SCIM in the web UI.
+
+## The Developer Journey in One Glance
+
+\`\`\`
+   create  ──►  develop  ──►  pack  ──►  publish  ──►  install
+   ────────     ─────────     ──────     ─────────     ─────────
+   oxp create   oxp dev       oxp pack   oxp publish   oxp install
+   pick a       EDH window    tar+zstd   to oxp.sh     in any
+   template     auto-opens    +Ed25519   signed +      OXP host
+                hot-reload    signature  TOFU-pinned
+\`\`\`
+
+Each step is one command. No marketplace review queue, no manual signing dance, no per-IDE packaging step.
+
+### 1. Create
+
+\`\`\`bash
+oxp create my-ext           # interactive picker
+oxp create my-ext -t hello-react   # React + TypeScript template
+\`\`\`
+
+Five templates ship today: \`hello-html\` (React + TypeScript, the default), \`hello-react\` (alias), \`hello-tree\` (declarative JSON tree, no JS), \`hello-code\` (TS extension with logic), \`hello-rust\` (WASI component).
+
+### 2. Develop
+
+\`\`\`bash
+oxp dev
+\`\`\`
+
+The CLI spawns an **Extension Development Host** window of your IDE automatically. Your extension appears in the sidebar. Save a file → bundle re-packs → host hot-reloads. No manual WebSocket URL, no "attach" command, no configuration. Press \`Ctrl+C\` in the terminal to end the session — the EDH window closes itself. See [Development Workflow](/docs/dev-workflow) and the [EDH guide](/docs/edh) for details.
+
+### 3. Pack
+
+\`\`\`bash
+oxp pack
+\`\`\`
+
+Produces a deterministic, Ed25519-signed \`.oxp\` bundle in \`dist/\`. Bundle policy is enforced locally (size limits, kind/permissions consistency, WIT pin for components).
+
+### 4. Publish
+
+\`\`\`bash
+oxp login                     # one-time, stores token in ~/.oxp/credentials
+oxp publish                   # uploads dist/<slug>-<version>.oxp
+\`\`\`
+
+The registry re-validates the manifest, re-checks the bundle policy, verifies the signature, and enforces TOFU key pinning. The default registry is **\`https://oxp.sh\`** — no localhost setup required to ship to real users.
+
+### 5. Install
+
+\`\`\`bash
+oxp install @yourname/my-ext            # any registered OXP host
+\`\`\`
+
+The host downloads the bundle, verifies its signature against the pinned key, shows the install-time permission prompt, and activates the extension.
+
+## What You Will *Not* Find in OXP
+
+OXP is intentionally small. These are out of scope:
+
+- **A new language.** Extensions are written in TypeScript, JavaScript, or Rust.
+- **A new UI framework.** \`@oxprotocol/ui\` is a *vocabulary* (Box, Stack, Button, Text, …) — the host paints it however it likes.
+- **A new package manager.** \`oxp\` is a thin CLI; pnpm/npm/yarn handle dependencies.
+- **A new identity system.** Sigstore for code signing, OIDC for keyless flows, OCI for distribution.
+
+The whole stack composes existing standards. The novelty is the *composition*.
+
+## Where to Go Next
+
+- [Installation](/docs/installation) — get the CLI in two minutes.
+- [Your First Extension](/docs/first-extension) — build, run, hot-reload, ship.
+- [Development Workflow](/docs/dev-workflow) — master \`oxp dev\` and the EDH.
+- [Extension Development Host](/docs/edh) — full reference for the dev window.
+- [The Manifest](/docs/manifest) — every field in \`oxp.json\`.
+- [Architecture](/docs/architecture) — internals, package graph, runtime topology.`,
+  },
+  {
     slug: "introduction",
     title: "Introduction",
     category: "Overview",

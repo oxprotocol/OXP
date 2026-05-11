@@ -119,6 +119,10 @@ pnpm dev
 
 This gives you a local registry at \`http://localhost:3000\` with a Postgres database and S3-compatible object storage.
 
+:::info Self-hosters only
+The CLI ships configured for the public registry at **\`https://oxp.sh\`** — you do **not** need a local registry to publish or install extensions. The Docker stack above is only for contributors working on the OXP registry itself, or for organizations self-hosting an internal registry.
+:::
+
 ## What's Next
 
 Now that you have the CLI installed, head to [Your First Extension](/docs/first-extension) to build and run your first OXP extension in under five minutes.`,
@@ -195,35 +199,44 @@ You'll see output like:
 
 The dev server watches your files, re-packs on every change, and pushes updates over WebSocket. Connected hosts hot-reload instantly.
 
-## Step 4: Open in VS Code
+## Step 4: Open in the Extension Development Host
 
-1. Open VS Code with the OXP host extension installed
-2. Run the command **OXP: Attach to Dev Server…**
-3. Enter the dev server URL: \`ws://localhost:7373/dev\`
-4. Your extension appears in a panel
+While \`oxp dev\` is running, a fresh **Extension Development Host (EDH)** window of your IDE has **already opened automatically**. You don't need to run any command, paste any URL, or change any setting.
 
-You'll see a "DEV: signature bypass" badge — this is expected. In dev mode, Ed25519 signing is skipped for speed.
+In the EDH window:
+
+1. Click the **OXP** icon in the activity bar (or, on JetBrains, the **OXP** stripe button on the right tool window).
+2. The sidebar opens with your extension rendered natively.
+3. The status bar shows \`$(plug) OXP Dev\` — your live connection indicator.
+4. A **"DEV: signature bypass"** chip is painted in the sidebar header — this is expected in dev mode.
+
+If anything goes wrong, open **View → Output → OXP Dev Host** (VS Code family) or the **OXP Dev Host** tool window (JetBrains) for live pack/reload logs.
 
 :::warning Dev mode is local-only
 The \`oxp dev\` server bypasses signature verification. **Never** point it at a remote host you don't control. For shipping bundles, always use \`oxp pack\` + \`oxp publish\`.
 :::
 
+See the [Extension Development Host guide](/docs/edh) for the full reference: chrome, commands, output channel, hot-reload semantics, and error boundary.
+
 ## Step 5: Make Changes
 
-Edit \`ui/index.html\`. As soon as you save, the dev server re-packs and the host hot-reloads your extension. No restart needed.
+Edit \`ui/index.html\`. As soon as you save, the dev server re-packs and the EDH hot-reloads your extension — typically in 100–250 ms. No window reload. Form values and scroll positions in your sidebar survive the reload.
+
+To end the session, press \`Ctrl+C\` in the terminal. The dev server stops and the EDH window closes itself.
 
 ## Step 6: Choose a Template
 
-OXP ships four templates for different use cases:
+OXP ships five templates for different use cases:
 
 | Template | Command | Description |
 |---|---|---|
-| \`hello-html\` | \`oxp create -t hello-html myext\` | Static HTML UI (default) |
-| \`hello-tree\` | \`oxp create -t hello-tree myext\` | Declarative \`oxp-ui-v1\` tree (no HTML needed) |
+| \`hello-html\` | \`oxp create -t hello-html myext\` | React + TypeScript + esbuild (default) |
+| \`hello-react\` | \`oxp create -t hello-react myext\` | Alias for \`hello-html\` — React + TSX UI with esbuild bundling |
+| \`hello-tree\` | \`oxp create -t hello-tree myext\` | Declarative \`oxp-ui-v1\` tree (no JS/HTML) |
 | \`hello-code\` | \`oxp create -t hello-code myext\` | TypeScript extension with logic |
 | \`hello-rust\` | \`oxp create -t hello-rust myext\` | Rust WASI component |
 
-For your first extension, \`hello-html\` or \`hello-tree\` are the simplest starting points. Move to \`hello-rust\` when you need logic beyond declarative UI.
+For your first extension, \`hello-html\` / \`hello-react\` or \`hello-tree\` are the simplest starting points. Move to \`hello-rust\` when you need logic beyond declarative UI.
 
 ## Step 7: Pack and Publish
 

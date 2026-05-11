@@ -76,7 +76,12 @@ intellijPlatform {
 
     pluginVerification {
         ides {
-            recommended()
+            // Pin verifier IDEs explicitly. `recommended()` resolves bare
+            // major.minor coordinates (e.g. `ideaIC:2025.3`) that JetBrains
+            // doesn't publish — only `2025.3.x` patch releases exist on the
+            // download CDN — so the verify task fails to download the IDE.
+            ide("IC", "2025.1.4")
+            ide("IC", "2025.2.3")
         }
     }
 }

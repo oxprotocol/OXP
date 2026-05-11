@@ -110,15 +110,130 @@ Each permission has an \`id\` from the [capability catalog](/docs/permissions), 
 
 ### Contributions
 
+The \`contributes\` object declares UI surfaces and behaviors your extension registers with the host. Each contribution is **declarative** — the host parses it at install time and wires up the chrome (commands, view containers, menus) without running any of your code. This is what lets a single bundle paint native UI in VS Code, Cursor, Windsurf, VSCodium, **and** JetBrains.
+
+\`\`\`json
+{
+  "contributes": {
+    "commands": [ ... ],
+    "viewsContainers": { ... },
+    "views": { ... },
+    "keybindings": [ ... ],
+    "mcpServers": [ ... ]
+  }
+}
+\`\`\`
+
+Contributions may be inlined as shown, or pulled from sibling files for tidiness:
+
 \`\`\`json
 {
   "contributes": {
     "commands": "contributions/commands.json",
-    "views": "contributions/views.json",
-    "keybindings": "contributions/keybindings.json"
+    "viewsContainers": "contributions/viewsContainers.json"
   }
 }
 \`\`\`
+
+#### \`contributes.commands\`
+
+Each command registers a callable handler that shows up in the IDE's command palette and can be bound to keybindings, menus, or invoked programmatically by your extension.
+
+\`\`\`json
+{
+  "contributes": {
+    "commands": [
+      {
+        "id": "hello.greet",
+        "title": "Hello: Greet the World",
+        "category": "Hello",
+        "icon": "$(megaphone)",
+        "when": "workspaceFolderCount > 0"
+      },
+      {
+        "id": "hello.refresh",
+        "title": "Hello: Refresh View",
+        "category": "Hello",
+        "icon": "$(refresh)"
+      }
+    ]
+  }
+}
+\`\`\`
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| \`id\` | string | yes | Unique within the extension. Convention: \`<prefix>.<verb>\` (e.g. \`hello.greet\`) |
+| \`title\` | string | yes | Shown in the command palette and menus |
+| \`category\` | string | no | Groups commands in the palette (e.g. \`"Hello"\` → \`Hello: Greet the World\`) |
+| \`icon\` | string | no | Codicon (\`$(name)\`) on VS Code family; mapped to the closest IntelliJ icon on JetBrains |
+| \`when\` | string | no | Boolean expression evaluated against host context keys; command is hidden when false |
+
+Commands are dispatched to your extension over the \`commands/execute\` RPC. Register the handler in your extension code:
+
+\`\`\`ts
+import { commands } from "@oxprotocol/sdk";
+
+commands.register("hello.greet", async () => {
+  // your handler
+});
+\`\`\`
+
+#### \`contributes.viewsContainers\`
+
+A **view container** is a top-level UI slot in the IDE chrome — the activity-bar icon (VS Code family) or tool-window stripe button (JetBrains) that owns your extension's sidebar.
+
+\`\`\`json
+{
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "hello-sidebar",
+          "title": "Hello",
+          "icon": "media/hello.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "hello-panel",
+          "title": "Hello Logs",
+          "icon": "$(output)"
+        }
+      ]
+    }
+  }
+}
+\`\`\`
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| \`id\` | string | yes | Referenced by \`contributes.views\` to mount views inside this container |
+| \`title\` | string | yes | Tooltip text and accessible label |
+| \`icon\` | string \\| \`$(codicon)\` | yes | Path to an SVG (16×16, monochrome) **or** a codicon reference |
+
+Two **locations** are supported in v0.1:
+
+- \`activitybar\` — the vertical icon strip on the left in VS Code family, the right tool-window stripe in JetBrains.
+- \`panel\` — the horizontal bottom panel in VS Code family, the bottom tool-window strip in JetBrains.
+
+Views inside a container are declared with \`contributes.views\` (keyed by container id) — covered separately in [UI Components](/docs/ui-components).
+
+#### \`contributes.keybindings\`
+
+\`\`\`json
+{
+  "contributes": {
+    "keybindings": [
+      { "command": "hello.greet", "key": "ctrl+alt+h", "mac": "cmd+alt+h" }
+    ]
+  }
+}
+\`\`\`
+
+#### \`contributes.mcpServers\`
+
+Auto-registers Model Context Protocol servers with the IDE's MCP client. See the [MCP Integration guide](/docs/mcp-integration) for the full schema.
 
 ### Categories
 
