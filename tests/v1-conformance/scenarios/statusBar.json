@@ -1,0 +1,19 @@
+{
+  "capability": "statusBar",
+  "spec": "spec/v1/oxp-api.md#ctxstatusbar--status-bar-items",
+  "scenarios": [
+    {
+      "name": "item shows after activate",
+      "steps": [
+        { "expect": "statusBarItem", "id": "conf.status", "textMatches": "conf" }
+      ]
+    },
+    {
+      "name": "click invokes bound command",
+      "steps": [
+        { "action": "clickStatusBarItem", "id": "conf.status" },
+        { "expect": "notification", "matches": "hello world" }
+      ]
+    }
+  ]
+}

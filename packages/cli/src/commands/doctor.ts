@@ -14,12 +14,18 @@
  */
 
 import { promises as fs } from "node:fs";
-import { join } from "node:path";
+import { join, resolve, isAbsolute, sep } from "node:path";
 import { homedir, platform, release } from "node:os";
 
 import { detectHosts } from "../lib/host-detect.js";
 import { ensureAdapters } from "../lib/host-adapter.js";
-import { info, oxpHome, readCredentials, registryUrl } from "../util.js";
+import {
+  findProjectRoot,
+  info,
+  oxpHome,
+  readCredentials,
+  registryUrl,
+} from "../util.js";
 
 interface WhoamiResp {
   ok?: boolean;
@@ -28,10 +34,14 @@ interface WhoamiResp {
   token?: { scopes?: string[]; expiresAt?: string | null };
 }
 
-const HELP = `oxp doctor [--json]   Inspect this machine and report what OXP can see
+const HELP = `oxp doctor [--json] [--project <dir>]   Inspect this machine and report what OXP can see
 
 Flags:
-  --json   Emit a machine-readable JSON report on a single line.
+  --json               Emit a machine-readable JSON report on a single line.
+  --project <dir>      Also inspect the OXP project at <dir> for build-determinism
+                       issues. Default: current working directory (if it contains
+                       an oxp.json).
+  --no-project         Skip project inspection even when cwd has an oxp.json.
 `;
 
 export async function doctor(args: string[]): Promise<number> {
@@ -40,6 +50,14 @@ export async function doctor(args: string[]): Promise<number> {
     return 0;
   }
   const json = args.includes("--json");
+  const noProject = args.includes("--no-project");
+  let projectArg: string | null = null;
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === "--project") projectArg = args[++i] ?? null;
+    else if (a && a.startsWith("--project="))
+      projectArg = a.slice("--project=".length);
+  }
 
   const home = oxpHome();
   const reg = registryUrl();
@@ -69,6 +87,25 @@ export async function doctor(args: string[]): Promise<number> {
   // Detect IDEs (skip running-process probe to keep the doctor cheap).
   const detected = await detectHosts({ skipProcessProbe: false });
   const adapters = await ensureAdapters(detected, { reportOnly: true });
+
+  // Project inspection (build-determinism). Off by default only when the
+  // user explicitly passes --no-project. When --project is given we use
+  // that path; otherwise we look for an oxp.json at or above cwd.
+  let project: ProjectReport | null = null;
+  if (!noProject) {
+    const start = projectArg ? resolve(projectArg) : process.cwd();
+    const root = await findProjectRoot(start);
+    if (root) project = await reportProject(root);
+    else if (projectArg) {
+      // Explicit --project but nothing found — surface as an error-shaped
+      // report rather than silently skipping.
+      project = {
+        root: start,
+        found: false,
+        checks: [],
+      };
+    }
+  }
 
   if (json) {
     process.stdout.write(
@@ -106,6 +143,7 @@ export async function doctor(args: string[]): Promise<number> {
                 ? a.error
                 : undefined,
         })),
+        project,
       }) + "\n",
     );
     return 0;
@@ -169,6 +207,7 @@ export async function doctor(args: string[]): Promise<number> {
     }
   }
   info(``);
+  if (project) renderProject(project);
   info(`Next steps:`);
   if (!tokenPresent) info(`  • run \`oxp login\` to publish extensions`);
   if (
@@ -228,3 +267,385 @@ async function pathExists(p: string): Promise<boolean> {
 
 // Suppress unused-import warning when the helper above isn't used.
 void homedir;
+
+/* -------------------------------------------------------------------------- */
+/* Project inspection — build-determinism checks                              */
+/* -------------------------------------------------------------------------- */
+//
+// A bundle is only reproducible across machines when the *inputs* are.
+// `oxp pack` itself is deterministic, but it shells out to the author's
+// `scripts.build` hook, which is wide-open. The checks below flag the
+// most common cross-machine drift causes: missing lockfile, unpinned
+// Node engine, generated outputs not gitignored, missing rust toolchain
+// pin for WASM projects, broken icon path, etc.
+//
+// Severity legend in the text report:
+//   ✓  ok           — no action needed
+//   !  warning      — likely to cause drift across machines or CI
+//   ✗  error        — broken right now (file missing, JSON invalid, …)
+//   ·  info         — neutral fact
+
+type CheckLevel = "ok" | "warn" | "error" | "info";
+
+interface ProjectCheck {
+  id: string;
+  level: CheckLevel;
+  label: string;
+  detail?: string;
+}
+
+interface ProjectReport {
+  root: string;
+  found: boolean;
+  manifestId?: string;
+  manifestVersion?: string;
+  checks: ProjectCheck[];
+}
+
+async function reportProject(root: string): Promise<ProjectReport> {
+  const checks: ProjectCheck[] = [];
+  let manifestId: string | undefined;
+  let manifestVersion: string | undefined;
+  let manifest: Record<string, unknown> | null = null;
+
+  // 1. oxp.json — parseable?
+  try {
+    const raw = await fs.readFile(join(root, "oxp.json"), "utf8");
+    manifest = JSON.parse(raw) as Record<string, unknown>;
+    manifestId =
+      typeof manifest.id === "string" ? (manifest.id as string) : undefined;
+    manifestVersion =
+      typeof manifest.version === "string"
+        ? (manifest.version as string)
+        : undefined;
+    checks.push({
+      id: "manifest",
+      level: "ok",
+      label: "oxp.json",
+      detail: `${manifestId ?? "(no id)"}@${manifestVersion ?? "?"}`,
+    });
+  } catch (err) {
+    checks.push({
+      id: "manifest",
+      level: "error",
+      label: "oxp.json",
+      detail: `unreadable: ${(err as Error).message}`,
+    });
+  }
+
+  // 2. Icon path validity (oxp.json#icon, used by the activity bar).
+  if (manifest && typeof manifest.icon === "string" && manifest.icon.trim()) {
+    const rel = (manifest.icon as string).trim();
+    if (isAbsolute(rel) || rel.includes("..")) {
+      checks.push({
+        id: "icon",
+        level: "error",
+        label: "icon",
+        detail: `unsafe path (must be relative, no '..'): ${rel}`,
+      });
+    } else {
+      const abs = join(root, rel);
+      if (!abs.startsWith(root + sep)) {
+        checks.push({
+          id: "icon",
+          level: "error",
+          label: "icon",
+          detail: `points outside project: ${rel}`,
+        });
+      } else if (!(await pathExists(abs))) {
+        checks.push({
+          id: "icon",
+          level: "error",
+          label: "icon",
+          detail: `file not found: ${rel}`,
+        });
+      } else {
+        checks.push({
+          id: "icon",
+          level: "ok",
+          label: "icon",
+          detail: rel,
+        });
+        // Activity-bar icons are mask-rendered (monochrome) in every
+        // VS Code fork. Multi-colour / gradient SVGs collapse into a
+        // silhouette at 24×24 — warn so authors don't think the icon
+        // wiring is broken when they see a solid blob in the rail.
+        try {
+          const svg = await fs.readFile(abs, "utf8");
+          const monoIssues = scanForActivityBarIconIssues(svg);
+          if (monoIssues.length > 0) {
+            checks.push({
+              id: "icon-monochrome",
+              level: "warn",
+              label: "icon (activity bar)",
+              detail:
+                `renders as a monochrome silhouette in the activity bar — ` +
+                monoIssues.join(", ") +
+                `. Use a single-colour path with fill="currentColor" for crisp rendering.`,
+            });
+          }
+        } catch {
+          /* unreadable — already flagged elsewhere */
+        }
+      }
+    }
+  } else {
+    checks.push({
+      id: "icon",
+      level: "info",
+      label: "icon",
+      detail: "not set (using default OXP brand)",
+    });
+  }
+
+  // 3. Lockfile — the single biggest determinism gap.
+  const lockCandidates = [
+    "pnpm-lock.yaml",
+    "package-lock.json",
+    "yarn.lock",
+    "bun.lockb",
+  ];
+  let lockfile: string | null = null;
+  for (const f of lockCandidates) {
+    if (await pathExists(join(root, f))) {
+      lockfile = f;
+      break;
+    }
+  }
+  const hasPkgJson = await pathExists(join(root, "package.json"));
+  if (lockfile) {
+    checks.push({
+      id: "lockfile",
+      level: "ok",
+      label: "lockfile",
+      detail: lockfile,
+    });
+  } else if (hasPkgJson) {
+    checks.push({
+      id: "lockfile",
+      level: "warn",
+      label: "lockfile",
+      detail:
+        "no lockfile — npm/pnpm install may resolve different versions on other machines",
+    });
+  } else {
+    checks.push({
+      id: "lockfile",
+      level: "info",
+      label: "lockfile",
+      detail: "no package.json (skipped)",
+    });
+  }
+
+  // 4. Node engine pin in package.json.
+  if (hasPkgJson) {
+    try {
+      const raw = await fs.readFile(join(root, "package.json"), "utf8");
+      const pkg = JSON.parse(raw) as {
+        engines?: { node?: string };
+        scripts?: Record<string, string>;
+      };
+      const nodePin = pkg.engines?.node;
+      if (nodePin) {
+        checks.push({
+          id: "node-engine",
+          level: "ok",
+          label: "engines.node",
+          detail: nodePin,
+        });
+      } else {
+        checks.push({
+          id: "node-engine",
+          level: "warn",
+          label: "engines.node",
+          detail:
+            "unset — bundlers may emit different output across Node majors",
+        });
+      }
+    } catch {
+      checks.push({
+        id: "node-engine",
+        level: "error",
+        label: "package.json",
+        detail: "unreadable",
+      });
+    }
+  }
+
+  // 5. scripts.build hook — present?
+  const buildCmd =
+    manifest &&
+    typeof (manifest.scripts as Record<string, unknown> | undefined)?.build ===
+      "string"
+      ? ((manifest.scripts as Record<string, string>).build as string)
+      : null;
+  if (buildCmd) {
+    checks.push({
+      id: "build-script",
+      level: "info",
+      label: "scripts.build",
+      detail: buildCmd,
+    });
+  } else {
+    checks.push({
+      id: "build-script",
+      level: "info",
+      label: "scripts.build",
+      detail: "(none — bundle uses source as-is)",
+    });
+  }
+
+  // 6. Generated outputs gitignored? Only relevant when a build hook
+  //    exists; otherwise `ui/` is hand-written and should be committed.
+  if (buildCmd) {
+    let gi = "";
+    try {
+      gi = await fs.readFile(join(root, ".gitignore"), "utf8");
+    } catch {
+      /* fine — checked below */
+    }
+    const ignores = new Set(
+      gi
+        .split(/\r?\n/)
+        .map((l) => l.trim())
+        .filter((l) => l && !l.startsWith("#")),
+    );
+    const wantsIgnored = ["dist", "ui"];
+    const missing = wantsIgnored.filter(
+      (d) =>
+        !ignores.has(d) &&
+        !ignores.has(`${d}/`) &&
+        !ignores.has(`/${d}`) &&
+        !ignores.has(`/${d}/`),
+    );
+    if (missing.length === 0) {
+      checks.push({
+        id: "gitignore",
+        level: "ok",
+        label: ".gitignore",
+        detail: "covers generated dist/ and ui/",
+      });
+    } else {
+      checks.push({
+        id: "gitignore",
+        level: "warn",
+        label: ".gitignore",
+        detail: `missing entries: ${missing.join(", ")} (build outputs should not be committed)`,
+      });
+    }
+  }
+
+  // 7. Rust toolchain pin for WASM projects.
+  const hasCargo = await pathExists(join(root, "Cargo.toml"));
+  if (hasCargo) {
+    const pinned =
+      (await pathExists(join(root, "rust-toolchain.toml"))) ||
+      (await pathExists(join(root, "rust-toolchain")));
+    if (pinned) {
+      checks.push({
+        id: "rust-toolchain",
+        level: "ok",
+        label: "rust-toolchain",
+        detail: "pinned",
+      });
+    } else {
+      checks.push({
+        id: "rust-toolchain",
+        level: "warn",
+        label: "rust-toolchain",
+        detail:
+          "no rust-toolchain.toml — different rustc/cargo-component versions produce different .wasm bytes",
+      });
+    }
+  }
+
+  // 8. node_modules present when a build hook needs it.
+  if (buildCmd && hasPkgJson) {
+    const hasNodeModules = await pathExists(join(root, "node_modules"));
+    if (!hasNodeModules) {
+      checks.push({
+        id: "node-modules",
+        level: "warn",
+        label: "node_modules",
+        detail: "missing — run install before `oxp pack` / `oxp dev`",
+      });
+    }
+  }
+
+  return {
+    root,
+    found: true,
+    manifestId,
+    manifestVersion,
+    checks,
+  };
+}
+
+function renderProject(p: ProjectReport): void {
+  info(`Project (build determinism):`);
+  if (!p.found) {
+    info(`  ✗ no oxp.json at ${p.root}`);
+    info(``);
+    return;
+  }
+  info(
+    `  root: ${p.root}` +
+      (p.manifestId ? `   (${p.manifestId}@${p.manifestVersion ?? "?"})` : ""),
+  );
+  for (const c of p.checks) {
+    const glyph =
+      c.level === "ok"
+        ? "✓"
+        : c.level === "warn"
+          ? "!"
+          : c.level === "error"
+            ? "✗"
+            : "·";
+    info(`  ${glyph} ${c.label.padEnd(18)}` + (c.detail ? ` ${c.detail}` : ""));
+  }
+  const warns = p.checks.filter(
+    (c) => c.level === "warn" || c.level === "error",
+  );
+  if (warns.length === 0) {
+    info(`  → bundle should reproduce byte-for-byte on another machine.`);
+  } else {
+    info(
+      `  → ${warns.length} issue${warns.length === 1 ? "" : "s"} may cause cross-machine drift.`,
+    );
+  }
+  info(``);
+}
+
+/**
+ * Quick heuristic for "this SVG will render badly as a VS Code activity-bar
+ * icon". Activity-bar icons are mask-rendered: fills/gradients/filters are
+ * discarded, only geometry + alpha matter. Multi-colour SVGs collapse into
+ * a solid silhouette. We flag the common giveaways so authors don't think
+ * the icon wiring is broken.
+ *
+ * Pure string scan — no XML parser — so the runtime cost is trivial.
+ */
+function scanForActivityBarIconIssues(svg: string): string[] {
+  const issues: string[] = [];
+  if (/<linearGradient\b|<radialGradient\b/i.test(svg)) {
+    issues.push("contains gradients");
+  }
+  if (/<filter\b/i.test(svg)) {
+    issues.push("contains filters");
+  }
+  // Collect every explicit fill colour (skip "none", url(...), currentColor).
+  const fills = new Set<string>();
+  const fillRe = /fill\s*=\s*"([^"]+)"/gi;
+  let m: RegExpExecArray | null;
+  while ((m = fillRe.exec(svg))) {
+    const v = (m[1] ?? "").trim().toLowerCase();
+    if (!v || v === "none" || v === "currentcolor" || v.startsWith("url(")) {
+      continue;
+    }
+    fills.add(v);
+  }
+  if (fills.size > 1) {
+    issues.push(`${fills.size} distinct fill colours`);
+  }
+  return issues;
+}

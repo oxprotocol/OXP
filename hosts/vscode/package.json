@@ -2,7 +2,7 @@
   "name": "oxp-vscode",
   "displayName": "OXP Host",
   "description": "Install and run OXP extensions inside VS Code.",
-  "version": "0.1.0",
+  "version": "0.2.14",
   "publisher": "oxp",
   "license": "Apache-2.0",
   "repository": {
@@ -20,10 +20,16 @@
     "onCommand:oxp.open",
     "onCommand:oxp.uninstall",
     "onCommand:oxp.dev",
+    "onCommand:oxp.devStart",
+    "onCommand:oxp.devStop",
+    "onCommand:oxp.devShowOutput",
+    "onCommand:oxp.dev.runCommand",
     "onCommand:oxp.runtime.show",
     "onCommand:oxp.runtime.stop",
     "onCommand:oxp.runtime.installFromUrl",
-    "onCommand:oxp.runtime.pickUrlInstall"
+    "onCommand:oxp.runtime.pickUrlInstall",
+    "onView:oxp.dev.view",
+    "workspaceContains:oxp.json"
   ],
   "contributes": {
     "commands": [
@@ -32,11 +38,55 @@
       { "command": "oxp.open", "title": "OXP: Open Extension…" },
       { "command": "oxp.uninstall", "title": "OXP: Uninstall Extension…" },
       { "command": "oxp.dev", "title": "OXP: Attach to Dev Server…" },
+      { "command": "oxp.devStart", "title": "OXP: Start Dev Session", "icon": "$(debug-start)" },
+      { "command": "oxp.devStop", "title": "OXP: Stop Dev Session", "icon": "$(debug-stop)" },
+      { "command": "oxp.devShowOutput", "title": "OXP: Show Dev Session Output" },
+      { "command": "oxp.dev.runCommand", "title": "OXP Dev: Run Extension Command…" },
       { "command": "oxp.reload", "title": "OXP: Reload Installed Extensions" },
       { "command": "oxp.runtime.show", "title": "OXP: Open Runtime Panel" },
       { "command": "oxp.runtime.stop", "title": "OXP: Stop Runtime" },
       { "command": "oxp.runtime.installFromUrl", "title": "OXP: Install Extension from URL…" },
       { "command": "oxp.runtime.pickUrlInstall", "title": "OXP: Activate URL Extension from CLI…" }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "oxpDev",
+          "title": "OXP",
+          "icon": "media/active-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "oxpDev": [
+        {
+          "type": "webview",
+          "id": "oxp.dev.view",
+          "name": "Dev Session",
+          "contextualTitle": "OXP"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "oxp.devStart",
+          "when": "view == oxp.dev.view",
+          "group": "navigation@1"
+        },
+        {
+          "command": "oxp.devStop",
+          "when": "view == oxp.dev.view",
+          "group": "navigation@2"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "oxp.devStart",
+        "key": "f5",
+        "when": "oxp.isProject && !inDebugMode && editorTextFocus"
+      }
     ],
     "configuration": {
       "title": "OXP",

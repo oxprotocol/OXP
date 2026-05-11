@@ -23,6 +23,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@mongodb-js/zstd':
+        specifier: ^2.0.1
+        version: 2.0.1
       '@oxprotocol/bundle':
         specifier: workspace:*
         version: link:../../packages/bundle
@@ -104,7 +107,7 @@ importers:
         version: 16.2.4(@typescript-eslint/parser@8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       mongodb:
         specifier: ^7.2.0
-        version: 7.2.0(socks@2.8.9)
+        version: 7.2.0(@mongodb-js/zstd@2.0.1)(socks@2.8.9)
       pg:
         specifier: ^8.20.0
         version: 8.20.0
@@ -8261,12 +8264,13 @@ snapshots:
       '@types/whatwg-url': 13.0.0
       whatwg-url: 14.2.0
 
-  mongodb@7.2.0(socks@2.8.9):
+  mongodb@7.2.0(@mongodb-js/zstd@2.0.1)(socks@2.8.9):
     dependencies:
       '@mongodb-js/saslprep': 1.4.10
       bson: 7.2.0
       mongodb-connection-string-url: 7.0.1
     optionalDependencies:
+      '@mongodb-js/zstd': 2.0.1
       socks: 2.8.9
 
   ms@2.1.3: {}

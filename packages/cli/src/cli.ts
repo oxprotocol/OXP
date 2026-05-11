@@ -48,7 +48,8 @@ const HELP = `oxp ${VERSION} — Open eXtensions Protocol
 
 Usage:
   oxp create [-t TPL] <name> Scaffold a new extension in ./<name>
-                             Templates: hello-html (default), hello-code, hello-tree
+                             Templates: hello-html (React+TS, default),
+                                        hello-code, hello-tree, hello-rust
   oxp dev [dir]              Watch + repack + serve over ws/http (default port 7373)
   oxp pack [dir]             Build dist/<slug>-<version>.oxp from <dir> (default: cwd)
   oxp login                  Sign in (email + password in terminal)
@@ -67,7 +68,9 @@ Usage:
                              JetBrains hosts pick it up automatically.
   oxp install-url --list     List previously URL-installed extensions
   oxp protocol-register      Register the oxp:// URL scheme on this machine
-  oxp doctor [--json]        Inspect this machine and report what OXP can see
+  oxp doctor [--json] [--project DIR]
+                             Inspect this machine + (optionally) a project
+                             for build-determinism issues
   oxp keygen                 Print the local Ed25519 publisher key id
   oxp help                   Show this message
   oxp version                Print version

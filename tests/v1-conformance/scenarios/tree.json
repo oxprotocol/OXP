@@ -1,0 +1,27 @@
+{
+  "capability": "tree",
+  "spec": "spec/v1/oxp-api.md#ctxtree--tree-views",
+  "scenarios": [
+    {
+      "name": "root nodes render",
+      "steps": [
+        { "action": "revealView", "id": "conf.tree" },
+        { "expect": "treeChildren", "view": "conf.tree", "parent": null, "labels": ["Alpha", "Bravo"] }
+      ]
+    },
+    {
+      "name": "child expansion",
+      "steps": [
+        { "action": "expandTreeNode", "view": "conf.tree", "id": "a" },
+        { "expect": "treeChildren", "view": "conf.tree", "parent": "a", "labels": ["Alpha child"] }
+      ]
+    },
+    {
+      "name": "select fires bound command",
+      "steps": [
+        { "action": "selectTreeNode", "view": "conf.tree", "id": "b" },
+        { "expect": "notification", "matches": "hello world" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "../../../spec/v1/manifest.schema.json",
+  "id": "@oxp/v1-conformance",
+  "version": "1.0.0",
+  "main": { "entry": "dist/index.js" },
+  "displayName": "OXP v1 Conformance Probe",
+  "description": "Exercises every v1 contribution point. Used by every host adapter's CI.",
+  "contributes": {
+    "commands": [
+      { "id": "conf.greet",     "title": "Conformance: Greet" },
+      { "id": "conf.pickColor", "title": "Conformance: Pick Color" },
+      { "id": "conf.openTree",  "title": "Conformance: Open Tree" },
+      { "id": "conf.runTask",   "title": "Conformance: Run Long Task" }
+    ],
+    "menus": [
+      { "commandId": "conf.greet", "location": "command-palette" },
+      { "commandId": "conf.greet", "location": "editor-context", "when": "editorLangId == 'typescript'" }
+    ],
+    "keybindings": [
+      { "commandId": "conf.greet", "key": "ctrl+shift+alt+g" }
+    ],
+    "views": [
+      { "id": "conf.tree", "name": "Conformance Tree", "icon": "list-tree" }
+    ],
+    "statusBar": [
+      { "id": "conf.status", "alignment": "right", "priority": 100 }
+    ]
+  },
+  "permissions": {
+    "workspace": { "read": ["**/*"], "write": ["./out/**"] },
+    "editor":    { "read": true, "write": true },
+    "terminal":  { "spawn": true },
+    "network":   { "fetch": ["https://httpbin.org"] }
+  }
+}

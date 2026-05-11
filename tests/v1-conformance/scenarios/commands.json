@@ -1,0 +1,21 @@
+{
+  "capability": "commands",
+  "spec": "spec/v1/oxp-api.md#ctxcommands--commands",
+  "scenarios": [
+    {
+      "name": "register + execute roundtrip",
+      "steps": [
+        { "action": "executeCommand", "id": "conf.greet", "args": "tester" },
+        { "expect": "returnValue", "equals": { "ok": true, "echoed": "tester" } },
+        { "expect": "notification", "matches": "hello tester" }
+      ]
+    },
+    {
+      "name": "command appears in palette",
+      "steps": [
+        { "action": "openCommandPalette" },
+        { "expect": "paletteContains", "title": "Conformance: Greet" }
+      ]
+    }
+  ]
+}

@@ -104,3 +104,68 @@ tasks {
         systemProperty("oxp.log", System.getenv("OXP_LOG") ?: "info")
     }
 }
+
+// ─── Vendor the built plugin into the OXP CLI ────────────────────────────
+//
+// The CLI ships the JetBrains plugin the same way it ships the VS Code
+// VSIX — bundled under `packages/cli/vendor/` and auto-installed by
+// `oxp dev`. To keep that artifact in lock-step with whatever the
+// Gradle build just produced, this task copies the freshly-built zip
+// into the vendor dir and rewrites `oxp-jetbrains.json` with the
+// current `pluginVersion`. It runs as a finalizer of `buildPlugin`,
+// but only when the build actually succeeded.
+val vendorIntoCli by tasks.registering {
+    group = "oxp"
+    description =
+        "Copy the built plugin zip into packages/cli/vendor/ and update oxp-jetbrains.json."
+
+    val pluginVersionProvider = providers.gradleProperty("pluginVersion")
+    val pluginNameProvider = providers.gradleProperty("pluginName")
+    val distZip = layout.buildDirectory
+        .file(pluginNameProvider.zip(pluginVersionProvider) { n, v ->
+            "distributions/$n-$v.zip"
+        })
+    // hosts/jetbrains → repo root is two levels up.
+    val vendorDir = layout.projectDirectory.dir("../../packages/cli/vendor")
+    val vendorZip = vendorDir.file("oxp-jetbrains.zip")
+    val vendorManifest = vendorDir.file("oxp-jetbrains.json")
+
+    inputs.file(distZip)
+    inputs.property("version", pluginVersionProvider)
+    outputs.file(vendorZip)
+    outputs.file(vendorManifest)
+
+    doLast {
+        val src = distZip.get().asFile
+        require(src.exists()) {
+            "Built plugin not found at ${src.absolutePath} — did buildPlugin succeed?"
+        }
+        val dest = vendorZip.asFile
+        dest.parentFile.mkdirs()
+        src.copyTo(dest, overwrite = true)
+
+        val version = pluginVersionProvider.get()
+        vendorManifest.asFile.writeText(
+            """{
+  "pluginId": "dev.oxp.jetbrains",
+  "version": "$version",
+  "zipFile": "oxp-jetbrains.zip",
+  "rootDir": "oxp-jetbrains"
+}
+""",
+        )
+        logger.lifecycle("✓ vendored ${src.name} → packages/cli/vendor/ (v$version)")
+    }
+}
+
+tasks.named("buildPlugin") {
+    finalizedBy(vendorIntoCli)
+}
+// Only vendor if buildPlugin actually produced its output. `finalizedBy`
+// would otherwise run even on failure, which would either fail loudly
+// (no zip) or vendor a stale artifact.
+vendorIntoCli {
+    onlyIf {
+        tasks.named("buildPlugin").get().state.failure == null
+    }
+}

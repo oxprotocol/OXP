@@ -1,0 +1,20 @@
+{
+  "capability": "lifecycle",
+  "spec": "spec/v1/oxp-api.md#ctxevents--lifecycle",
+  "scenarios": [
+    {
+      "name": "activate runs",
+      "steps": [
+        { "expect": "log", "matches": "activate(ctx)" }
+      ]
+    },
+    {
+      "name": "deactivate is killed after 5000ms if it hangs",
+      "steps": [
+        { "action": "installHangingDeactivate" },
+        { "action": "uninstallExtension" },
+        { "expect": "killedAfterMs", "max": 6000 }
+      ]
+    }
+  ]
+}

@@ -18,7 +18,9 @@ import {
   type McpServer,
 } from "@/lib/mcp";
 
-export const dynamic = "force-static";
+// Root layout is force-dynamic (Navbar reads the auth cookie), so this page
+// inherits that. Don't set `force-static` here — it conflicts with the layout
+// and produced DYNAMIC_SERVER_USAGE errors in prod.
 
 /**
  * MCP server detail page. Routes like `/mcp/modelcontextprotocol/filesystem`

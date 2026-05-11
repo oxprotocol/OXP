@@ -1,0 +1,17 @@
+# Files needed for development but not part of the shipped .oxp bundle.
+# Source-of-truth lives at https://oxp.sh/docs/oxpignore
+
+# React/TS source — bundled and inlined into ui/index.html by build.mjs
+src/
+
+# Tooling — only used at build time
+build.mjs
+package.json
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+tsconfig.json
+
+# IDE / OS noise
+.gitignore
+.DS_Store

@@ -16,10 +16,38 @@ Protocol-validation cut. Implements:
 - `extension/load` + `activate` + `command` + `deactivate` + `unload`.
 - LSP-style `Content-Length` framing over stdio.
 - Async libuv-based transport (no blocking, no extra deps).
+- **Extension Development Host** integration with `oxp dev` — see below.
 
 Not yet wired (in priority order): UI surface mapping (statusline / `vim.notify`
 / `vim.ui.select` / extmarks), language-server bridge, host capability callbacks
 (`fs` / `net` / `secrets` / `commands`), streams.
+
+## Extension Development Host
+
+Running `oxp dev` from inside any Neovim `:terminal`:
+
+1. detects Neovim via `$NVIM`,
+2. auto-installs this plugin into
+   `${XDG_DATA_HOME:-~/.local/share}/nvim/site/pack/oxp/start/oxp.nvim/` (no
+   `:packadd` needed — pack/start is on `runtimepath` automatically),
+3. opens a new tab (`[OXP Dev]`) in the running Neovim,
+4. hot-reloads the bundle on every successful rebuild,
+5. renders runtime errors in a themed red-bordered float overlay (same UX
+   as VS Code's `<webview>` boundary and JetBrains' JCEF overlay),
+6. closes the EDH tab on `Ctrl-C` (CLI shutdown).
+
+You can also drive the EDH manually:
+
+```vim
+:OxpDevAttach /path/to/project /path/to/oxp-runtime /path/to/session-dir
+:OxpDevStatus
+:OxpDevDetach
+```
+
+The CLI ships the plugin vendored under `packages/cli/vendor/oxp-neovim.tar.gz`
+and `oxp-neovim.json` — auto-refreshed by
+[`hosts/neovim/scripts/vendor.sh`](scripts/vendor.sh) and CI on every push to
+`main`.
 
 ## Install
 

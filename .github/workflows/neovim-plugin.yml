@@ -1,0 +1,87 @@
+name: neovim-plugin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "hosts/neovim/**"
+      - ".github/workflows/neovim-plugin.yml"
+  pull_request:
+    paths:
+      - "hosts/neovim/**"
+
+jobs:
+  # The plugin is pure Lua + Neovim's stdlib — no compile step.
+  # We run the existing smoke harness against headless Neovim so any
+  # syntax / require / setup regression fails fast.
+  smoke:
+    name: smoke (lua + headless nvim)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install neovim (stable PPA)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y neovim
+          nvim --version | head -1
+
+      - name: smoke — module loads + dev module attaches
+        run: |
+          # 1. Existing scaffolding still loads.
+          nvim --headless --clean -u hosts/neovim/scripts/smoke_init.lua +qa
+          # 2. New oxp.dev module exposes its public surface.
+          nvim --headless --clean -u NONE \
+            --cmd "set rtp+=hosts/neovim" \
+            --cmd "runtime! plugin/oxp.lua" \
+            -c "lua local d = require('oxp.dev'); assert(type(d.attach)=='function'); assert(type(d.refresh)=='function'); assert(type(d.shutdown)=='function'); print('ok')" \
+            -c 'qa!'
+
+  # Package the plugin into packages/cli/vendor/ and (on push to main)
+  # commit the refreshed artefacts. Mirrors the JetBrains pipeline so
+  # every IDE adapter is vendored automatically on release.
+  package-plugin:
+    name: package + vendor
+    needs: smoke
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need history + write token for the auto-commit step below.
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: vendor into packages/cli/vendor
+        run: ./hosts/neovim/scripts/vendor.sh
+
+      - name: show what we produced
+        run: |
+          ls -la packages/cli/vendor/oxp-neovim*
+          cat packages/cli/vendor/oxp-neovim.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oxp-neovim-vendored
+          path: |
+            packages/cli/vendor/oxp-neovim.tar.gz
+            packages/cli/vendor/oxp-neovim.json
+          if-no-files-found: error
+
+      # Auto-commit the refreshed vendored files on main, the same shape
+      # the JetBrains pipeline uses. `[skip ci]` keeps us out of an
+      # infinite loop (this push to main would re-trigger us otherwise).
+      - name: commit vendored artefacts
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          if git diff --quiet -- packages/cli/vendor/oxp-neovim.tar.gz packages/cli/vendor/oxp-neovim.json; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          version=$(cat hosts/neovim/VERSION)
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/cli/vendor/oxp-neovim.tar.gz packages/cli/vendor/oxp-neovim.json
+          git commit -m "chore(cli): vendor oxp-neovim $version [skip ci]"
+          git push origin HEAD:main

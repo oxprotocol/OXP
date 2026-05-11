@@ -17,6 +17,15 @@ import {
 import { jcoBackend } from "@oxprotocol/host-runtime";
 import { vscodeHostFs } from "./fs-adapter";
 import { devCommand } from "./dev";
+import {
+  OxpDevView,
+  startDevSession,
+  stopDevSession,
+  showDevOutput,
+  pickAndRunExtensionCommand,
+  findOxpProjects,
+  autostartEdhIfMarked,
+} from "./dev-session";
 import { renderMainUi } from "./render";
 import { vscodeProviderFactory } from "./runtime-provider";
 import { RuntimeRpcService } from "./runtime-rpc-service";
@@ -79,6 +88,35 @@ export function activate(context: vscode.ExtensionContext): void {
     },
   });
 
+  const devView = new OxpDevView(context);
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(OxpDevView.viewId, devView, {
+      webviewOptions: { retainContextWhenHidden: true },
+    }),
+  );
+
+  // If this window was launched as an Extension Development Host (the
+  // developer's window dropped an autostart marker before spawning us),
+  // pick it up and start the dev session inline. This mirrors VS Code's
+  // F5 EDH UX: the developer keeps editing in their window; this window
+  // hosts the running extension.
+  void autostartEdhIfMarked(context, devView).then((started) => {
+    if (started) {
+      void vscode.commands.executeCommand("setContext", "oxp.isEdh", true);
+    }
+  });
+
+  // Surface a context key so the F5 keybinding only fires inside an
+  // OXP project. Re-evaluate when the workspace changes.
+  function refreshOxpContext(): void {
+    const isOxp = findOxpProjects().length > 0;
+    void vscode.commands.executeCommand("setContext", "oxp.isProject", isOxp);
+  }
+  refreshOxpContext();
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeWorkspaceFolders(refreshOxpContext),
+  );
+
   // Render extension-driven UI trees and surface status/notify events.
   context.subscriptions.push(
     runtimeRpc.onUiRender((ev) =>
@@ -106,6 +144,14 @@ export function activate(context: vscode.ExtensionContext): void {
       uninstallCommand(id),
     ),
     vscode.commands.registerCommand("oxp.dev", () => devCommand(context)),
+    vscode.commands.registerCommand("oxp.devStart", () =>
+      startDevSession(context, devView),
+    ),
+    vscode.commands.registerCommand("oxp.devStop", () => stopDevSession()),
+    vscode.commands.registerCommand("oxp.devShowOutput", () => showDevOutput()),
+    vscode.commands.registerCommand("oxp.dev.runCommand", () =>
+      pickAndRunExtensionCommand(),
+    ),
     vscode.commands.registerCommand("oxp.reload", () => reloadCommand()),
     vscode.commands.registerCommand("oxp.activate", (id?: string) =>
       activateCommand(id),

@@ -1,14 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Native binary modules + workspace packages that wrap them must not be
-  // bundled — they are loaded at runtime by Node from node_modules.
-  serverExternalPackages: [
-    "@mongodb-js/zstd",
-    "@oxprotocol/bundle",
-    "@oxprotocol/schema",
-    "tar-stream",
-  ],
+  // Only truly native modules must remain external (they load a `.node`
+  // binary at runtime and cannot be bundled by webpack). Workspace ESM
+  // packages must be bundled so webpack transforms them to CJS for the
+  // route handler (which Next emits as CJS).
+  serverExternalPackages: ["@mongodb-js/zstd"],
 
   // Defensive: webpack still tries to walk into .node binaries via transitive
   // requires from workspace packages even when listed above. Mark them external
@@ -25,9 +22,6 @@ const nextConfig: NextConfig = {
         ) => {
           if (
             request === "@mongodb-js/zstd" ||
-            request === "@oxprotocol/bundle" ||
-            request === "@oxprotocol/schema" ||
-            request === "tar-stream" ||
             (request && request.endsWith(".node"))
           ) {
             return callback(undefined, "commonjs " + request);

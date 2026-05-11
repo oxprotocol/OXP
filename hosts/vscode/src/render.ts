@@ -39,6 +39,13 @@ export interface RenderInput {
   webview: vscode.Webview;
   /** Read a bundled file as bytes. */
   read(rel: string): Promise<Uint8Array>;
+  /**
+   * Dev-mode: auto-stamp the bundle's existing inline <script> and <style>
+   * tags with the per-render nonce so the developer's own bundled code runs
+   * under CSP. This is the same trust model as `oxp dev` signature-bypass
+   * (the bundle is the author's WIP). NEVER set this in production / marketplace flow.
+   */
+  dev?: boolean;
 }
 
 export type RenderOutcome =
@@ -58,15 +65,33 @@ export type RenderOutcome =
  *   - connect-src: 'none' until Phase A.4 grants per-host network access
  *   - frame-src / frame-ancestors / object-src: 'none'
  */
-function buildCsp(webview: vscode.Webview, nonce: string): string {
+function buildCsp(
+  webview: vscode.Webview,
+  nonce: string,
+  dev: boolean = false,
+): string {
   const src = webview.cspSource;
+  // In dev we allow https: for styles/fonts/connect so common patterns
+  // (Google Fonts `@import`, asset CDNs, dev-server fetches) work
+  // without the author having to think about CSP yet. PROD stays
+  // deny-by-default. This is the same trust-the-dev-bundle stance as
+  // signature bypass.
+  const styleHttps = dev ? " https:" : "";
+  const fontHttps = dev ? " https:" : "";
+  // Dev allows unsafe-eval because most JS bundlers (esbuild sourcemaps,
+  // Vite HMR shims, many React libs that ship `new Function()` for safe
+  // expression eval) trigger CSP violations otherwise. PROD never gets eval.
+  const scriptExtras = dev ? " 'unsafe-eval'" : "";
+  const connectSrc = dev
+    ? `connect-src ${src} https: ws: wss:`
+    : `connect-src 'none'`;
   return [
     `default-src 'none'`,
-    `script-src ${src} 'nonce-${nonce}'`,
-    `style-src ${src} 'nonce-${nonce}' 'unsafe-inline'`,
+    `script-src ${src} 'nonce-${nonce}'${scriptExtras}`,
+    `style-src ${src} 'nonce-${nonce}' 'unsafe-inline'${styleHttps}`,
     `img-src ${src} data: https:`,
-    `font-src ${src}`,
-    `connect-src 'none'`,
+    `font-src ${src} data:${fontHttps}`,
+    connectSrc,
     `frame-src 'none'`,
     `frame-ancestors 'none'`,
     `object-src 'none'`,
@@ -84,14 +109,16 @@ function wrapHtml(
   webview: vscode.Webview,
   nonce: string,
   bodyStyle: string,
+  dev: boolean,
 ): string {
-  const csp = buildCsp(webview, nonce);
+  const csp = buildCsp(webview, nonce, dev);
+  const bootstrap = dev ? buildDevBootstrap(nonce) : "";
   return `<!doctype html><html><head>
 <meta charset="utf-8" />
 <meta http-equiv="Content-Security-Policy" content="${csp}" />
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
 <meta name="referrer" content="no-referrer" />
-</head><body style="${bodyStyle}">${body}</body></html>`;
+${bootstrap}</head><body style="${bodyStyle}">${body}</body></html>`;
 }
 
 export async function renderMainUi(input: RenderInput): Promise<RenderOutcome> {
@@ -125,7 +152,13 @@ export async function renderMainUi(input: RenderInput): Promise<RenderOutcome> {
     }
     return {
       kind: "html",
-      html: wrapHtml(body, input.webview, nonce, "margin:0;padding:16px"),
+      html: wrapHtml(
+        body,
+        input.webview,
+        nonce,
+        "margin:0;padding:16px",
+        !!input.dev,
+      ),
     };
   }
 
@@ -135,8 +168,40 @@ export async function renderMainUi(input: RenderInput): Promise<RenderOutcome> {
   const bytes = await input.read(uiRel);
   let html = new TextDecoder().decode(bytes);
   html = rewriteAssetUrls(html, input.webview, input.resourceRoot, uiRel);
-  html = injectCspMeta(html, input.webview, nonce);
+  if (input.dev) html = stampInlineNonces(html, nonce);
+  html = injectCspMeta(html, input.webview, nonce, !!input.dev);
+  if (input.dev) html = injectDevBootstrap(html, nonce);
   return { kind: "html", html };
+}
+
+/**
+ * Dev-only: add `nonce="..."` to every <script> and <style> tag in the
+ * bundle that doesn't already carry one. Lets the author's own inline
+ * bundled JS/CSS execute under CSP without forcing them to manage nonces
+ * by hand during iteration. PROD must never call this.
+ *
+ * IMPORTANT: We must NOT do a naive global regex over the document —
+ * minified JS bundles legitimately contain string literals like
+ * `"<script><\/script>"` (React uses one to detect IE quirks) and a
+ * blind regex would rewrite that string, producing
+ * `"<script nonce=\"…\"><\/script>"` which is invalid JavaScript. The
+ * walker below only stamps *real* opening tags, skipping everything
+ * between a `<script>`/`<style>` open tag and its matching close tag.
+ */
+function stampInlineNonces(html: string, nonce: string): string {
+  // Match either an opening <script>/<style> (capturing whole tag + body
+  // up to its close) OR every other character. We can rewrite the open
+  // tag, then re-emit the body and close tag unchanged.
+  return html.replace(
+    /<(script|style)\b([^>]*)>([\s\S]*?)<\/\1\s*>/gi,
+    (_full, tag: string, attrs: string, body: string) => {
+      const hasNonce = /\bnonce\s*=/.test(attrs);
+      const openTag = hasNonce
+        ? `<${tag}${attrs}>`
+        : `<${tag}${attrs} nonce="${nonce}">`;
+      return `${openTag}${body}</${tag}>`;
+    },
+  );
 }
 
 /**
@@ -153,8 +218,9 @@ function injectCspMeta(
   html: string,
   webview: vscode.Webview,
   nonce: string,
+  dev: boolean,
 ): string {
-  const csp = buildCsp(webview, nonce);
+  const csp = buildCsp(webview, nonce, dev);
   const meta = `<meta http-equiv="Content-Security-Policy" content="${csp}" /><meta http-equiv="X-Content-Type-Options" content="nosniff" /><meta name="referrer" content="no-referrer" />`;
   if (/<head[^>]*>/i.test(html)) {
     return html.replace(/<head([^>]*)>/i, `<head$1>${meta}`);
@@ -163,6 +229,73 @@ function injectCspMeta(
     return html.replace(/<html([^>]*)>/i, `<html$1><head>${meta}</head>`);
   }
   return `<!doctype html><html><head>${meta}</head><body>${html}</body></html>`;
+}
+
+/**
+ * Dev-only: splice the in-page error-boundary script into <head>.
+ * The boundary catches uncaught errors and unhandled promise rejections,
+ * shows a dark, dismissable overlay in the webview, AND postMessages
+ * `{kind:"oxp:dev:error", message, stack}` to the host so the failure
+ * also lands in the dev Output channel. Prod must never call this.
+ */
+function injectDevBootstrap(html: string, nonce: string): string {
+  const script = buildDevBootstrap(nonce);
+  if (/<head[^>]*>/i.test(html)) {
+    return html.replace(/<\/head>/i, `${script}</head>`);
+  }
+  return `${script}${html}`;
+}
+
+function buildDevBootstrap(nonce: string): string {
+  // Keep this string self-contained — it executes inside the bundled
+  // webview before the author's code. No dependencies, no globals.
+  // Style and copy are intentionally restrained so author error stacks
+  // stay readable on small sidebar widths.
+  const body = `
+(function () {
+  var vs = null;
+  try { vs = (typeof acquireVsCodeApi === 'function') ? acquireVsCodeApi() : null; } catch (_) {}
+  var overlay = null;
+  function ensureOverlay() {
+    if (overlay) return overlay;
+    overlay = document.createElement('div');
+    overlay.id = '__oxp_dev_err__';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:rgba(15,17,23,0.96);color:#e8e8e8;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.45;padding:16px;overflow:auto;display:none;border-left:3px solid #f87171';
+    overlay.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><strong style="color:#f87171;font-size:13px">\u26a0 Extension runtime error</strong><button type="button" id="__oxp_dev_err_close__" style="background:transparent;border:1px solid #3f3f46;color:#e8e8e8;border-radius:3px;padding:2px 8px;cursor:pointer;font:inherit">close</button></div><div id="__oxp_dev_err_msg__" style="color:#f87171;white-space:pre-wrap;margin-bottom:8px"></div><pre id="__oxp_dev_err_stack__" style="white-space:pre-wrap;color:#a1a1aa;margin:0"></pre>';
+    function appendWhenReady() {
+      if (document.body) {
+        document.body.appendChild(overlay);
+        var btn = document.getElementById('__oxp_dev_err_close__');
+        if (btn) btn.addEventListener('click', function () { overlay.style.display = 'none'; });
+      } else {
+        document.addEventListener('DOMContentLoaded', appendWhenReady, { once: true });
+      }
+    }
+    appendWhenReady();
+    return overlay;
+  }
+  function report(message, stack) {
+    var el = ensureOverlay();
+    var m = document.getElementById('__oxp_dev_err_msg__');
+    var s = document.getElementById('__oxp_dev_err_stack__');
+    if (m) m.textContent = String(message || 'Unknown error');
+    if (s) s.textContent = String(stack || '');
+    if (el) el.style.display = 'block';
+    try { if (vs) vs.postMessage({ kind: 'oxp:dev:error', message: String(message || ''), stack: String(stack || '') }); } catch (_) {}
+  }
+  window.addEventListener('error', function (e) {
+    var err = e && e.error;
+    report((err && err.message) || e.message, (err && err.stack) || '');
+  });
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e && e.reason;
+    var msg = (r && r.message) || (typeof r === 'string' ? r : 'Unhandled promise rejection');
+    var stack = (r && r.stack) || '';
+    report(msg, stack);
+  });
+})();
+`;
+  return `<script nonce="${nonce}">${body}</script>`;
 }
 
 export function rewriteAssetUrls(

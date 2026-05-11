@@ -161,6 +161,7 @@ async function renderDev(
     manifest: bundle.manifest,
     resourceRoot: session.dirUri,
     webview: session.panel.webview,
+    dev: true,
     read: async (rel) =>
       vscode.workspace.fs.readFile(
         vscode.Uri.joinPath(session.dirUri, ...rel.split("/")),

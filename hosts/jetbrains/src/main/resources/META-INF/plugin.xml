@@ -32,6 +32,15 @@
             anchor="right"
             icon="AllIcons.Nodes.Plugin"
             factoryClass="dev.oxp.jetbrains.ui.OxpToolWindowFactory"/>
+        <toolWindow
+            id="OXP Dev"
+            anchor="right"
+            icon="AllIcons.Actions.Lightning"
+            factoryClass="dev.oxp.jetbrains.ui.OxpDevToolWindowFactory"/>
+        <projectService
+            serviceImplementation="dev.oxp.jetbrains.edh.OxpDevSession"/>
+        <postStartupActivity
+            implementation="dev.oxp.jetbrains.edh.EdhStartupActivity"/>
     </extensions>
 
     <actions>
@@ -47,6 +56,11 @@
                 class="dev.oxp.jetbrains.actions.RuntimeStatusAction"
                 text="Runtime Status"
                 description="Show OXP runtime process status and loaded extensions."/>
+            <action
+                id="dev.oxp.jetbrains.StartDevSessionAction"
+                class="dev.oxp.jetbrains.edh.StartDevSessionAction"
+                text="Start Dev Session (EDH)"
+                description="Open a new IDE window as an OXP Extension Development Host."/>
         </group>
     </actions>
 </idea-plugin>

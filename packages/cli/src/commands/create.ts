@@ -124,8 +124,12 @@ export async function create(args: string[]): Promise<number> {
       `  oxp pack && oxp publish                                          # ship it`,
     );
   } else {
+    // hello-html: React + TypeScript + esbuild
     info(`Next steps:`);
     info(`  cd ${name}`);
+    info(
+      `  npm install                                                      # one-time`,
+    );
     info(
       `  oxp dev                                                          # live reload in IDE`,
     );
@@ -209,12 +213,17 @@ const TEXT_EXT = new Set([
   ".md",
   ".txt",
   ".js",
+  ".mjs",
+  ".cjs",
   ".ts",
+  ".tsx",
+  ".jsx",
   ".css",
   ".toml",
   ".rs",
   ".wit",
   ".gitignore",
+  ".oxpignore",
 ]);
 
 async function copyTree(

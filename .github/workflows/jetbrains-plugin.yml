@@ -127,6 +127,11 @@ jobs:
     name: package plugin
     needs: [build-runtime, build-hello-rust]
     runs-on: ubuntu-24.04
+    # `contents: write` is required for the "commit vendored plugin"
+    # step below to push back to main. Read-only would still succeed
+    # for the build itself.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -176,3 +181,35 @@ jobs:
           name: oxp-jetbrains-plugin
           path: hosts/jetbrains/build/distributions/*.zip
           if-no-files-found: error
+
+      # `buildPlugin` finalises into `vendorIntoCli`, which copies the
+      # freshly-built zip into packages/cli/vendor/ and rewrites
+      # oxp-jetbrains.json to the current pluginVersion. Upload the
+      # vendored artefacts so the CLI release job (or a human picking
+      # up the PR) can grab them without rebuilding from source.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oxp-jetbrains-vendored
+          path: |
+            packages/cli/vendor/oxp-jetbrains.zip
+            packages/cli/vendor/oxp-jetbrains.json
+          if-no-files-found: error
+
+      # On pushes to main, commit the refreshed vendored files back so
+      # the CLI source tree always tracks the latest released plugin.
+      # PRs and forks skip this step; the artefacts above remain the
+      # source of truth for those builds.
+      - name: commit vendored plugin (main only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- packages/cli/vendor/oxp-jetbrains.zip packages/cli/vendor/oxp-jetbrains.json; then
+            echo "vendored files unchanged — nothing to commit"
+            exit 0
+          fi
+          version=$(grep '^pluginVersion' hosts/jetbrains/gradle.properties | awk -F'=' '{print $2}' | tr -d ' ')
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/cli/vendor/oxp-jetbrains.zip packages/cli/vendor/oxp-jetbrains.json
+          git commit -m "chore(cli): vendor oxp-jetbrains $version [skip ci]"
+          git push
