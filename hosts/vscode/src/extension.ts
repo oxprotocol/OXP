@@ -310,11 +310,13 @@ function handleNotifyEvent(ev: {
         return;
       }
       const verb = ev.kind === "installed" ? "Installed" : "Updated";
-      vscode.window.setStatusBarMessage(
+      const choice = await vscode.window.showInformationMessage(
         `OXP: ${verb} ${record.id}@${record.version}`,
-        4000,
+        "Open",
       );
-      await openInstalled(record);
+      if (choice === "Open") {
+        await openInstalled(record);
+      }
     } catch (err) {
       logChannel.appendLine(
         `[notify] failed to open ${ev.id}: ${(err as Error).message}`,
