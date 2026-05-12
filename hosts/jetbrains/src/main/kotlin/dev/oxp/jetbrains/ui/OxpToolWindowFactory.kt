@@ -51,11 +51,6 @@ class OxpToolWindowFactory : ToolWindowFactory {
         installedContent.isCloseable = false
         toolWindow.contentManager.addContent(installedContent)
 
-        val panel = OxpPanel(project)
-        val content = toolWindow.contentManager.factory.createContent(panel, "Runtime", false)
-        content.isCloseable = false
-        toolWindow.contentManager.addContent(content)
-
         // Tail `~/.oxp/notify/inbox.jsonl` so `oxp install` from any
         // terminal pops the extension open without the user clicking.
         val notifyWatcher = dev.oxp.jetbrains.runtime.NotifyInboxWatcher()
@@ -71,6 +66,22 @@ class OxpToolWindowFactory : ToolWindowFactory {
             notifyWatcher.dispose()
         }
 
+        // Auto-open all installed ui-v1 extensions as tabs so the user
+        // sees their extensions immediately without double-clicking.
+        SwingUtilities.invokeLater {
+            val entries = try { dev.oxp.jetbrains.runtime.InstalledStoreReader.list() } catch (_: Exception) { emptyList() }
+            for (entry in entries) {
+                if (entry.manifest.mainUi != null) {
+                    installedPanel.openById(entry.manifest.id)
+                }
+            }
+            // Focus the first extension tab (skip "Installed" at index 0)
+            if (toolWindow.contentManager.contentCount > 1) {
+                toolWindow.contentManager.setSelectedContent(
+                    toolWindow.contentManager.getContent(1)!!
+                )
+            }
+        }
 
         // Surface extension-driven UI trees as additional tabs in this
         // tool window. One tab per instance; subsequent renders replace

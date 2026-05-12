@@ -189,6 +189,12 @@ export function activate(context: vscode.ExtensionContext): void {
   // Watch the shared notify inbox so CLI installs surface immediately
   // in this running VS Code window.
   startNotifyWatcher(context);
+
+  // ── Auto-open already-installed extensions ──
+  // On startup, scan ~/.oxp/host-store/ and surface every installed
+  // extension that has a UI. This way `oxp install` from *any* terminal
+  // (even before this IDE was open) is immediately visible.
+  void autoOpenInstalledExtensions();
 }
 
 export async function deactivate(): Promise<void> {
@@ -327,6 +333,46 @@ function handleNotifyEvent(ev: {
 
 async function reloadCommand(): Promise<void> {
   vscode.window.setStatusBarMessage("OXP: store reloaded", 2000);
+}
+
+/**
+ * Scan the shared install store and surface any already-installed
+ * extensions to the user. Instead of silently opening webviews (which
+ * would be intrusive on every IDE start), we show a notification that
+ * lets the user choose which to open.
+ */
+async function autoOpenInstalledExtensions(): Promise<void> {
+  try {
+    const records = await store.list();
+    if (records.length === 0) return;
+
+    // Filter to extensions that actually have a UI to show.
+    const uiRecords = records.filter((r) => r.manifest.main?.ui);
+    if (uiRecords.length === 0) return;
+
+    const names = uiRecords.map(
+      (r) => r.manifest.displayName ?? r.id,
+    );
+    const msg =
+      uiRecords.length === 1
+        ? `OXP: ${names[0]} is ready`
+        : `OXP: ${uiRecords.length} extensions ready (${names.join(", ")})`;
+
+    const choice = await vscode.window.showInformationMessage(
+      msg,
+      "Open",
+      "Show All",
+    );
+    if (choice === "Open" && uiRecords.length === 1) {
+      await openInstalled(uiRecords[0]);
+    } else if (choice === "Open" || choice === "Show All") {
+      await listCommand();
+    }
+  } catch (err) {
+    logChannel.appendLine(
+      `[auto-open] scan failed: ${(err as Error).message}`,
+    );
+  }
 }
 
 async function installCommand(): Promise<void> {
