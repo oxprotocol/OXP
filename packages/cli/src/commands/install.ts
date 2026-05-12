@@ -103,6 +103,11 @@ Flags:
   --no-adapter        Don't auto-install missing host adapters
   -y, --yes           Approve every requested permission without prompting
   --json              Emit a single JSON line on success (machine-readable)
+
+Environment:
+  OXP_TRUST_PUBLISHER Comma-separated publishers (e.g. "@aldgar,@oxprotocol")
+                      whose extensions skip the consent prompt. Narrower
+                      than --yes: only the listed publishers are trusted.
 `;
 
 export async function install(args: string[]): Promise<number> {
@@ -261,13 +266,19 @@ export async function install(args: string[]): Promise<number> {
     return failed.length === 0 ? 0 : 1;
   }
 
+  // Trusted-publisher allowlist: `OXP_TRUST_PUBLISHER=@aldgar,@oxprotocol`
+  // skips the consent prompt for those publishers only. Anyone else still
+  // prompts. Intentionally narrower than `--yes` so dotfiles and CI scripts
+  // can be unattended without granting blanket trust to unknown authors.
+  const trustedPublisher = isPublisherTrusted(opts.id);
+
   try {
     const { record, prompted } = await installWithConsent({
       registry: registryUrl(),
       id: opts.id,
       store,
       grants,
-      prompt: opts.yes ? allowAllPrompt() : ttyPrompt(),
+      prompt: opts.yes || trustedPublisher ? allowAllPrompt() : ttyPrompt(),
     });
 
     // Smart host detection — discover IDEs, ensure adapters, broadcast.
@@ -334,6 +345,7 @@ function printHostSummary(adapters: AdapterStatus[]): void {
     return;
   }
   info(`  hosts:`);
+  let needsManualPlugin = false;
   for (const a of adapters) {
     const runTag = a.host.running ? " (running)" : "";
     let tail: string;
@@ -345,9 +357,11 @@ function printHostSummary(adapters: AdapterStatus[]): void {
         tail = "adapter installed now";
         break;
       case "unavailable":
-        tail = `adapter pending (${a.reason})`;
+        needsManualPlugin = true;
+        tail = "adapter not installed (see below)";
         break;
       case "failed":
+        needsManualPlugin = true;
         tail = `adapter install failed: ${a.error}`;
         break;
       case "unsupported":
@@ -356,6 +370,32 @@ function printHostSummary(adapters: AdapterStatus[]): void {
     }
     info(`    - ${a.host.displayName}${runTag} — ${tail}`);
   }
+  if (needsManualPlugin) {
+    info(``);
+    info(`  One-time setup to see extensions inside your IDE:`);
+    info(`    • VS Code / Cursor / Windsurf: search "OXP" in Extensions`);
+    info(`    • JetBrains: Settings → Plugins → Marketplace → search "OXP"`);
+    info(`  Already-installed extensions live at ~/.oxp/host-store/ and`);
+    info(`  appear automatically once the OXP plugin is loaded.`);
+  }
+}
+
+/**
+ * `OXP_TRUST_PUBLISHER` env var: comma-separated list of `@publisher`
+ * prefixes whose extensions install without an interactive consent prompt.
+ * Example: `OXP_TRUST_PUBLISHER=@aldgar,@oxprotocol`.
+ */
+function isPublisherTrusted(id: string): boolean {
+  const raw = process.env.OXP_TRUST_PUBLISHER;
+  if (!raw) return false;
+  const m = /^(@[^/]+)\//.exec(id);
+  if (!m) return false;
+  const publisher = m[1]!.toLowerCase();
+  return raw
+    .split(/[\s,]+/)
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean)
+    .some((entry) => entry === publisher || entry === publisher.slice(1));
 }
 
 /* -------------------------------------------------------------------------- */

@@ -136,4 +136,25 @@ describe("oxp pack on a hello-rust project", () => {
       /WASM_FILE_MISSING|build\/myext\.wasm/,
     );
   });
+
+  it("auto-rasterises icon.svg → icon.png when only the SVG exists", async () => {
+    expect(await create(["--template", "hello-rust", "myext"])).toBe(0);
+    const projectDir = join(tmpRoot, "myext");
+    // Stand-in wasm so pack reaches the ensureIconPng step.
+    await fs.mkdir(join(projectDir, "build"), { recursive: true });
+    await fs.writeFile(
+      join(projectDir, "build/myext.wasm"),
+      Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]),
+    );
+    // Template ships both icon.svg + icon.png; delete the PNG so we
+    // can verify pack regenerates it from the SVG sibling.
+    await fs.rm(join(projectDir, "icon.png"));
+    expect(await pack([projectDir, "--no-build"])).toBe(0);
+    const png = await fs.readFile(join(projectDir, "icon.png"));
+    expect(
+      png
+        .subarray(0, 8)
+        .equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+    ).toBe(true);
+  });
 });

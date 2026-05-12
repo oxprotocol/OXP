@@ -53,7 +53,7 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         id = "dev.oxp.jetbrains"
-        name = "OXP — Open Extension Protocol"
+        name = "OXP - Open Extension Protocol"
         version = providers.gradleProperty("pluginVersion")
 
         description = """
@@ -83,6 +83,19 @@ intellijPlatform {
             ide("IC", "2025.1.4")
             ide("IC", "2025.2.3")
         }
+    }
+
+    // Marketplace publishing. The token is read from the
+    // `intellijPublishToken` Gradle property (set in CI via
+    // `-PintellijPublishToken=$JETBRAINS_PAT` or
+    // `ORG_GRADLE_PROJECT_intellijPublishToken`). Channels default to
+    // `default` (stable); pass `-PpublishChannel=beta` to push a
+    // pre-release.
+    publishing {
+        token = providers.gradleProperty("intellijPublishToken")
+        channels = providers.gradleProperty("publishChannel")
+            .orElse("default")
+            .map { listOf(it) }
     }
 }
 

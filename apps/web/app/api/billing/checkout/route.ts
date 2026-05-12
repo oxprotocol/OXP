@@ -16,7 +16,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { PLANS, type PlanId } from "@/lib/billing";
-import { createCheckoutTransaction, isPaddleConfigured } from "@/lib/paddle";
+import { createCheckoutTransaction, isPaddleConfigured, diagnosePaddleKey } from "@/lib/paddle";
 
 const PURCHASABLE: PlanId[] = ["pro", "teams"];
 
@@ -103,10 +103,12 @@ async function handle(req: Request): Promise<Response> {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error("[billing/checkout] paddle error", message);
+    const keyDiag = diagnosePaddleKey();
     return NextResponse.json(
       {
         error: "Could not start checkout — Paddle rejected the request.",
         detail: message,
+        ...(keyDiag ? { diagnosis: keyDiag } : {}),
       },
       { status: 502 },
     );

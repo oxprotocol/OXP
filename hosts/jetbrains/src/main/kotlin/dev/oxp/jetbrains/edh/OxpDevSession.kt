@@ -67,6 +67,12 @@ class OxpDevSession(private val project: Project) : Disposable {
         val mainUi: String?
             get() = ((manifest["main"] as? JsonObject)?.get("ui") as? JsonPrimitive)
                 ?.contentOrNullSafe()
+        /** Relative path inside the bundle of the manifest icon, if any. */
+        val iconPath: String?
+            get() = (manifest["icon"] as? JsonPrimitive)?.contentOrNullSafe()
+        /** Absolute http URL the dev server serves the icon from, if any. */
+        val iconUrl: String?
+            get() = iconPath?.let { "$httpBase/$it" }
     }
 
     private val json = Json { ignoreUnknownKeys = true }

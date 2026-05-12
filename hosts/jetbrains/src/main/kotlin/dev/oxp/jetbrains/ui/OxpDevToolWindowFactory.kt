@@ -100,6 +100,9 @@ private class DevPanel(
         border = JBUI.Borders.empty(0, 8)
         font = font.deriveFont(Font.BOLD)
     }
+    /** Tracks the most recent manifest icon URL we loaded so we don't
+     *  re-fetch on every status update for the same extension. */
+    private var lastIconUrl: String? = null
 
     private var unsubscribe: (() -> Unit)? = null
     private var lastLoadedUrl: String? = null
@@ -143,10 +146,29 @@ private class DevPanel(
                     // share `window` (they don't, in JCEF) or are out of
                     // scope for the extension's UI surface.
                     if (frame == null || !frame.isMain) return
+                    // Theme bridge FIRST so the page's own scripts see
+                    // the `--vscode-*` CSS variables on `getComputedStyle`
+                    // synchronously during their initial render. The
+                    // dev error boundary is fine to run after.
+                    cefBrowser?.executeJavaScript(ThemeBridge.injectScript(), cefBrowser.url, 0)
                     cefBrowser?.executeJavaScript(devBoundaryScript(), cefBrowser.url, 0)
                 }
             },
             browser.cefBrowser,
+        )
+
+        // Re-inject theme tokens when the user switches IDE LAF or the
+        // editor color scheme — without this the webview keeps the
+        // colors that were live at first load.
+        val app = ApplicationManager.getApplication()
+        val busConnection = app.messageBus.connect(this)
+        busConnection.subscribe(
+            com.intellij.ide.ui.LafManagerListener.TOPIC,
+            com.intellij.ide.ui.LafManagerListener { reinjectTheme() },
+        )
+        busConnection.subscribe(
+            com.intellij.openapi.editor.colors.EditorColorsManager.TOPIC,
+            com.intellij.openapi.editor.colors.EditorColorsListener { reinjectTheme() },
         )
 
         // Load the empty-state HTML synchronously so the panel never
@@ -161,6 +183,14 @@ private class DevPanel(
     override fun dispose() {
         unsubscribe?.invoke()
         unsubscribe = null
+    }
+
+    /** Re-run the theme bridge script in the current document. Safe
+     *  to call even before the page has loaded — the script no-ops
+     *  until `document.documentElement` exists. */
+    private fun reinjectTheme() {
+        val url = browser.cefBrowser.url ?: return
+        browser.cefBrowser.executeJavaScript(ThemeBridge.injectScript(), url, 0)
     }
 
     private fun buildHeader(): JComponent {
@@ -195,6 +225,16 @@ private class DevPanel(
     // ── Session callbacks (always on EDT) ────────────────────────────
 
     private fun onSessionUpdate(status: OxpDevSession.Status, reload: OxpDevSession.Reload?) {
+        // Title label + icon: surface the manifest identity so users can
+        // tell which extension this Dev panel is hosting at a glance.
+        if (reload != null) {
+            val tag = "${reload.id ?: "?"}@${reload.version ?: "?"}"
+            titleLabel.text = tag
+            updateIcon(reload.iconUrl)
+        } else {
+            titleLabel.text = "OXP Extension Development Host"
+            updateIcon(null)
+        }
         // Status label
         statusLabel.text = when (status) {
             is OxpDevSession.Status.Idle -> "Idle — waiting for `oxp dev`…"
@@ -271,6 +311,43 @@ private class DevPanel(
 
     private fun escapeHtml(s: String): String =
         s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;")
+
+    /**
+     * Fetch the manifest icon (svg or png) from the dev server and apply
+     * it to the title label. Kept off-EDT for the network call; the
+     * Swing mutation hops back via invokeLater. Failures are silent —
+     * the title text alone is enough to identify the extension.
+     */
+    private fun updateIcon(iconUrl: String?) {
+        if (iconUrl == lastIconUrl) return
+        lastIconUrl = iconUrl
+        if (iconUrl == null) {
+            titleLabel.icon = null
+            return
+        }
+        val bg = ApplicationManager.getApplication()
+        bg.executeOnPooledThread {
+            val icon: Icon? = runCatching { loadIconFromUrl(iconUrl) }.getOrNull()
+            SwingUtilities.invokeLater {
+                if (lastIconUrl == iconUrl) titleLabel.icon = icon
+            }
+        }
+    }
+
+    /**
+     * Decode a PNG byte stream into a 16×16 Swing Icon. SVG isn't
+     * supported here because the IntelliJ Platform's SVG decoder
+     * (`com.intellij.util.SVGLoader`) is `@ApiStatus.Internal`, and
+     * pulling Batik just for icon rendering is overkill. Authors who
+     * want their icon visible in the JetBrains host should ship a PNG
+     * (the manifest schema already permits both `.svg` and `.png`).
+     */
+    private fun loadIconFromUrl(url: String): Icon? {
+        if (url.endsWith(".svg", ignoreCase = true)) return null
+        val bytes = java.net.URI(url).toURL().openStream().use { it.readBytes() }
+        val img = javax.imageio.ImageIO.read(bytes.inputStream()) ?: return null
+        return com.intellij.util.IconUtil.toSize(javax.swing.ImageIcon(img), 16, 16)
+    }
 
     /**
      * In-page error boundary, evaluated on every top-frame load.

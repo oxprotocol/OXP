@@ -27,6 +27,45 @@ export function isPaddleConfigured(): boolean {
   return PADDLE_API_KEY.length > 0;
 }
 
+/**
+ * Diagnose common Paddle configuration mistakes.
+ *
+ * Paddle API key formats:
+ *   - Production: `pdl_live_apikey_*`
+ *   - Sandbox:    `pdl_sdbx_apikey_*`
+ *
+ * A 403 from `transactions.create` with a valid key usually means the
+ * seller's domain hasn't been approved yet (Checkout → Website Approval).
+ */
+export function diagnosePaddleKey(): string | null {
+  if (!PADDLE_API_KEY) return "PADDLE_API_KEY is not set.";
+
+  const isLiveKey = PADDLE_API_KEY.startsWith("pdl_live_");
+  const isSandboxKey = PADDLE_API_KEY.startsWith("pdl_sdbx_");
+
+  if (!isLiveKey && !isSandboxKey) {
+    return (
+      `PADDLE_API_KEY has an unrecognized prefix. Expected "pdl_live_apikey_*" ` +
+      `(production) or "pdl_sdbx_apikey_*" (sandbox). Go to Paddle → ` +
+      `Developer Tools → Authentication to copy the correct key.`
+    );
+  }
+  if (PADDLE_ENV === "production" && isSandboxKey) {
+    return (
+      `PADDLE_ENV=production but PADDLE_API_KEY is a sandbox key (pdl_sdbx_*). ` +
+      `Use a "pdl_live_*" key for production, or set PADDLE_ENV=sandbox.`
+    );
+  }
+  if (PADDLE_ENV === "sandbox" && isLiveKey) {
+    return (
+      `PADDLE_ENV=sandbox but PADDLE_API_KEY is a production key (pdl_live_*). ` +
+      `Use a "pdl_sdbx_*" key for sandbox, or set PADDLE_ENV=production.`
+    );
+  }
+  // Key format looks fine — 403 is likely a domain-approval or permissions issue.
+  return null;
+}
+
 export function paddleEnvironment(): "production" | "sandbox" {
   return PADDLE_ENV === "production" ? "production" : "sandbox";
 }

@@ -211,16 +211,29 @@ export default function PricingPage() {
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    href={tier.ctaHref}
-                    className={`block text-center px-4 py-3 rounded text-sm font-mono font-bold tracking-wider uppercase transition-all ${
-                      tier.highlight
-                        ? "bg-[#7DD3FC] text-[#060a13] hover:bg-[#BAE6FD]"
-                        : "border border-[#7DD3FC]/30 text-[#7DD3FC] hover:bg-[#7DD3FC]/10"
-                    }`}
-                  >
-                    {tier.cta}
-                  </Link>
+                  {tier.ctaHref.startsWith("/api/") ? (
+                    <a
+                      href={tier.ctaHref}
+                      className={`block text-center px-4 py-3 rounded text-sm font-mono font-bold tracking-wider uppercase transition-all ${
+                        tier.highlight
+                          ? "bg-[#7DD3FC] text-[#060a13] hover:bg-[#BAE6FD]"
+                          : "border border-[#7DD3FC]/30 text-[#7DD3FC] hover:bg-[#7DD3FC]/10"
+                      }`}
+                    >
+                      {tier.cta}
+                    </a>
+                  ) : (
+                    <Link
+                      href={tier.ctaHref}
+                      className={`block text-center px-4 py-3 rounded text-sm font-mono font-bold tracking-wider uppercase transition-all ${
+                        tier.highlight
+                          ? "bg-[#7DD3FC] text-[#060a13] hover:bg-[#BAE6FD]"
+                          : "border border-[#7DD3FC]/30 text-[#7DD3FC] hover:bg-[#7DD3FC]/10"
+                      }`}
+                    >
+                      {tier.cta}
+                    </Link>
+                  )}
                 </div>
               </div>
             );

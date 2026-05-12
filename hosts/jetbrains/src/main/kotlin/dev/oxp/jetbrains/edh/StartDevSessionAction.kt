@@ -1,6 +1,5 @@
 package dev.oxp.jetbrains.edh
 
-import com.intellij.ide.impl.OpenProjectTask
 import com.intellij.ide.impl.ProjectUtil
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
@@ -41,12 +40,10 @@ class StartDevSessionAction : AnAction() {
 
         EdhMarker.write(folder.path)
 
-        // Open the folder in a brand-new IDE frame.
-        val openTask = OpenProjectTask {
-            forceOpenInNewFrame = true
-            projectToClose = null
-        }
-        val opened = ProjectUtil.openOrImport(Paths.get(folder.path), openTask)
+        // Open the folder in a new IDE frame. The public `openOrImport(Path)`
+        // overload opens the project in a new frame when one is already open,
+        // which is exactly the EDH workflow we want (original window stays).
+        val opened = ProjectUtil.openOrImport(Paths.get(folder.path))
         if (opened == null) {
             notify(project, "OXP: failed to open EDH window", NotificationType.ERROR)
             return

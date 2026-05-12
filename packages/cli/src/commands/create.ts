@@ -137,6 +137,13 @@ export async function create(args: string[]): Promise<number> {
       `  oxp pack && oxp publish                                          # ship it`,
     );
   }
+  info("");
+  info(`Customise your icon (already shipped as icon.svg + icon.png):`);
+  info(`  oxp icon init -t terminal      # try another built-in template`);
+  info(`  oxp icon from "🚀"             # emoji icon`);
+  info(`  oxp icon from "AB" --bg "#7c3aed"   # monogram`);
+  info(`  oxp icon convert mylogo.svg    # use your own SVG`);
+  info(`  oxp icon preview               # see it at every IDE size`);
   return 0;
 }
 

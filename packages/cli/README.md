@@ -52,6 +52,41 @@ oxp publish          # upload to the registry
 Tokens are stored at `~/.oxp/credentials` (mode 0600). The CLI sends them
 as `Authorization: Bearer <raw>`. Rotate any time with `oxp token rotate`.
 
+## Icons
+
+Every published extension needs an icon. The OXP host renderers (VS Code,
+JetBrains, Neovim) all decode **PNG** — SVG support varies, so PNG is the
+cross-host floor. The CLI ships a generator so you don't need ImageMagick:
+
+```sh
+oxp icon init                            # rounded chevron square (default)
+oxp icon init -t terminal --bg "#0d1117" --fg "#3fb950"
+oxp icon from "🚀"                       # emoji icon (via Twemoji)
+oxp icon from "OXP" --bg "#7c3aed"       # 1–3 letter monogram
+oxp icon convert logo.svg --size 256     # rasterise an existing SVG
+oxp icon preview                         # see your icon at every IDE size
+```
+
+Each subcommand emits **both** an `icon.svg` (editable source) and an
+`icon.png` (what hosts actually load), then prints the `oxp.json` snippet:
+
+```json
+{ "icon": "icon.png" }
+```
+
+Built-in templates: `chevron`, `terminal`, `branch`, `swatch`, `package`.
+
+### Bring your own icon
+
+Prefer a hand-crafted look? Any of these pair well with `oxp icon convert`:
+
+- [Lucide](https://lucide.dev) — 1,500+ icons, ISC, downloadable as SVG
+- [Tabler Icons](https://tabler.io/icons) — 5,800+ icons, MIT
+- [Phosphor Icons](https://phosphoricons.com) — 9,000+ icons, MIT
+- [icon.kitchen](https://icon.kitchen) — in-browser editor, free export
+- ImageMagick: `magick -background none -density 256 logo.svg -resize 256x256 icon.png`
+- rsvg-convert: `rsvg-convert -w 256 -h 256 logo.svg -o icon.png`
+
 ## Environment
 
 | Var            | Default                  | Purpose                       |

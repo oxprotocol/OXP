@@ -383,11 +383,13 @@ object CapabilityHandlers {
             ?: throw RpcException(JsonRpcError(-32603, "unknown action: $commandId"))
 
         // Marshal to EDT — IntelliJ actions assume the swing thread.
+        // `ActionManager.tryToExecute` is the public, non-deprecated way to
+        // trigger an action by id; it builds the AnActionEvent internally
+        // and avoids both the scheduled-for-removal `createFromAnAction`
+        // factory and the override-only direct `actionPerformed` invocation.
         val app = ApplicationManager.getApplication()
         app.invokeAndWait {
-            val ctx = com.intellij.openapi.actionSystem.impl.SimpleDataContext.builder().build()
-            val event = AnActionEvent.createFromAnAction(action, null, "OXP", ctx)
-            action.actionPerformed(event)
+            ActionManager.getInstance().tryToExecute(action, null, null, "OXP", true)
         }
         return buildJsonObject { put("resultJson", "null") }
     }

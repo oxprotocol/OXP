@@ -21,6 +21,12 @@ import com.intellij.openapi.wm.ToolWindowManager
  */
 class EdhStartupActivity : ProjectActivity {
     override suspend fun execute(project: Project) {
+        // Always start the late-marker watcher: it will pick up a
+        // marker that `oxp dev` writes *after* the project is already
+        // open, which is the common case when the user runs the CLI
+        // from a terminal inside an already-open IntelliJ window.
+        project.getService(EdhMarkerWatcher::class.java).start()
+
         val basePath = project.basePath ?: return
         val payload = EdhMarker.consumeIfMatches(basePath) ?: return
 

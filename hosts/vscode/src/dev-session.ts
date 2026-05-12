@@ -370,6 +370,15 @@ export class OxpDevView implements vscode.WebviewViewProvider {
         active.output.show(true);
         return;
       }
+      if (obj.kind === "oxp:cap:invoke") {
+        // Capability bridge for ui-v1 HTML extensions running in dev.
+        // Routes a small set of read-only host operations from the React
+        // UI (sandboxed webview) to VS Code APIs, gated by the bundle's
+        // declared `fs.read*` / `workspace.read` permissions and the
+        // workspace folder. See packages/sdk hostBridge() helper.
+        void this.handleCapabilityInvoke(obj as never, bundle);
+        return;
+      }
     });
 
     // Register the extension's declared commands (contributes.commands)
@@ -401,6 +410,123 @@ export class OxpDevView implements vscode.WebviewViewProvider {
   private setRunningStatus(bundle: VerifiedBundle, devUrl: string): void {
     if (!this.view) return;
     this.view.webview.html = runningHtml(bundle, devUrl);
+  }
+
+  /**
+   * Capability bridge — webview UI ⇄ VS Code APIs.
+   *
+   * Dev-mode only. Honours these read-only capabilities:
+   *   - `fs.read`  : read a workspace-relative file path
+   *   - `fs.list`  : list a workspace-relative directory
+   *   - `fs.stat`  : stat a workspace-relative path
+   *   - `workspace.root` : returns the absolute workspace folder uri
+   *
+   * The bundle MUST declare a matching `fs.read*` permission. Path
+   * traversal (`..`, absolute paths) is rejected. Production install
+   * gates the same operations through the regular permission broker;
+   * this bridge is only wired for the EDH webview during dev iteration.
+   */
+  private async handleCapabilityInvoke(
+    msg: {
+      kind: "oxp:cap:invoke";
+      id?: unknown;
+      capability?: unknown;
+      args?: unknown;
+    },
+    bundle: VerifiedBundle,
+  ): Promise<void> {
+    const id = typeof msg.id === "string" ? msg.id : null;
+    const capability = typeof msg.capability === "string" ? msg.capability : "";
+    const args = (msg.args ?? {}) as { path?: unknown };
+
+    const reply = (ok: boolean, payload: Record<string, unknown>): void => {
+      if (!this.view || id == null) return;
+      this.view.webview.postMessage({
+        kind: "oxp:cap:result",
+        id,
+        ok,
+        ...payload,
+      });
+    };
+
+    try {
+      const root =
+        active?.folder?.uri ?? vscode.workspace.workspaceFolders?.[0]?.uri;
+      if (!root) {
+        return reply(false, { error: "no workspace folder open" });
+      }
+
+      if (capability === "workspace.root") {
+        return reply(true, { value: { path: root.fsPath } });
+      }
+
+      const declared = (bundle.manifest.permissions ?? []) as readonly string[];
+      const hasFsRead = declared.some(
+        (p) => p === "fs.read" || p.startsWith("fs.read:"),
+      );
+
+      if (
+        capability === "fs.read" ||
+        capability === "fs.list" ||
+        capability === "fs.stat"
+      ) {
+        if (!hasFsRead) {
+          return reply(false, {
+            error: `extension did not declare 'fs.read' in oxp.json#permissions`,
+          });
+        }
+        const rel = typeof args.path === "string" ? args.path : "";
+        if (!rel || rel.startsWith("/") || rel.includes("..")) {
+          return reply(false, {
+            error: `invalid path '${rel}' (must be a workspace-relative path with no '..')`,
+          });
+        }
+        const target = vscode.Uri.joinPath(root, ...rel.split("/"));
+
+        if (capability === "fs.read") {
+          const bytes = await vscode.workspace.fs.readFile(target);
+          // Webviews can't ship binary cleanly; base64-encode.
+          const b64 = Buffer.from(bytes).toString("base64");
+          return reply(true, { value: { bytes: b64, size: bytes.byteLength } });
+        }
+        if (capability === "fs.list") {
+          const entries = await vscode.workspace.fs.readDirectory(target);
+          return reply(true, {
+            value: {
+              entries: entries.map(([name, kind]) => ({
+                name,
+                kind:
+                  kind === vscode.FileType.Directory
+                    ? "dir"
+                    : kind === vscode.FileType.File
+                      ? "file"
+                      : "other",
+              })),
+            },
+          });
+        }
+        if (capability === "fs.stat") {
+          const s = await vscode.workspace.fs.stat(target);
+          return reply(true, {
+            value: {
+              size: s.size,
+              mtimeMs: s.mtime,
+              isDir: (s.type & vscode.FileType.Directory) !== 0,
+            },
+          });
+        }
+      }
+
+      return reply(false, {
+        error: `unsupported capability '${capability}'`,
+      });
+    } catch (err) {
+      const e = err as { code?: string; message?: string };
+      reply(false, {
+        error: e.message ?? String(err),
+        code: e.code,
+      });
+    }
   }
 }
 

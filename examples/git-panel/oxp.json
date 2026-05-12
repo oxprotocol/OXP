@@ -1,0 +1,23 @@
+{
+  "specVersion": "1",
+  "id": "@aldgar/git-panel",
+  "publisher": "aldgar",
+  "version": "0.1.0",
+  "displayName": "Git Panel",
+  "description": "Read-only git status panel — current branch, last 5 commits, and a quick worktree summary. Reads .git/ directly; never invokes git commands.",
+  "license": "MIT",
+  "categories": ["scm", "other"],
+  "keywords": ["git", "branch", "log", "status", "panel"],
+  "icon": "icon.svg",
+  "engines": { "oxp": "^1.0.0" },
+  "main": { "ui": "ui/index.html" },
+  "ui": { "components": "oxp-ui-only", "preferredSurface": "sidebar" },
+  "permissions": [
+    {
+      "id": "fs.read",
+      "scope": ["${workspace}/.git/**"],
+      "rationale": "Read .git/HEAD, refs, and reflog to display the current branch and recent commits."
+    }
+  ],
+  "scripts": { "build": "node build.mjs" }
+}

@@ -25,6 +25,7 @@ import { keygen } from "./commands/keygen.js";
 import { token } from "./commands/token.js";
 import { protocolRegister } from "./commands/protocol-register.js";
 import { doctor } from "./commands/doctor.js";
+import { icon } from "./commands/icon.js";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -72,6 +73,8 @@ Usage:
                              Inspect this machine + (optionally) a project
                              for build-determinism issues
   oxp keygen                 Print the local Ed25519 publisher key id
+  oxp icon ...               Generate or convert extension icons
+                             (run 'oxp icon help' for templates / options)
   oxp help                   Show this message
   oxp version                Print version
 
@@ -120,6 +123,8 @@ async function main(argv: string[]): Promise<number> {
       return doctor(rest);
     case "keygen":
       return keygen(rest);
+    case "icon":
+      return icon(rest);
     default:
       process.stderr.write(`oxp: unknown command '${cmd}'\n\n` + HELP);
       return 2;

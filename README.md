@@ -2,7 +2,45 @@
 
 > **🔒 Security lock active.** All non-security feature work is paused until Phase A + B + C of [`ROADMAP-SECURITY.md`](./ROADMAP-SECURITY.md) are complete. See [`SECURITY.md`](./SECURITY.md) for current threat model and posture, and [`ROADMAP-FEATURES.md`](./ROADMAP-FEATURES.md) for the bookmark of paused feature work.
 
-**New here?** → [QUICKSTART.md](./QUICKSTART.md) — build a `.wasm` extension once, run it in VS Code _and_ JetBrains in 10 minutes.
+One extension binary, every editor. No accounts, no logins, no settings to edit.
+
+---
+
+## For users — install and run an extension
+
+Two commands, total. The second one prompts you once to approve permissions; everything else is automatic.
+
+```sh
+# 1. One-line install (works on macOS / Linux / WSL).
+curl -fsSL https://oxp.sh/install | sh
+
+# 2. Install any extension. The CLI auto-installs the host plugin into
+#    every IDE it detects (VS Code, Cursor, Windsurf, VSCodium, IntelliJ
+#    family, Neovim), downloads the extension, asks once for permissions,
+#    then opens the extension UI in every running IDE window.
+oxp install @aldgar/git-panel
+```
+
+Alternative installers:
+
+```sh
+npm  install -g @oxprotocol/cli      # if you already have Node ≥ 20
+brew install oxprotocol/tap/oxp      # once the Homebrew tap is live
+```
+
+Want to install the IDE plugin yourself instead of letting the CLI do it? Search **OXP** in your IDE's marketplace — VS Code Marketplace, Open VSX, or JetBrains Marketplace.
+
+**That is the entire user workflow.** No browser tab, no account, no API key, no config file. The only prompt you'll ever see is the one-time permission consent for each extension — required by the security model, never skippable except via `--yes` for trusted-publisher allowlists.
+
+---
+
+## For extension authors
+
+→ [`QUICKSTART.md`](./QUICKSTART.md) — build a `.wasm` extension once, run it in VS Code _and_ JetBrains in 10 minutes.
+
+## For OXP maintainers — publishing to marketplaces
+
+→ [`MARKETPLACE-PUBLISHING.md`](./MARKETPLACE-PUBLISHING.md) — tag-triggered CI publishes the CLI, the VS Code extension (to Marketplace + Open VSX), and the JetBrains plugin in one shot.
 
 ---
 

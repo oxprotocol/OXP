@@ -42,9 +42,35 @@ import javax.swing.SwingUtilities
  */
 class OxpToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        // "Installed" tab — first thing the user sees. Lists everything
+        // already in `~/.oxp/host-store/extensions/` so a CLI install
+        // is immediately discoverable.
+        val installedPanel = InstalledExtensionsPanel(project, toolWindow)
+        val installedContent = toolWindow.contentManager.factory
+            .createContent(installedPanel, "Installed", false)
+        installedContent.isCloseable = false
+        toolWindow.contentManager.addContent(installedContent)
+
         val panel = OxpPanel(project)
         val content = toolWindow.contentManager.factory.createContent(panel, "Runtime", false)
+        content.isCloseable = false
         toolWindow.contentManager.addContent(content)
+
+        // Tail `~/.oxp/notify/inbox.jsonl` so `oxp install` from any
+        // terminal pops the extension open without the user clicking.
+        val notifyWatcher = dev.oxp.jetbrains.runtime.NotifyInboxWatcher()
+        val unsubscribeNotifyInbox = notifyWatcher.addListener { ev ->
+            when (ev.kind) {
+                "installed", "updated" -> ev.id?.let { installedPanel.openById(it) }
+                "uninstalled" -> installedPanel.refresh()
+            }
+        }
+        notifyWatcher.start()
+        com.intellij.openapi.util.Disposer.register(toolWindow.disposable) {
+            unsubscribeNotifyInbox()
+            notifyWatcher.dispose()
+        }
+
 
         // Surface extension-driven UI trees as additional tabs in this
         // tool window. One tab per instance; subsequent renders replace
@@ -257,17 +283,21 @@ private class OxpPanel(private val project: Project) : JPanel(BorderLayout()) {
         val labels = entries.map { e ->
             "${e.meta.suggestedId}   (${e.meta.sha256.take(12)}…  ${e.meta.size}b)\n    ← ${e.meta.sourceUrl}"
         }
-        val choice = com.intellij.openapi.ui.Messages.showChooseDialog(
-            project,
-            "Pick a URL-installed extension to activate:",
-            "OXP — From CLI",
-            null,
-            labels.toTypedArray(),
-            labels.first(),
-        )
-        if (choice < 0) return
-        val pick = entries[choice]
-        loadAndActivate(pick.bundlePath.toString(), pick.meta.suggestedId, pick.meta.sourceUrl)
+        // `Messages.showChooseDialog` is deprecated. The official replacement
+        // for a list picker is `JBPopupFactory` — it's async, but the caller
+        // is already on the EDT so we just dispatch the activation from the
+        // popup's `onChosen` callback.
+        com.intellij.openapi.ui.popup.JBPopupFactory.getInstance()
+            .createPopupChooserBuilder(labels)
+            .setTitle("OXP — From CLI")
+            .setItemChosenCallback { selected ->
+                val idx = labels.indexOf(selected)
+                if (idx < 0) return@setItemChosenCallback
+                val pick = entries[idx]
+                loadAndActivate(pick.bundlePath.toString(), pick.meta.suggestedId, pick.meta.sourceUrl)
+            }
+            .createPopup()
+            .showCenteredInCurrentWindow(project)
     }
 
     /** Common install tail: prompt for permissions, load, activate. */

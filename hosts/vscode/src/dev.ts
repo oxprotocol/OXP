@@ -177,7 +177,23 @@ async function renderDev(
   }
 
   session.panel.title = `⚠ DEV ${bundle.id}@${bundle.version}`;
-  session.panel.webview.html = withDevBadge(outcome.html, bundle, session.url);
+  // If the manifest declares an icon, materialise its webview URI so the
+  // dev badge can render it inline. Resolved against the unpacked
+  // session dir (same root webview assets are loaded from).
+  const iconRel =
+    typeof bundle.manifest.icon === "string" ? bundle.manifest.icon : undefined;
+  let iconWebviewUri: string | undefined;
+  if (iconRel && /^[^/].*\.(svg|png)$/i.test(iconRel)) {
+    iconWebviewUri = session.panel.webview
+      .asWebviewUri(vscode.Uri.joinPath(session.dirUri, ...iconRel.split("/")))
+      .toString();
+  }
+  session.panel.webview.html = withDevBadge(
+    outcome.html,
+    bundle,
+    session.url,
+    iconWebviewUri,
+  );
 }
 
 function devLoadingHtml(devUrl: string, status: string): string {
@@ -195,9 +211,13 @@ function withDevBadge(
   html: string,
   bundle: VerifiedBundle,
   devUrl: string,
+  iconWebviewUri?: string,
 ): string {
+  const iconImg = iconWebviewUri
+    ? `<img src="${escapeHtml(iconWebviewUri)}" alt="" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;border-radius:2px;background:#fff2"/>`
+    : "";
   const badge = `<div style="position:fixed;top:0;left:0;right:0;z-index:2147483647;background:#7f1d1d;color:#fff;font-family:ui-monospace,monospace;font-size:11px;padding:4px 10px;text-align:center;letter-spacing:.04em">
-    ⚠ OXP DEV — signature bypass — ${escapeHtml(bundle.id)}@${escapeHtml(bundle.version)} via ${escapeHtml(devUrl)}
+    ${iconImg}⚠ OXP DEV — signature bypass — ${escapeHtml(bundle.id)}@${escapeHtml(bundle.version)} via ${escapeHtml(devUrl)}
   </div>`;
   if (/<body[^>]*>/i.test(html)) {
     return html.replace(/<body([^>]*)>/i, `<body$1>${badge}`);

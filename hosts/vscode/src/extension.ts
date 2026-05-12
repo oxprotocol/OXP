@@ -287,16 +287,40 @@ function handleNotifyEvent(ev: {
   version: string;
 }): void {
   if (ev.kind !== "installed" && ev.kind !== "updated") return;
-  logChannel.appendLine(
-    `[notify] ${ev.kind} ${ev.id}@${ev.version} — reloading store`,
-  );
-  // The store reads installed.json on demand, so a notification only
-  // needs to surface a quiet status message; existing list/open
-  // commands will pick up the new entry on next invocation.
-  vscode.window.setStatusBarMessage(
-    `OXP: ${ev.id}@${ev.version} installed`,
-    5000,
-  );
+  logChannel.appendLine(`[notify] ${ev.kind} ${ev.id}@${ev.version} — opening`);
+  // Zero-friction: the user ran `oxp install @x/y` in a terminal — we
+  // immediately surface the extension UI in this running window. Focus
+  // the OXP activity-bar view so they see it appear, then open the
+  // extension's webview/log channel.
+  void (async () => {
+    try {
+      // Reveal the OXP view container so the user sees something animate
+      // even before the webview opens.
+      await vscode.commands.executeCommand("workbench.view.extension.oxpDev");
+    } catch {
+      /* view may not exist yet; ignore */
+    }
+    try {
+      const record = await store.get(ev.id);
+      if (!record) {
+        vscode.window.setStatusBarMessage(
+          `OXP: ${ev.id}@${ev.version} installed (open via OXP: List)`,
+          5000,
+        );
+        return;
+      }
+      const verb = ev.kind === "installed" ? "Installed" : "Updated";
+      vscode.window.setStatusBarMessage(
+        `OXP: ${verb} ${record.id}@${record.version}`,
+        4000,
+      );
+      await openInstalled(record);
+    } catch (err) {
+      logChannel.appendLine(
+        `[notify] failed to open ${ev.id}: ${(err as Error).message}`,
+      );
+    }
+  })();
 }
 
 async function reloadCommand(): Promise<void> {

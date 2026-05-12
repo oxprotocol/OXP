@@ -4,6 +4,51 @@ This document is the single playbook for shipping the OXP host adapters to
 their respective marketplaces so that `oxp install <id>` becomes a one-step
 experience for end users.
 
+## Zero-friction publishing workflow (recommended)
+
+Once the four secrets below are added to the GitHub repo, **every
+`v*.*.*` tag automatically publishes to every marketplace whose token is
+present**. Missing tokens silently skip — no failure — so you can wire up
+each marketplace one at a time.
+
+### One-time setup
+
+Add these to **Repo → Settings → Secrets and variables → Actions**:
+
+| Secret name      | Where to get it | Publishes to |
+|------------------|-----------------|--------------|
+| `VSCE_PAT`       | <https://dev.azure.com> → User settings → PAT, scope `Marketplace: Manage` | VS Code Marketplace |
+| `OVSX_PAT`       | <https://open-vsx.org/user-settings/tokens> | Open VSX (Cursor, VSCodium, code-server) |
+| `JETBRAINS_PAT`  | <https://plugins.jetbrains.com/author/me/tokens> → Generate permanent token | JetBrains Marketplace |
+| `NPM_TOKEN`      | `npm token create --type=automation` | npm (`@oxprotocol/*`) |
+
+### Cut a release
+
+```bash
+# from any clean main checkout
+git tag v0.3.0
+git push origin v0.3.0
+```
+
+The [`publish` workflow](.github/workflows/publish.yml) fires and runs
+five jobs in parallel:
+
+1. **detect available credentials** — outputs which `has_*` flags are true
+2. **publish-vsce** — `vsce publish` of `hosts/vscode/*.vsix`
+3. **publish-ovsx** — `ovsx publish` of the same VSIX to Open VSX
+4. **publish-jetbrains** — cross-builds the Rust runtime for 6 triples, then `./gradlew publishPlugin`
+5. **publish-npm** — `pnpm -r publish` for every public package in `packages/*` (topological order, `workspace:*` rewritten to fixed versions)
+
+The summary step writes a table to the workflow run page showing exactly
+what published and what was skipped.
+
+### Manually trigger without a tag
+
+GitHub → Actions → **publish** → **Run workflow**. Useful for republishing
+a single marketplace after fixing a transient marketplace-side failure.
+
+---
+
 > **Why this matters.** The CLI already detects every supported IDE and
 > calls `<ide> --install-extension <adapter-id>` for the VS Code family
 > (see `packages/cli/src/lib/host-adapter.ts`). The only thing standing

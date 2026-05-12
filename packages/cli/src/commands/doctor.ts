@@ -14,8 +14,9 @@
  */
 
 import { promises as fs } from "node:fs";
-import { join, resolve, isAbsolute, sep } from "node:path";
+import { join, resolve, isAbsolute, sep, dirname } from "node:path";
 import { homedir, platform, release } from "node:os";
+import { fileURLToPath } from "node:url";
 
 import { detectHosts } from "../lib/host-detect.js";
 import { ensureAdapters } from "../lib/host-adapter.js";
@@ -61,6 +62,7 @@ export async function doctor(args: string[]): Promise<number> {
 
   const home = oxpHome();
   const reg = registryUrl();
+  const cliVersion = await readCliVersion();
   const tokenPresent = !!(await readCredentials());
 
   // Best-effort whoami (registry might be down — fall through silently).
@@ -112,7 +114,7 @@ export async function doctor(args: string[]): Promise<number> {
       JSON.stringify({
         ok: true,
         cli: {
-          version: "0.1.0",
+          version: cliVersion,
           node: process.version,
           platform: platform(),
           release: release(),
@@ -152,7 +154,7 @@ export async function doctor(args: string[]): Promise<number> {
   info(`OXP doctor`);
   info(`──────────────────────────────────────────────────────────`);
   info(
-    `CLI:        v0.1.0  ·  node ${process.version}  ·  ${platform()} ${release()}`,
+    `CLI:        v${cliVersion}  ·  node ${process.version}  ·  ${platform()} ${release()}`,
   );
   info(`Registry:   ${reg}`);
   if (tokenPresent && who?.handle) {
@@ -225,6 +227,18 @@ export async function doctor(args: string[]): Promise<number> {
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                    */
 /* -------------------------------------------------------------------------- */
+
+async function readCliVersion(): Promise<string> {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    // dist/commands/doctor.js → ../../package.json
+    const raw = await fs.readFile(join(here, "..", "..", "package.json"), "utf8");
+    const pkg = JSON.parse(raw) as { version?: string };
+    return pkg.version ?? "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+}
 
 interface PathReport {
   label: string;

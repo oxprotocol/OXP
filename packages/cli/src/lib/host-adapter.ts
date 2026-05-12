@@ -43,10 +43,10 @@ export const JETBRAINS_ADAPTER_ID = "sh.oxp.jetbrains";
 export const NEOVIM_ADAPTER_REPO = "oxprotocol/oxp.nvim";
 
 /** When true, auto-install will attempt to fetch the adapter from OpenVSX. */
-const ADAPTER_PUBLISHED = false; // flip when oxp-vscode VSIX is on OpenVSX
+const ADAPTER_PUBLISHED = true; // ✓ oxp-vscode VSIX published to OpenVSX
 
 /** When true, auto-install will fetch the JetBrains plugin from JetBrains Marketplace. */
-const JETBRAINS_ADAPTER_PUBLISHED = false; // flip when sh.oxp.jetbrains is published
+const JETBRAINS_ADAPTER_PUBLISHED = true; // ✓ sh.oxp.jetbrains published to JetBrains Marketplace
 
 export type AdapterStatus =
   /** Adapter is already installed in this host. */

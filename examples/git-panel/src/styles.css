@@ -1,0 +1,240 @@
+/* git-panel — palette tracks VS Code & JetBrains theme tokens via CSS
+   variables, with a quiet dark fallback so the panel looks reasonable
+   in any host. */
+
+:root {
+  --gp-bg: var(--vscode-editor-background, #0b1220);
+  --gp-fg: var(--vscode-foreground, #e6edf3);
+  --gp-muted: color-mix(in srgb, var(--gp-fg) 55%, transparent);
+  --gp-border: var(--vscode-panel-border, rgba(125, 211, 252, 0.18));
+  --gp-accent: var(--vscode-textLink-foreground, #7dd3fc);
+  --gp-card: color-mix(in srgb, var(--gp-fg) 6%, transparent);
+  --gp-mono: var(
+    --vscode-editor-font-family,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace
+  );
+  --gp-sans: var(--vscode-font-family, system-ui, -apple-system, sans-serif);
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--gp-bg);
+  color: var(--gp-fg);
+  font-family: var(--gp-sans);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.gp {
+  padding: 12px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 100vh;
+}
+
+.gp-loading {
+  color: var(--gp-muted);
+  font-size: 12px;
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* ── header ───────────────────────────────────────────────────────── */
+
+.gp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gp-border);
+}
+.gp-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gp-muted);
+}
+.gp-title strong {
+  color: var(--gp-fg);
+  font-weight: 600;
+}
+.gp-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gp-accent);
+  box-shadow: 0 0 6px var(--gp-accent);
+}
+
+.gp-refresh {
+  background: transparent;
+  border: 1px solid var(--gp-border);
+  color: var(--gp-fg);
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+.gp-refresh:hover:not(:disabled) {
+  border-color: var(--gp-accent);
+  color: var(--gp-accent);
+}
+.gp-refresh:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── branch ───────────────────────────────────────────────────────── */
+
+.gp-branch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--gp-card);
+  border: 1px solid var(--gp-border);
+  border-radius: 6px;
+}
+.gp-branch-icon {
+  font-family: var(--gp-mono);
+  color: var(--gp-accent);
+  font-weight: 600;
+}
+.gp-branch-name {
+  font-weight: 600;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gp-sha {
+  font-family: var(--gp-mono);
+  font-size: 11px;
+  color: var(--gp-muted);
+  background: transparent;
+  padding: 1px 6px;
+  border: 1px solid var(--gp-border);
+  border-radius: 3px;
+}
+
+/* ── sections ─────────────────────────────────────────────────────── */
+
+.gp-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gp-h2 {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gp-muted);
+  margin: 0;
+}
+
+.gp-muted {
+  color: var(--gp-muted);
+  font-size: 12px;
+  margin: 0;
+}
+
+/* ── commits ──────────────────────────────────────────────────────── */
+
+.gp-commits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border: 1px solid var(--gp-border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--gp-card);
+}
+.gp-commit {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  padding: 8px 10px;
+  align-items: start;
+}
+.gp-commit + .gp-commit {
+  border-top: 1px solid var(--gp-border);
+}
+.gp-commit-body {
+  min-width: 0;
+}
+.gp-commit-msg {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gp-commit-meta {
+  font-size: 11px;
+  color: var(--gp-muted);
+  margin-top: 2px;
+}
+
+/* ── stats ────────────────────────────────────────────────────────── */
+
+.gp-stats {
+  margin: 0;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 12px;
+  row-gap: 4px;
+  font-size: 12px;
+}
+.gp-stats dt {
+  color: var(--gp-muted);
+}
+.gp-stats dd {
+  margin: 0;
+  font-family: var(--gp-mono);
+}
+
+/* ── empty state / footer ─────────────────────────────────────────── */
+
+.gp-empty {
+  padding: 14px;
+  background: var(--gp-card);
+  border: 1px dashed var(--gp-border);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.gp-empty p {
+  margin: 0 0 6px;
+}
+.gp-hint {
+  color: var(--gp-muted);
+}
+.gp-hint code {
+  font-family: var(--gp-mono);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.gp-footer {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--gp-border);
+  text-align: center;
+}

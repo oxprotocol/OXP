@@ -1,16 +1,117 @@
 <idea-plugin>
     <id>dev.oxp.jetbrains</id>
-    <name>OXP — Open Extension Protocol</name>
+    <name>OXP - Open Extension Protocol</name>
     <vendor email="hi@oxprotocol.org" url="https://oxprotocol.org">OXP</vendor>
 
     <description><![CDATA[
-        <p>Run universal <a href="https://oxprotocol.org">OXP</a> extensions
-        (WebAssembly components) inside any JetBrains IDE.</p>
-        <p>One extension binary, every editor — IntelliJ IDEA, PyCharm,
-        WebStorm, GoLand, Rider, RustRover, CLion, DataGrip.</p>
-        <p>Extensions are sandboxed by the OXP runtime (Rust + wasmtime) and
-        speak a single JSON-RPC protocol to the IDE.</p>
+        <p><b>Run universal <a href="https://oxprotocol.org">OXP</a>
+        extensions (<code>.wasm</code> components) inside any JetBrains
+        IDE.</b> One extension binary, every editor — write it once,
+        ship it to IntelliJ IDEA, PyCharm, WebStorm, GoLand, Rider,
+        RustRover, CLion, DataGrip, <i>and</i> VS Code and Neovim.</p>
+
+        <h3>What is OXP?</h3>
+        <p>OXP (Open Extension Protocol) is an open spec for editor
+        extensions distributed as sandboxed WebAssembly components
+        (WASI&nbsp;Preview&nbsp;2). The same <code>.oxp</code> bundle
+        runs unchanged in every OXP-compatible host. This plugin is
+        the JetBrains host.</p>
+
+        <h3>Features</h3>
+        <ul>
+          <li><b>Install from URL</b> — paste any
+            <code>https://&hellip;/extension.oxp</code> (or
+            <code>file://</code>); the bundle is downloaded, sha256-
+            verified, signature-checked, cached, and loaded into a
+            sandboxed wasm runtime (Rust&nbsp;+&nbsp;wasmtime).</li>
+          <li><b>Capability-based permissions</b> — every extension
+            declares the capabilities it needs
+            (<code>net.fetch</code>, <code>fs.read</code>,
+            <code>shell.exec</code>, …). You approve them
+            <i>before</i> activation. Cancel = no install.</li>
+          <li><b>In-IDE rendering</b> — extensions draw their UI in
+            the <b>OXP</b> tool window via the
+            <code>oxp:ui/v1</code> interface (declarative component
+            tree or sandboxed webview). No native code, no plugin
+            classloader pollution.</li>
+          <li><b>Live dev sessions</b> — start an Extension
+            Development Host with <i>Tools → OXP → Start Dev Session
+            (EDH)</i> and the extension hot-reloads on every save of
+            an <code>oxp dev</code> server.</li>
+          <li><b>Deterministic bundles</b> — every published
+            <code>.oxp</code> is reproducible (sorted, mtime-stripped
+            tar&nbsp;+&nbsp;zstd) and signed with Ed25519. The digest
+            in the marketplace matches the bytes you load.</li>
+        </ul>
+
+        <h3>Quick start</h3>
+        <ol>
+          <li>Open <i>Tools → OXP → Install OXP Bundle…</i> and paste
+            the URL of any <code>.oxp</code> bundle, or run
+            <code>oxp install @publisher/slug</code> from your
+            terminal.</li>
+          <li>Approve the requested capabilities.</li>
+          <li>Open the <b>OXP</b> tool window (right side bar). Your
+            installed extensions appear there — click one to load
+            its UI.</li>
+        </ol>
+
+        <h3>Building your own extension</h3>
+        <p>Install the CLI (<code>npm i -g @oxprotocol/cli</code>),
+        then:</p>
+        <pre>oxp create my-ext   # scaffold (templates: html, tree, rust, code)
+cd my-ext
+oxp dev             # live reload in your running IDE
+oxp pack            # build a signed .oxp
+oxp publish         # ship to https://oxp.sh</pre>
+
+        <h3>Security</h3>
+        <ul>
+          <li><b>Sandboxed</b>: extensions have no ambient authority.
+            No FS, network, or process access without an explicit
+            granted capability.</li>
+          <li><b>Verified</b>: sha256 + Ed25519 signature on every
+            install.</li>
+          <li><b>Allowlisted</b>: <code>net.fetch</code> can be
+            scoped to specific hosts; <code>fs.read</code> to
+            specific paths.</li>
+          <li><b>No native code</b>: every extension is a
+            <code>.wasm</code> component.</li>
+        </ul>
+
+        <h3>Links</h3>
+        <ul>
+          <li>Specification — <a href="https://oxprotocol.org/spec">oxprotocol.org/spec</a></li>
+          <li>CLI &amp; SDK — <a href="https://www.npmjs.com/package/@oxprotocol/cli">npmjs.com/@oxprotocol/cli</a></li>
+          <li>Source — <a href="https://github.com/oxprotocol/oxp">github.com/oxprotocol/oxp</a></li>
+          <li>Issues — <a href="https://github.com/oxprotocol/oxp/issues">github.com/oxprotocol/oxp/issues</a></li>
+        </ul>
+
+        <p><i>Apache-2.0 licensed.</i></p>
     ]]></description>
+
+    <change-notes><![CDATA[
+        <h4>0.2.0</h4>
+        <ul>
+          <li><b>Installed tab</b> in the OXP tool window — lists
+            everything in <code>~/.oxp/host-store/extensions/</code>.
+            Double-click to open the extension UI inline.</li>
+          <li><b>Auto-open on install</b> — running
+            <code>oxp install @publisher/slug</code> in any terminal
+            now opens the extension live in this IDE, no clicks.</li>
+          <li><b>ui-v1 (HTML) extensions</b> render inside the tool
+            window via JCEF.</li>
+          <li>New plugin icon and full description.</li>
+        </ul>
+        <h4>0.1.0</h4>
+        <ul>
+          <li>Initial public release of the JetBrains host.</li>
+          <li>Wasmtime-backed sandboxed runtime (Rust).</li>
+          <li>Tool windows for installed extensions and dev sessions.</li>
+          <li>Cross-host shared install store under <code>~/.oxp</code>.</li>
+          <li>Live-reload dev sessions via <code>oxp dev</code>.</li>
+        </ul>
+    ]]></change-notes>
 
     <!--
       Depending only on `com.intellij.modules.platform` makes this plugin
@@ -39,6 +140,8 @@
             factoryClass="dev.oxp.jetbrains.ui.OxpDevToolWindowFactory"/>
         <projectService
             serviceImplementation="dev.oxp.jetbrains.edh.OxpDevSession"/>
+        <projectService
+            serviceImplementation="dev.oxp.jetbrains.edh.EdhMarkerWatcher"/>
         <postStartupActivity
             implementation="dev.oxp.jetbrains.edh.EdhStartupActivity"/>
     </extensions>
@@ -61,6 +164,11 @@
                 class="dev.oxp.jetbrains.edh.StartDevSessionAction"
                 text="Start Dev Session (EDH)"
                 description="Open a new IDE window as an OXP Extension Development Host."/>
+            <action
+                id="dev.oxp.jetbrains.AttachToDevServerAction"
+                class="dev.oxp.jetbrains.edh.AttachToDevServerAction"
+                text="Attach to OXP Dev Server"
+                description="Consume a pending EDH marker and attach this project to the running `oxp dev`."/>
         </group>
     </actions>
 </idea-plugin>
