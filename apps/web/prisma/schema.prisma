@@ -717,6 +717,26 @@ model BandwidthUsage {
 
 
 // ──────────────────────────────────────────────────────────────────────
+// Pre-launch waitlist (Paddle delayed — collect early-adopter emails)
+// ──────────────────────────────────────────────────────────────────────
+
+/// One row per (email, plan). Upserted on duplicate so re-submitting the
+/// same address for the same plan is idempotent. The `plan` column mirrors
+/// the PlanId enum values ("pro" | "teams"). Prisma Studio or a direct
+/// SELECT on this table gives the user the list to email at launch time.
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  email     String
+  name      String?
+  plan      String
+  createdAt DateTime @default(now())
+
+  @@unique([email, plan])
+  @@index([plan, createdAt])
+  @@map("waitlist_entries")
+}
+
+// ──────────────────────────────────────────────────────────────────────
 // Email verification + password reset tokens (credentials auth)
 // ──────────────────────────────────────────────────────────────────────
 

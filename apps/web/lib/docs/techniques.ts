@@ -2,6 +2,115 @@ import type { DocSection } from "../docs";
 
 export const techniquesDocs: DocSection[] = [
   {
+    slug: "mcp-integration",
+    title: "Managing MCP Servers",
+    category: "Techniques",
+    summary: "OXP acts as a universal router for Model Context Protocol — install any MCP server once and it auto-configures every IDE on your machine.",
+    body: `## OXP as a Universal MCP Router
+
+OXP is not just an extension protocol — it is the fastest way to wire MCP servers into every AI-aware IDE on your machine simultaneously.
+
+Instead of editing JSON config files for VS Code, Cursor, JetBrains AI Assistant, and Windsurf separately, you run one command and OXP injects the server configuration into all of them automatically.
+
+\`\`\`bash
+oxp install @modelcontextprotocol/server-github
+\`\`\`
+
+That single command:
+
+1. Downloads and verifies the MCP server bundle
+2. Detects every installed IDE / AI client (VS Code, Cursor, Windsurf, JetBrains, Claude Desktop)
+3. Injects the correct config block into each one
+4. No JSON editing. No restarts needed for most clients.
+
+---
+
+## Installing MCP Servers
+
+### From the OXP Registry
+
+\`\`\`bash
+oxp install @modelcontextprotocol/server-github
+oxp install @modelcontextprotocol/server-filesystem
+oxp install @upstash/context7-mcp
+\`\`\`
+
+### From a URL
+
+\`\`\`bash
+oxp install --from oxp://mcp/github
+\`\`\`
+
+### Browse the full library
+
+\`\`\`bash
+oxp mcp list              # list installed servers
+oxp mcp search <query>    # search the registry
+\`\`\`
+
+Or open the [MCP Library](/mcp) in your browser and click **Install** on any server.
+
+---
+
+## Viewing Active Servers in the Switchboard
+
+Once installed, your MCP servers appear in the **OXP Switchboard** inside your IDE:
+
+- **VS Code / Cursor / Windsurf** — open the OXP panel in the sidebar → MCP tab
+- **JetBrains** — Tools → OXP → MCP Servers
+- **CLI** — \`oxp doctor\` lists every active server and whether each client picked it up
+
+---
+
+## How Auto-Injection Works
+
+OXP writes the server config into the standard config location each client expects:
+
+| Client | Config location |
+|---|---|
+| VS Code / Cursor | \`.vscode/mcp.json\` or \`settings.json\` |
+| Windsurf | \`~/.codeium/windsurf/mcp_settings.json\` |
+| JetBrains AI | IDE MCP registry via plugin |
+| Claude Desktop | \`~/Library/Application Support/Claude/claude_desktop_config.json\` |
+
+OXP keeps these in sync — install once, every client is updated.
+
+---
+
+## Scoping a Server to a Project
+
+Add \`--project\` to limit the server to the current workspace only:
+
+\`\`\`bash
+oxp install @modelcontextprotocol/server-filesystem --project
+\`\`\`
+
+This writes to \`.vscode/mcp.json\` (checked-in, shareable with your team) instead of the global user config.
+
+---
+
+## Removing a Server
+
+\`\`\`bash
+oxp uninstall @modelcontextprotocol/server-github
+\`\`\`
+
+OXP removes the config entry from every client it injected into.
+
+---
+
+## Troubleshooting
+
+Run \`oxp doctor\` to see the full status of every detected IDE and MCP server:
+
+\`\`\`bash
+oxp doctor --json   # machine-readable output for CI
+\`\`\`
+
+If a client is not picking up a newly installed server, try \`oxp setup\` to re-sync all adapters.
+`,
+  },
+  {
     slug: "rust-extensions",
     title: "Rust Extensions",
     category: "Techniques",

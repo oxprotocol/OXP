@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { SearchBar } from "@/components/ui/SearchBar";
 import { ExtensionCard } from "@/components/ui/ExtensionCard";
@@ -41,6 +41,13 @@ export default function Home() {
   const [allPackages, setAllPackages] = useState<OxpPackage[]>([]);
   const [filteredPackages, setFilteredPackages] = useState<OxpPackage[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [copiedStep, setCopiedStep] = useState<number | null>(null);
+
+  const copyStep = useCallback((step: number, text: string) => {
+    void navigator.clipboard.writeText(text).catch(() => {});
+    setCopiedStep(step);
+    setTimeout(() => setCopiedStep(null), 2000);
+  }, []);
 
   // Pull DB-backed extensions from the public API on mount.
   useEffect(() => {
@@ -100,15 +107,82 @@ export default function Home() {
           </div>
 
           {/* Title */}
-          <h1 className="text-5xl md:text-8xl font-black tracking-tight text-[#f8fafc] mb-6 max-w-5xl leading-[0.9]">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tight text-[#f8fafc] mb-6 max-w-4xl leading-[0.95]">
             The last extension you&apos;ll{" "}
             <span className="text-holo">ever port</span>.
           </h1>
 
-          <p className="text-base md:text-lg text-[#f8fafc]/40 mb-14 max-w-2xl leading-relaxed font-mono">
+          <p className="text-base md:text-lg text-[#f8fafc]/40 mb-8 max-w-2xl leading-relaxed font-mono">
             OXP is an open protocol for IDE extensions. Write once. Ship to
             every editor, forever.
           </p>
+
+          {/* ─── MCP Feature Block ─── */}
+          <div className="flex flex-col items-center gap-5 mb-8 w-full max-w-3xl">
+            {/* Divider with live indicator */}
+            <div className="flex w-full items-center gap-4">
+              <div className="flex-1 h-px bg-linear-to-r from-transparent to-[#7DD3FC]/20" />
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-[#7DD3FC]/20 bg-[#7DD3FC]/5">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon" />
+                <span className="text-[9px] font-mono font-bold tracking-[0.3em] text-[#7DD3FC]/60 uppercase">
+                  AI Ready
+                </span>
+              </div>
+              <div className="flex-1 h-px bg-linear-to-l from-transparent to-[#7DD3FC]/20" />
+            </div>
+
+            {/* Tech card */}
+            <div className="relative w-full hud-card hud-corners px-6 md:px-10 py-8 overflow-hidden text-center">
+              {/* Animated top scan line */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#7DD3FC]/60 to-transparent animate-pulse-glow" />
+              {/* Subtle circuit-grid background */}
+              <div
+                className="absolute inset-0 opacity-[0.025] pointer-events-none"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(#7DD3FC 1px, transparent 1px), linear-gradient(90deg, #7DD3FC 1px, transparent 1px)",
+                  backgroundSize: "28px 28px",
+                }}
+              />
+
+              {/* Eyebrow */}
+              <div className="flex items-center justify-center gap-3 mb-5 relative">
+                <div className="h-px w-8 bg-linear-to-r from-transparent to-[#7DD3FC]/30" />
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon shrink-0" />
+                <Server className="w-4 h-4 text-[#7DD3FC]/60" />
+                <span className="text-xl md:text-2xl font-black tracking-[0.2em] uppercase text-holo">
+                  MCP Servers
+                </span>
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon shrink-0" />
+                <div className="h-px w-8 bg-linear-to-l from-transparent to-[#7DD3FC]/30" />
+              </div>
+
+              {/* Headline — no dash */}
+              <h2 className="relative text-3xl md:text-5xl font-black tracking-tight text-[#f8fafc] leading-[0.95] mb-7 max-w-xl mx-auto">
+                Every AI tool installed into every editor.{" "}
+                <span className="text-holo">One command.</span>
+              </h2>
+
+              {/* Command */}
+              <button
+                type="button"
+                onClick={() => copyStep(0, "oxp install @modelcontextprotocol/server-github")}
+                className="group inline-flex items-center gap-3 px-5 py-3 rounded border border-[#7DD3FC]/20 bg-[#060a13]/80 hover:border-[#7DD3FC]/50 hover:bg-[#7DD3FC]/5 transition-all duration-300 mx-auto relative"
+                title="Copy MCP install command"
+              >
+                <span className="text-[9px] font-mono font-bold tracking-[0.2em] uppercase text-[#7DD3FC]/50 border border-[#7DD3FC]/20 px-1.5 py-0.5 rounded">
+                  MCP
+                </span>
+                <code className="text-sm font-mono text-[#f8fafc]/70 group-hover:text-[#f8fafc] transition-colors">
+                  <span className="text-[#7DD3FC]/40">$</span> oxp install @modelcontextprotocol/server-github
+                </code>
+                <span className="inline-block w-px h-3.5 bg-[#7DD3FC]/70 animate-terminal-blink" />
+                <span className="text-[10px] font-mono text-[#f8fafc]/30 group-hover:text-[#7DD3FC] transition-colors shrink-0">
+                  {copiedStep === 0 ? "Copied!" : "Copy"}
+                </span>
+              </button>
+            </div>
+          </div>
 
           {/* Search */}
           <div className="w-full flex justify-center mb-8">
@@ -260,48 +334,66 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Build-an-extension CTA — two steps stacked vertically so the
-              full command is always readable. Step 1 is the copy-the-CLI
-              action (most users start here); step 2 reserves the slug. */}
+          {/* Build-an-extension CTA — three steps stacked vertically */}
           <div className="mt-12 mx-auto max-w-2xl space-y-3">
-            {/* Step 1 — Scaffold locally (full command visible) */}
+            {/* Step 1 — Install CLI globally */}
             <button
               type="button"
-              onClick={() => {
-                void navigator.clipboard
-                  .writeText("npx @oxprotocol/cli create my-extension")
-                  .catch(() => {});
-              }}
+              onClick={() => copyStep(1, "npm i -g @oxprotocol/cli")}
               className="hud-card hud-corners group w-full px-5 py-4 flex items-center justify-between gap-4 text-left hover:border-[#7DD3FC]/40 transition-colors"
               title="Copy command"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-7 w-7 items-center justify-center rounded border border-[#7DD3FC]/30 bg-[#7DD3FC]/5 text-[10px] font-mono font-bold text-[#7DD3FC] flex-shrink-0">
+                <div className="flex h-7 w-7 items-center justify-center rounded border border-[#7DD3FC]/30 bg-[#7DD3FC]/5 text-[10px] font-mono font-bold text-[#7DD3FC] shrink-0">
                   1
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#7DD3FC]/60 mb-1">
+                    Install the CLI
+                  </div>
+                  <code className="block text-sm font-mono text-[#f8fafc]/80 whitespace-nowrap overflow-x-auto">
+                    <span className="text-[#7DD3FC]/40">$</span> npm i -g @oxprotocol/cli
+                  </code>
+                </div>
+              </div>
+              <span className={`text-[10px] font-mono tracking-wider uppercase border px-3 py-1.5 rounded shrink-0 transition-all ${copiedStep === 1 ? "text-emerald-400 border-emerald-500/40" : "text-[#f8fafc]/40 border-[#7DD3FC]/15 group-hover:text-[#7DD3FC] group-hover:border-[#7DD3FC]/40"}`}>
+                {copiedStep === 1 ? "Copied!" : "Copy"}
+              </span>
+            </button>
+
+            {/* Step 2 — Scaffold locally */}
+            <button
+              type="button"
+              onClick={() => copyStep(2, "npx @oxprotocol/cli create my-extension")}
+              className="hud-card hud-corners group w-full px-5 py-4 flex items-center justify-between gap-4 text-left hover:border-[#7DD3FC]/40 transition-colors"
+              title="Copy command"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-7 w-7 items-center justify-center rounded border border-[#7DD3FC]/30 bg-[#7DD3FC]/5 text-[10px] font-mono font-bold text-[#7DD3FC] shrink-0">
+                  2
                 </div>
                 <div className="min-w-0">
                   <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#7DD3FC]/60 mb-1">
                     Scaffold locally
                   </div>
                   <code className="block text-sm font-mono text-[#f8fafc]/80 whitespace-nowrap overflow-x-auto">
-                    <span className="text-[#7DD3FC]/40">$</span> npx
-                    @oxprotocol/cli create my-extension
+                    <span className="text-[#7DD3FC]/40">$</span> npx @oxprotocol/cli create my-extension
                   </code>
                 </div>
               </div>
-              <span className="text-[10px] font-mono text-[#f8fafc]/40 tracking-wider uppercase border border-[#7DD3FC]/15 px-3 py-1.5 rounded group-hover:text-[#7DD3FC] group-hover:border-[#7DD3FC]/40 flex-shrink-0">
-                Copy
+              <span className={`text-[10px] font-mono tracking-wider uppercase border px-3 py-1.5 rounded shrink-0 transition-all ${copiedStep === 2 ? "text-emerald-400 border-emerald-500/40" : "text-[#f8fafc]/40 border-[#7DD3FC]/15 group-hover:text-[#7DD3FC] group-hover:border-[#7DD3FC]/40"}`}>
+                {copiedStep === 2 ? "Copied!" : "Copy"}
               </span>
             </button>
 
-            {/* Step 2 — Reserve a slug on the registry */}
+            {/* Step 3 — Reserve a slug on the registry */}
             <Link
               href="/new"
               className="hud-card hud-corners group flex w-full items-center justify-between gap-4 px-5 py-4 hover:border-[#7DD3FC]/40 transition-colors"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className="flex h-7 w-7 items-center justify-center rounded border border-[#7DD3FC]/30 bg-[#7DD3FC]/5 text-[10px] font-mono font-bold text-[#7DD3FC] flex-shrink-0">
-                  2
+                <div className="flex h-7 w-7 items-center justify-center rounded border border-[#7DD3FC]/30 bg-[#7DD3FC]/5 text-[10px] font-mono font-bold text-[#7DD3FC] shrink-0">
+                  3
                 </div>
                 <div className="min-w-0">
                   <div className="text-[10px] font-mono tracking-[0.2em] uppercase text-[#7DD3FC]/60 mb-1">
@@ -314,7 +406,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <ArrowRight className="w-4 h-4 text-[#7DD3FC]/40 group-hover:translate-x-1 group-hover:text-[#7DD3FC] transition-all flex-shrink-0" />
+              <ArrowRight className="w-4 h-4 text-[#7DD3FC]/40 group-hover:translate-x-1 group-hover:text-[#7DD3FC] transition-all shrink-0" />
             </Link>
 
             <p className="text-center text-[10px] font-mono text-[#f8fafc]/30 tracking-wider pt-1">
@@ -382,6 +474,7 @@ export default function Home() {
                     verificationLevel={pkg.verificationLevel}
                     verifiedDomain={pkg.verifiedDomain}
                     verifiedGithub={pkg.verifiedGithub}
+                    showcase={pkg.ownerHandle === "aldgar"}
                   />
                 </Link>
               ))}
@@ -499,29 +592,44 @@ function FeaturedMcpSection() {
 
   return (
     <section className="relative py-24" style={{ zIndex: 2 }}>
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#7DD3FC]/15 to-transparent" />
+      {/* Strong top separator */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#7DD3FC]/30 to-transparent" />
+      {/* Subtle section bg glow */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#7DD3FC]/[0.03] to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between mb-12 gap-6 flex-wrap">
+        <div className="flex items-end justify-between mb-10 gap-6 flex-wrap">
           <div>
-            <div className="flex items-center gap-3 mb-3">
-              <Server className="w-4 h-4 text-[#7DD3FC]/40" />
-              <h2 className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#7DD3FC]/50 uppercase">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-1.5 border border-[#7DD3FC]/30 rounded bg-[#7DD3FC]/10">
+                <Server className="w-3.5 h-3.5 text-[#7DD3FC]" />
+              </div>
+              <h2 className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#7DD3FC]/70 uppercase">
                 {"// MCP Library"}
               </h2>
             </div>
-            <h3 className="text-3xl md:text-4xl font-black text-[#f8fafc] mb-3 leading-tight">
+            <h3 className="text-4xl md:text-5xl font-black text-[#f8fafc] mb-4 leading-tight">
               {snapshot.servers.length.toLocaleString()} AI tools.{" "}
               <span className="text-holo">One command.</span>
             </h3>
-            <p className="text-sm font-mono text-[#f8fafc]/40 max-w-2xl leading-relaxed">
+            <p className="text-sm font-mono text-[#f8fafc]/50 max-w-2xl leading-relaxed mb-5">
               Every MCP server ever published, indexed daily. While everyone
               else edits JSON config files, your users type one command.
             </p>
+            {/* Featured install command */}
+            <div className="inline-flex items-center gap-3 hud-card hud-corners px-4 py-2.5 rounded">
+              <Terminal className="w-3.5 h-3.5 text-[#7DD3FC]/50 shrink-0" />
+              <code className="text-sm font-mono text-[#7DD3FC]">
+                <span className="text-[#f8fafc]/30">$</span> oxp mcp add github
+              </code>
+              <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 tracking-[0.15em] uppercase shrink-0">
+                Instant
+              </span>
+            </div>
           </div>
           <Link
             href="/mcp"
-            className="inline-flex items-center gap-2 text-[10px] font-mono font-bold tracking-[0.2em] text-[#7DD3FC]/60 hover:text-[#7DD3FC] transition-colors uppercase"
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#7DD3FC]/25 text-[#7DD3FC]/70 font-mono font-bold text-[10px] tracking-[0.2em] uppercase rounded hover:border-[#7DD3FC]/60 hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/5 transition-all"
           >
             Browse MCP Library
             <ArrowRight className="w-3 h-3" />
@@ -532,7 +640,7 @@ function FeaturedMcpSection() {
           {featured.map((server) => (
             <Link
               key={server.id}
-              href="/mcp"
+              href={`/mcp/${server.id}`}
               className="hud-card hud-corners p-6 flex flex-col group"
             >
               <div className="flex items-start justify-between mb-4">

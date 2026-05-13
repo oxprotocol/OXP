@@ -19,6 +19,7 @@ export interface ExtensionCardProps {
   verificationLevel?: "unverified" | "github" | "domain";
   verifiedDomain?: string | null;
   verifiedGithub?: string | null;
+  showcase?: boolean;
 }
 
 export function ExtensionCard({
@@ -33,6 +34,7 @@ export function ExtensionCard({
   verificationLevel,
   verifiedDomain,
   verifiedGithub,
+  showcase = false,
 }: ExtensionCardProps) {
   const isPlanned = availability === "planned";
 
@@ -42,6 +44,13 @@ export function ExtensionCard({
       <div className="absolute inset-0 overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#7DD3FC]/30 to-transparent animate-pulse-glow" />
       </div>
+
+      {/* Showcase ribbon */}
+      {showcase && (
+        <div className="absolute top-3 right-3 px-2 py-0.5 rounded border border-emerald-500/30 bg-emerald-500/10 text-[9px] font-mono font-bold tracking-[0.18em] text-emerald-400 uppercase">
+          Showcase
+        </div>
+      )}
 
       {/* Header */}
       <div className="flex justify-between items-start mb-3 gap-2">

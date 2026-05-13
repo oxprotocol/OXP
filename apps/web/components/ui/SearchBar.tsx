@@ -17,8 +17,16 @@ export function SearchBar({ onSearch, placeholder }: SearchBarProps) {
     onSearch?.(value);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearch?.(query);
+  };
+
   return (
-    <div className="relative flex w-full max-w-3xl items-center group">
+    <form
+      onSubmit={handleSubmit}
+      className="relative flex w-full max-w-3xl items-center group"
+    >
       {/* Outer glow */}
       <div className="absolute -inset-[1px] bg-gradient-to-r from-transparent via-[#7DD3FC]/20 to-transparent rounded-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500 blur-sm" />
 
@@ -52,6 +60,6 @@ export function SearchBar({ onSearch, placeholder }: SearchBarProps) {
           Search
         </button>
       </div>
-    </div>
+    </form>
   );
 }

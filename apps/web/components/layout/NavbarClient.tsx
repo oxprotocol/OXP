@@ -50,8 +50,8 @@ const navLinks: NavItem[] = [
       { label: "Publishing", href: "/docs/publishing" },
     ],
   },
-  { label: "Pricing", href: "/pricing" },
   { label: "Community", href: "/community" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 interface NavChild {

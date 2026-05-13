@@ -9,6 +9,7 @@ import {
   Shield,
   FileText,
   Sparkles,
+  Server,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -82,6 +83,52 @@ export default function DocsIndexPage() {
           className="docs-pager-link inline-flex items-center gap-2 rounded-md border px-5 py-2.5 text-base font-medium"
         >
           CLI reference
+        </Link>
+      </div>
+
+      {/* ─── MCP Featured Card ─── */}
+      <div className="relative rounded-lg overflow-hidden p-[1.5px] mb-10">
+        {/* Rotating conic-gradient border */}
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] aspect-square animate-mcp-border"
+          style={{
+            background:
+              "conic-gradient(from 0deg, transparent 0deg 55%, #7DD3FC 60%, #a78bfa 72%, #7DD3FC 80%, transparent 85%)",
+          }}
+        />
+        <Link
+          href="/docs/mcp-integration"
+          className="relative flex flex-col sm:flex-row items-start sm:items-center gap-5 rounded-[7px] p-6 group"
+          style={{ background: "var(--docs-card-solid-bg)" }}
+        >
+          <span
+            className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border docs-card-icon"
+          >
+            <Server className="h-6 w-6" />
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <h2 className="docs-card-title text-lg font-bold tracking-tight">
+                Managing MCP Servers
+              </h2>
+              <span className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-mono font-bold tracking-[0.18em] uppercase bg-[#7DD3FC]/10 text-[#7DD3FC] border border-[#7DD3FC]/20">
+                <Sparkles className="h-2.5 w-2.5" />
+                New
+              </span>
+            </div>
+            <p className="docs-card-tagline text-sm leading-relaxed">
+              OXP acts as a universal MCP router — one command installs any AI
+              tool into every client simultaneously. No JSON editing, instant
+              rollout across VS Code, JetBrains, Cursor, and Neovim.
+            </p>
+            <code className="mt-2.5 inline-block text-xs font-mono text-[#7DD3FC]/80 bg-[#7DD3FC]/5 border border-[#7DD3FC]/15 rounded px-3 py-1.5">
+              oxp mcp add github
+            </code>
+          </div>
+          <ArrowRight
+            className="h-5 w-5 shrink-0 transition-transform group-hover:translate-x-1"
+            style={{ color: "var(--docs-link)" }}
+          />
         </Link>
       </div>
 

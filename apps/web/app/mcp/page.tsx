@@ -8,7 +8,6 @@ import {
   Code2,
   ExternalLink,
   Plug,
-  RefreshCw,
   Server,
   Sparkles,
   X,
@@ -22,12 +21,6 @@ import {
 } from "@/lib/mcp";
 
 const snapshot = getMcpSnapshot();
-
-function formatSyncedAt(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toUTCString().replace("GMT", "UTC");
-}
 
 // ---- Filter facets -----------------------------------------------------
 // Tags we surface as one-click filters. Curated from the most common
@@ -306,32 +299,6 @@ export default function McpRegistryPage() {
             }}
             placeholder="Search MCP servers by name, publisher, or tag..."
           />
-
-          {/* Sync banner */}
-          <div className="mt-8 hud-card hud-corners px-5 py-4 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <RefreshCw className="w-4 h-4 text-[#7DD3FC]/50" />
-              <div className="text-xs font-mono text-[#f8fafc]/50">
-                <span className="text-[#7DD3FC]/70">
-                  {snapshot.servers.length}
-                </span>{" "}
-                servers ·{" "}
-                <span className="text-[#7DD3FC]/70">{featuredCount}</span>{" "}
-                featured
-              </div>
-            </div>
-            <div className="text-[10px] font-mono text-[#f8fafc]/30 tracking-wider uppercase">
-              Synced {formatSyncedAt(snapshot.syncedAt)} · source{" "}
-              <a
-                href={snapshot.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="text-[#7DD3FC]/60 hover:text-[#7DD3FC] underline-offset-2 hover:underline"
-              >
-                {snapshot.source}
-              </a>
-            </div>
-          </div>
         </div>
       </section>
 

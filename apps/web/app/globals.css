@@ -165,6 +165,14 @@ button:disabled,
   animation: terminal-blink-slow 10s ease-in-out infinite;
 }
 
+@keyframes mcp-border-spin {
+  to { transform: rotate(1turn); }
+}
+
+.animate-mcp-border {
+  animation: mcp-border-spin 4s linear infinite;
+}
+
 /* ─── App container — wide developer surface ─── */
 
 .app-container {
@@ -942,6 +950,7 @@ html.light [data-force-dark] .border-y { border-color: rgba(125, 211, 252, 0.10)
   --docs-border-2:  rgba(148, 163, 184, 0.25);
   --docs-code-bg:   rgba(148, 163, 184, 0.10);
   --docs-block-bg:  rgba(15, 23, 42, 0.55);
+  --docs-card-solid-bg: #0f172a;   /* fully opaque surface for animated border cards */
   --docs-active-bg: rgba(125, 211, 252, 0.12);
   --docs-card-shadow: 0 0 0 0 transparent;
   --docs-card-shadow-hov: 0 0 0 1px rgba(125, 211, 252, 0.15);
@@ -976,6 +985,7 @@ html.light .docs-shell {
   --docs-border-2:  #cbd5e1;        /* slate-300 */
   --docs-code-bg:   #eef2f7;        /* slightly cooler than slate-100 */
   --docs-block-bg:  #ffffff;        /* white codeblocks pop on cream */
+  --docs-card-solid-bg: #ffffff;
   --docs-active-bg: #e0f2fe;        /* sky-100 */
   --docs-card-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
   --docs-card-shadow-hov: 0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);

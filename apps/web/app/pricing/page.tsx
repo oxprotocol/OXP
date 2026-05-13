@@ -1,12 +1,21 @@
 import Link from "next/link";
-import { Check, Zap, Building2, Lock, ShieldCheck } from "lucide-react";
+import { Check, Lock, Zap, Building2, ShieldCheck, Tag } from "lucide-react";
 import { PLAN_ORDER, PLANS, type PlanId } from "@/lib/billing";
+import { WaitlistModal } from "./WaitlistModal";
 
 const ICONS: Record<PlanId, typeof Zap> = {
   free: Zap,
   pro: ShieldCheck,
   teams: Building2,
   enterprise: Building2,
+};
+
+// Map waitlist-pivot plans to their modal labels.
+const WAITLIST_PLANS: Partial<
+  Record<PlanId, { buttonLabel: string }>
+> = {
+  pro: { buttonLabel: "Claim Early Access" },
+  teams: { buttonLabel: "Join Teams Waitlist" },
 };
 
 interface MatrixRow {
@@ -16,8 +25,6 @@ interface MatrixRow {
   teams: string;
 }
 
-// The matrix is hand-curated rather than derived from PLANS so we can
-// describe nuances ("Sigstore + customer KMS") that don't fit a boolean.
 const matrix: MatrixRow[] = [
   {
     feature: "Public extensions",
@@ -37,30 +44,15 @@ const matrix: MatrixRow[] = [
     pro: "5 (soon)",
     teams: "Unlimited (soon)",
   },
-  {
-    feature: "Organizations",
-    free: "—",
-    pro: "—",
-    teams: "Unlimited",
-  },
-  {
-    feature: "Seats included",
-    free: "1",
-    pro: "1",
-    teams: "Per user",
-  },
+  { feature: "Organizations", free: "—", pro: "—", teams: "Unlimited" },
+  { feature: "Seats included", free: "1", pro: "1", teams: "Per user" },
   {
     feature: "Personal namespaces",
     free: "3",
     pro: "Unlimited",
     teams: "Unlimited",
   },
-  {
-    feature: "CDN bandwidth",
-    free: "10 GB",
-    pro: "100 GB",
-    teams: "1 TB",
-  },
+  { feature: "CDN bandwidth", free: "10 GB", pro: "100 GB", teams: "1 TB" },
   {
     feature: "Signed releases",
     free: "—",
@@ -73,24 +65,9 @@ const matrix: MatrixRow[] = [
     pro: "30 days (soon)",
     teams: "1 year (soon)",
   },
-  {
-    feature: "SSO (SAML / OIDC)",
-    free: "—",
-    pro: "—",
-    teams: "Soon",
-  },
-  {
-    feature: "Self-hosted registry",
-    free: "—",
-    pro: "—",
-    teams: "—",
-  },
-  {
-    feature: "Compliance",
-    free: "—",
-    pro: "—",
-    teams: "GDPR DPA",
-  },
+  { feature: "SSO (SAML / OIDC)", free: "—", pro: "—", teams: "Soon" },
+  { feature: "Self-hosted registry", free: "—", pro: "—", teams: "—" },
+  { feature: "Compliance", free: "—", pro: "—", teams: "GDPR DPA" },
   {
     feature: "Uptime SLA",
     free: "Best effort",
@@ -124,13 +101,24 @@ export default function PricingPage() {
             <br />
             <span className="text-[#7DD3FC]">Scales with your team.</span>
           </h1>
-          <p className="text-base font-mono text-[#f8fafc]/50 max-w-2xl mx-auto">
+          <p className="text-base font-mono text-[#f8fafc]/50 max-w-2xl mx-auto mb-6">
             Every tier includes the full OXP runtime, CLI, and multi-host
             adapters. Start free, upgrade when you need privacy, governance, or
-            self-hosting. Items without a tag ship today; items tagged{" "}
+            self-hosting. Items tagged{" "}
             <span className="text-[#7DD3FC]/80">soon</span> are on the active
-            roadmap and land before your renewal.
+            roadmap.
           </p>
+
+          {/* Early-access launch banner */}
+          <div className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded border border-amber-500/30 bg-amber-500/8">
+            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-beacon shrink-0" />
+            <p className="text-xs font-mono text-amber-300/80 leading-snug">
+              <span className="font-bold text-amber-300">Billing opens soon.</span>
+              {" "}Join the waitlist to lock in a{" "}
+              <span className="font-bold text-amber-300">40% early-adopter discount</span>{" "}
+              on Pro or Teams — guaranteed at launch.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -140,6 +128,8 @@ export default function PricingPage() {
           {PLAN_ORDER.map((id) => {
             const tier = PLANS[id];
             const Icon = ICONS[id];
+            const waitlist = WAITLIST_PLANS[id];
+
             return (
               <div
                 key={tier.id}
@@ -154,6 +144,7 @@ export default function PricingPage() {
                     </div>
                   </div>
                 )}
+
                 <div
                   className={`hud-card hud-corners h-full px-7 pt-9 pb-7 flex flex-col ${
                     tier.highlight
@@ -169,9 +160,11 @@ export default function PricingPage() {
                       {tier.name}
                     </h2>
                   </div>
+
                   <p className="text-xs font-mono text-[#f8fafc]/45 mb-6 min-h-[4.5em] leading-relaxed">
                     {tier.tagline}
                   </p>
+
                   <div className="mb-8 min-h-21">
                     <div className="inline-flex items-baseline gap-1 leading-none">
                       {tier.priceCentsEur === null ? (
@@ -193,6 +186,7 @@ export default function PricingPage() {
                       {tier.cadence}
                     </div>
                   </div>
+
                   <ul className="space-y-3 mb-8 flex-1">
                     {tier.features.map((f) => (
                       <li
@@ -211,7 +205,31 @@ export default function PricingPage() {
                       </li>
                     ))}
                   </ul>
-                  {tier.ctaHref.startsWith("/api/") ? (
+
+                  {/* ─── CTA ─── */}
+                  {waitlist ? (
+                    <div className="space-y-2.5">
+                      {/* Discount hint — shown on Pro only */}
+                      {id === "pro" && (
+                        <div className="flex items-center gap-2 px-3 py-2 rounded border border-amber-500/25 bg-amber-500/8">
+                          <Tag className="w-3 h-3 text-amber-400 shrink-0" />
+                          <p className="text-[10px] font-mono text-amber-300/80 leading-snug">
+                            Join the waitlist today to lock in a{" "}
+                            <span className="font-bold text-amber-300">
+                              40% early-adopter discount
+                            </span>
+                            .
+                          </p>
+                        </div>
+                      )}
+                      <WaitlistModal
+                        planId={id as "pro" | "teams"}
+                        planName={tier.name}
+                        buttonLabel={waitlist.buttonLabel}
+                        highlight={!!tier.highlight}
+                      />
+                    </div>
+                  ) : tier.ctaHref.startsWith("/api/") ? (
                     <a
                       href={tier.ctaHref}
                       className={`block text-center px-4 py-3 rounded text-sm font-mono font-bold tracking-wider uppercase transition-all ${
@@ -239,9 +257,10 @@ export default function PricingPage() {
             );
           })}
         </div>
+
         <p className="text-center text-xs font-mono text-[#f8fafc]/40 tracking-wider uppercase mt-6">
-          Prices in EUR · Billed via Paddle · VAT applied where required ·
-          Cancel anytime
+          Prices in EUR · Billing via Paddle coming soon · VAT applied where
+          required · Cancel anytime
         </p>
       </section>
 
@@ -251,7 +270,7 @@ export default function PricingPage() {
           {"// Feature comparison"}
         </h2>
         <div className="hud-card hud-corners overflow-x-auto">
-          <table className="w-full text-sm min-w-[720px]">
+          <table className="w-full text-sm min-w-180">
             <thead className="bg-[#030711]/60 border-b border-[#7DD3FC]/10">
               <tr className="text-xs font-mono text-[#7DD3FC]/60 uppercase tracking-wider">
                 <th className="text-left px-6 py-4">Feature</th>
@@ -287,7 +306,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ─── FAQ STRIP ─── */}
+      {/* ─── BOTTOM CTA ─── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 w-full">
         <div className="hud-card hud-corners p-10 text-center">
           <h3 className="text-2xl md:text-3xl font-black text-[#f8fafc] mb-3">
@@ -295,13 +314,14 @@ export default function PricingPage() {
           </h3>
           <p className="text-sm font-mono text-[#f8fafc]/40 mb-6 max-w-xl mx-auto">
             No annual lock-in, no sales calls. Upgrade when you need private
-            extensions or organizations.
+            extensions or organizations. Paid billing opens soon — get in early
+            for 40% off.
           </p>
           <Link
             href="/signup"
             className="inline-flex items-center gap-2 px-5 py-3 rounded border border-[#7DD3FC]/30 text-[#7DD3FC] hover:bg-[#7DD3FC]/10 text-sm font-mono font-bold tracking-wider uppercase transition-all"
           >
-            Get started
+            Get started free
           </Link>
         </div>
       </section>

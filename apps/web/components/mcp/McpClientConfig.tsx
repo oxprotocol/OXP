@@ -28,6 +28,13 @@ interface ClientPreset {
 
 const CLIENTS: ClientPreset[] = [
   {
+    id: "oxp",
+    label: "OXP",
+    filename: "terminal",
+    wrap: (entry) => entry,
+    hint: "Installs the server and configures every detected MCP-aware client (Claude Desktop, Cursor, VS Code, Windsurf) automatically.",
+  },
+  {
     id: "claude",
     label: "Claude Desktop",
     filename: "claude_desktop_config.json",
@@ -55,13 +62,6 @@ const CLIENTS: ClientPreset[] = [
     wrap: (entry) => ({ mcpServers: entry }),
     hint: "Edit ~/.codeium/windsurf/mcp_config.json (Settings → Cascade → MCP).",
   },
-  {
-    id: "oxp",
-    label: "OXP",
-    filename: "terminal",
-    wrap: (entry) => entry,
-    hint: "Installs the server and configures every detected MCP-aware client (Claude Desktop, Cursor, VS Code, Windsurf) automatically.",
-  },
 ];
 
 export function McpClientConfig({
@@ -71,7 +71,7 @@ export function McpClientConfig({
   server: McpServer;
   launchers: McpInstallSpec[];
 }) {
-  const [client, setClient] = useState<ClientId>("claude");
+  const [client, setClient] = useState<ClientId>("oxp");
   const [launcherIdx, setLauncherIdx] = useState(0);
 
   const launcher = launchers[Math.min(launcherIdx, launchers.length - 1)];
