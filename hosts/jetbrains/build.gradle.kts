@@ -66,7 +66,7 @@ intellijPlatform {
 
             <h2>What is OXP?</h2>
             <p>
-              <a href="https://oxprotocol.org">OXP (Open Extension Protocol)</a> is an open spec
+              <a href="https://oxp.sh">OXP (Open Extension Protocol)</a> is an open spec
               for editor extensions distributed as sandboxed <b>WebAssembly components</b>
               (WASI Preview 2). The same <code>.oxp</code> bundle runs unchanged in every
               OXP-compatible host — no recompilation, no platform-specific code.
@@ -77,7 +77,7 @@ intellijPlatform {
               <tbody>
                 <tr><td><b>JetBrains</b> (all IDEs)</td><td>✅ Stable</td><td>This plugin</td></tr>
                 <tr><td>VS Code &amp; forks</td><td>✅ Stable</td><td>oxprotocol.oxp-vscode</td></tr>
-                <tr><td>Neovim</td><td>🔵 Beta</td><td>github.com/oxprotocol/oxp</td></tr>
+                <tr><td>Neovim</td><td>🔵 Beta</td><td><a href="https://github.com/oxprotocol/oxp">github.com/oxprotocol/oxp</a></td></tr>
               </tbody>
             </table>
 
@@ -171,7 +171,7 @@ oxp publish          # ship to https://oxp.sh
 
         vendor {
             name = "OXP"
-            url = "https://oxprotocol.org"
+            url = "https://oxp.sh"
         }
     }
 

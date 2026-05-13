@@ -80,19 +80,23 @@ export class ExplorerSlotManager {
     this.visibility.set(extId, visible);
     await this.persistVisibility();
 
-    let slot = this.reverseAlloc.get(extId);
+    const existing = this.reverseAlloc.get(extId);
+    let slot: number;
 
-    if (slot === undefined) {
+    if (existing === undefined) {
       if (!visible) return; // nothing to do
-      slot = this.allocateSlot(extId);
-      if (slot === null) {
+      const allocated = this.allocateSlot(extId);
+      if (allocated === null) {
         void vscode.window.showWarningMessage(
           `OXP: All ${SLOT_COUNT} Explorer slots are in use. Toggle off another extension first.`,
         );
         return;
       }
+      slot = allocated;
       await this.persistAllocation();
       this.registerSlotProvider(slot, extId);
+    } else {
+      slot = existing;
     }
 
     await this.setSlotContext(slot, visible);

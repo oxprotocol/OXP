@@ -102,6 +102,7 @@ class ExtensionToolWindowManager(private val project: Project) {
             canCloseContent = false,
             shouldBeAvailable = true,
         )
+        @Suppress("UnstableApiUsage")
         val tw = manager.registerToolWindow(task)
         val content = tw.contentManager.factory.createContent(panel, null, false)
         tw.contentManager.addContent(content)
