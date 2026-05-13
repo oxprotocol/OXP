@@ -161,6 +161,9 @@ jobs:
       - name: install workspace deps
         run: pnpm install --frozen-lockfile
 
+      - name: build workspace packages
+        run: pnpm -r --filter "./packages/**" build
+
       - name: build VS Code bundle
         working-directory: hosts/vscode
         run: pnpm build
