@@ -91,6 +91,20 @@ oxp publish         # ship to https://oxp.sh</pre>
     ]]></description>
 
     <change-notes><![CDATA[
+        <h4>0.4.7 — Static slot architecture</h4>
+        <ul>
+          <li><b>No more plugin-verifier warnings</b> — replaced dynamic
+            <code>registerToolWindow</code> / <code>unregisterToolWindow</code>
+            calls with eight statically-declared LEFT-anchor slot windows in
+            <code>plugin.xml</code>. Extensions are assigned to slots at
+            runtime via <code>setAvailable</code> and <code>stripeTitle</code>
+            — fully stable, verifier-clean APIs.</li>
+          <li>Slot allocation (which extension owns which slot number) is
+            persisted in <code>PropertiesComponent</code> and restored on
+            project reopen.</li>
+          <li>Up to 8 extensions can be shown simultaneously in the sidebar.
+            Toggling the 9th shows a balloon nudge to hide another first.</li>
+        </ul>
         <h4>0.4.6</h4>
         <ul>
           <li>Icon updated to match the VS Code marketplace design (dark background, light blue OXP logo).</li>
@@ -160,6 +174,38 @@ oxp publish         # ship to https://oxp.sh</pre>
             anchor="right"
             icon="/icons/oxp-logo.svg"
             factoryClass="dev.oxp.jetbrains.ui.OxpDevToolWindowFactory"/>
+
+        <!--
+          Eight statically-declared LEFT-anchor slots for OXP extensions.
+          Slots start hidden (shouldBeAvailable = false). ExtensionToolWindowManager
+          assigns extensions to slots at runtime via setAvailable + setStripeTitle,
+          avoiding any use of registerToolWindow / unregisterToolWindow.
+        -->
+        <toolWindow id="oxp.ext.slot.0" anchor="left" secondary="true"
+            icon="/icons/oxp-logo.svg"
+            factoryClass="dev.oxp.jetbrains.ui.ExtensionSlotWindowFactory"/>
+        <toolWindow id="oxp.ext.slot.1" anchor="left" secondary="true"
+            icon="/icons/oxp-logo.svg"
+            factoryClass="dev.oxp.jetbrains.ui.ExtensionSlotWindowFactory"/>
+        <toolWindow id="oxp.ext.slot.2" anchor="left" secondary="true"
+            icon="/icons/oxp-logo.svg"
+            factoryClass="dev.oxp.jetbrains.ui.ExtensionSlotWindowFactory"/>
+        <toolWindow id="oxp.ext.slot.3" anchor="left" secondary="true"
+            icon="/icons/oxp-logo.svg"
+            factoryClass="dev.oxp.jetbrains.ui.ExtensionSlotWindowFactory"/>
+        <toolWindow id="oxp.ext.slot.4" anchor="left" secondary="true"
+            icon="/icons/oxp-logo.svg"
+            factoryClass="dev.oxp.jetbrains.ui.ExtensionSlotWindowFactory"/>
+        <toolWindow id="oxp.ext.slot.5" anchor="left" secondary="true"
+            icon="/icons/oxp-logo.svg"
+            factoryClass="dev.oxp.jetbrains.ui.ExtensionSlotWindowFactory"/>
+        <toolWindow id="oxp.ext.slot.6" anchor="left" secondary="true"
+            icon="/icons/oxp-logo.svg"
+            factoryClass="dev.oxp.jetbrains.ui.ExtensionSlotWindowFactory"/>
+        <toolWindow id="oxp.ext.slot.7" anchor="left" secondary="true"
+            icon="/icons/oxp-logo.svg"
+            factoryClass="dev.oxp.jetbrains.ui.ExtensionSlotWindowFactory"/>
+
         <projectService
             serviceImplementation="dev.oxp.jetbrains.ui.ExtensionToolWindowManager"/>
         <projectService
