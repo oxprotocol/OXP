@@ -8,8 +8,10 @@ import {
   ChevronDown,
   LayoutDashboard,
   LogOut,
+  Menu,
   Settings,
   User as UserIcon,
+  X,
 } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -69,6 +71,12 @@ interface NavItem {
 
 export function NavbarClient({ user }: { user: User | null }) {
   const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   const isActive = (href: string) =>
     href === "/"
       ? pathname === "/"
@@ -138,15 +146,78 @@ export function NavbarClient({ user }: { user: User | null }) {
                 </Link>
                 <Link
                   href="/signup"
-                  className="inline-flex items-center px-5 py-2 rounded text-xs font-mono font-bold tracking-wider uppercase bg-[#7DD3FC] text-[#060a13] hover:bg-[#BAE6FD] transition-all"
+                  className="hidden sm:inline-flex items-center px-5 py-2 rounded text-xs font-mono font-bold tracking-wider uppercase bg-[#7DD3FC] text-[#060a13] hover:bg-[#BAE6FD] transition-all"
                 >
                   Launch
                 </Link>
               </>
             )}
+            <button
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              className="md:hidden p-2 rounded text-[#f8fafc]/60 hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/5 transition-colors"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* ─── Mobile menu ─── */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-[#7DD3FC]/10 bg-[#060a13]/95 backdrop-blur-xl">
+          <div className="app-container py-3 flex flex-col gap-0.5">
+            {navLinks.map((link) =>
+              link.children && link.children.length > 0 ? (
+                <MobileNavDropdown
+                  key={link.href}
+                  item={link}
+                  isAuthed={!!user}
+                  active={isActive(link.href)}
+                  onClose={() => setMobileOpen(false)}
+                />
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className={`px-3 py-3 rounded text-sm font-mono font-medium tracking-wider uppercase transition-colors ${
+                    isActive(link.href)
+                      ? "text-[#7DD3FC] bg-[#7DD3FC]/5"
+                      : "text-[#f8fafc]/60 hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/5"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ),
+            )}
+            {!user && (
+              <div className="mt-3 pt-3 border-t border-[#7DD3FC]/10 flex flex-col gap-2">
+                <Link
+                  href="/signin"
+                  onClick={() => setMobileOpen(false)}
+                  className="px-3 py-3 rounded text-sm font-mono font-medium tracking-wider uppercase text-[#f8fafc]/60 hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/5 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  onClick={() => setMobileOpen(false)}
+                  className="px-5 py-3 rounded text-sm font-mono font-bold tracking-wider uppercase bg-[#7DD3FC] text-[#060a13] hover:bg-[#BAE6FD] transition-all text-center"
+                >
+                  Launch
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="h-px w-full bg-linear-to-r from-transparent via-[#7DD3FC]/20 to-transparent" />
     </nav>
@@ -281,6 +352,66 @@ function MenuItem({
         {label}
       </Link>
     </li>
+  );
+}
+
+function MobileNavDropdown({
+  item,
+  isAuthed,
+  active,
+  onClose,
+}: {
+  item: NavItem;
+  isAuthed: boolean;
+  active: boolean;
+  onClose: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const visibleChildren = (item.children ?? []).filter(
+    (c) => !c.auth || isAuthed,
+  );
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={`w-full flex items-center justify-between px-3 py-3 rounded text-sm font-mono font-medium tracking-wider uppercase transition-colors ${
+          active
+            ? "text-[#7DD3FC] bg-[#7DD3FC]/5"
+            : "text-[#f8fafc]/60 hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/5"
+        }`}
+      >
+        {item.label}
+        <ChevronDown
+          className={`w-3.5 h-3.5 opacity-60 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+      {open && (
+        <div className="ml-3 mt-0.5 mb-1 flex flex-col gap-0.5 border-l border-[#7DD3FC]/15 pl-3">
+          <Link
+            href={item.href}
+            onClick={onClose}
+            className="py-2 px-2 text-xs font-mono font-bold tracking-wider uppercase text-[#7DD3FC] hover:bg-[#7DD3FC]/5 rounded transition-colors"
+          >
+            {item.label} · Overview
+          </Link>
+          {visibleChildren.map((c) => (
+            <Link
+              key={c.href}
+              href={c.href}
+              onClick={onClose}
+              className="py-2 px-2 text-xs font-mono text-[#f8fafc]/60 hover:text-[#7DD3FC] hover:bg-[#7DD3FC]/5 rounded transition-colors"
+            >
+              <div className="font-bold tracking-wide">{c.label}</div>
+              {c.desc && (
+                <div className="text-[#f8fafc]/40 text-xs mt-0.5">{c.desc}</div>
+              )}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

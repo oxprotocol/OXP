@@ -849,54 +849,26 @@ html.light [data-force-dark] .from-\[\#7DD3FC\]\/20 {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 
-/* HUD card — light mode: clean white card matching community/docs pages */
+/* HUD card — restore dark spaceship appearance inside the dark island */
 html.light [data-force-dark] .hud-card {
-  background: #ffffff !important;
-  border: 1px solid #e5e7eb !important;     /* gray-200 */
-  border-radius: 6px !important;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(125, 211, 252, 0.03) 0%,
+    rgba(6, 10, 19, 0.9) 50%,
+    rgba(125, 211, 252, 0.03) 100%
+  ) !important;
+  border: 1px solid rgba(125, 211, 252, 0.15) !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
 }
 html.light [data-force-dark] .hud-card:hover {
-  border-color: #cbd5e1 !important;          /* slate-300 */
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06) !important;
+  border-color: rgba(125, 211, 252, 0.4) !important;
+  box-shadow: 0 0 20px rgba(125, 211, 252, 0.08), inset 0 0 20px rgba(125, 211, 252, 0.02) !important;
 }
 html.light [data-force-dark] .hud-card::before,
-html.light [data-force-dark] .hud-card::after { display: none !important; }
+html.light [data-force-dark] .hud-card::after { display: block !important; }
 html.light [data-force-dark] .hud-corners::before,
-html.light [data-force-dark] .hud-corners::after { display: none !important; }
-
-/* Card text inside light-mode landing cards */
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\] { color: #0f172a !important; }
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/80,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/70,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/65,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/60,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/55,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/50,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/45,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/40 { color: #475569 !important; }
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/35,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/30,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/25,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/20,
-html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/15 { color: #94a3b8 !important; }
-html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\],
-html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/80,
-html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/70,
-html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/60,
-html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/50,
-html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/40 { color: #0369a1 !important; }
-html.light [data-force-dark] .hud-card .group-hover\:text-\[\#7DD3FC\]:hover,
-html.light [data-force-dark] .hud-card.group:hover .group-hover\:text-\[\#7DD3FC\] { color: #075985 !important; }
-
-/* Inner pill / chip backgrounds inside cards */
-html.light [data-force-dark] .hud-card .bg-\[\#7DD3FC\]\/5,
-html.light [data-force-dark] .hud-card .bg-\[\#7DD3FC\]\/\[0\.03\] { background-color: #f0f9ff !important; }
-html.light [data-force-dark] .hud-card .bg-\[\#7DD3FC\]\/10 { background-color: #e0f2fe !important; }
-html.light [data-force-dark] .hud-card .border-\[\#7DD3FC\]\/10,
-html.light [data-force-dark] .hud-card .border-\[\#7DD3FC\]\/15,
-html.light [data-force-dark] .hud-card .border-\[\#7DD3FC\]\/20 { border-color: #e5e7eb !important; }
-html.light [data-force-dark] .hud-card .fill-\[\#7DD3FC\]\/30 { fill: #0369a1 !important; }
+html.light [data-force-dark] .hud-corners::after { display: block !important; opacity: 0.5 !important; }
 
 /* Grid overlay back to cyan whisper */
 html.light [data-force-dark] .grid-overlay {
