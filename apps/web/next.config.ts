@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Opt in to Turbopack explicitly so Next.js 16 doesn't warn about the
+  // coexisting webpack config. The webpack config is still used for
+  // `next build` (Turbopack doesn't support custom webpack config yet).
+  turbopack: {},
+
   // Only truly native modules must remain external (they load a `.node`
   // binary at runtime and cannot be bundled by webpack). Workspace ESM
   // packages must be bundled so webpack transforms them to CJS for the
