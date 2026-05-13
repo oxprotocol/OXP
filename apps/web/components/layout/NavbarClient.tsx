@@ -84,6 +84,7 @@ export function NavbarClient({ user }: { user: User | null }) {
 
   return (
     <nav
+      data-force-dark
       className="w-full border-b border-[#7DD3FC]/10 bg-[#060a13]/80 backdrop-blur-xl sticky top-0"
       style={{ zIndex: 50 }}
     >

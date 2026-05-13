@@ -167,17 +167,20 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => copyStep(0, "oxp install @modelcontextprotocol/server-github")}
-                className="group inline-flex items-center gap-3 px-5 py-3 rounded border border-[#7DD3FC]/20 bg-[#060a13]/80 hover:border-[#7DD3FC]/50 hover:bg-[#7DD3FC]/5 transition-all duration-300 mx-auto relative"
-                title="Copy MCP install command"
+                className="group relative flex items-center gap-2 sm:gap-3 w-full max-w-lg px-4 sm:px-5 py-3 rounded border border-[#7DD3FC]/20 bg-[#060a13]/80 hover:border-[#7DD3FC]/50 hover:bg-[#7DD3FC]/5 transition-all duration-300 mx-auto overflow-hidden"
+                title="Copy: oxp install @modelcontextprotocol/server-github"
               >
-                <span className="text-[9px] font-mono font-bold tracking-[0.2em] uppercase text-[#7DD3FC]/50 border border-[#7DD3FC]/20 px-1.5 py-0.5 rounded">
+                <span className="shrink-0 text-[9px] font-mono font-bold tracking-[0.2em] uppercase text-[#7DD3FC]/50 border border-[#7DD3FC]/20 px-1.5 py-0.5 rounded">
                   MCP
                 </span>
-                <code className="text-sm font-mono text-[#f8fafc]/70 group-hover:text-[#f8fafc] transition-colors">
-                  <span className="text-[#7DD3FC]/40">$</span> oxp install @modelcontextprotocol/server-github
-                </code>
-                <span className="inline-block w-px h-3.5 bg-[#7DD3FC]/70 animate-terminal-blink" />
-                <span className="text-[10px] font-mono text-[#f8fafc]/30 group-hover:text-[#7DD3FC] transition-colors shrink-0">
+                <span className="flex-1 min-w-0 truncate text-left">
+                  <code className="text-xs sm:text-sm font-mono text-[#f8fafc]/70 group-hover:text-[#f8fafc] transition-colors">
+                    <span className="text-[#7DD3FC]/40">$</span>{" "}
+                    oxp install @modelcontextprotocol/server-github
+                  </code>
+                </span>
+                <span className="shrink-0 inline-block w-px h-3.5 bg-[#7DD3FC]/70 animate-terminal-blink" />
+                <span className="shrink-0 text-[10px] font-mono text-[#f8fafc]/30 group-hover:text-[#7DD3FC] transition-colors">
                   {copiedStep === 0 ? "Copied!" : "Copy"}
                 </span>
               </button>
@@ -223,11 +226,11 @@ export default function Home() {
         >
           {/* Section header */}
           <div className="flex items-center gap-4 mb-6">
-            <div className="h-[1px] flex-1 bg-gradient-to-r from-[#7DD3FC]/20 to-transparent" />
+            <div className="h-px flex-1 bg-linear-to-r from-[#7DD3FC]/20 to-transparent" />
             <h2 className="text-[10px] font-mono font-bold tracking-[0.3em] text-[#7DD3FC]/50 uppercase whitespace-nowrap">
               {"// Why OXP"}
             </h2>
-            <div className="h-[1px] flex-1 bg-gradient-to-l from-[#7DD3FC]/20 to-transparent" />
+            <div className="h-px flex-1 bg-linear-to-l from-[#7DD3FC]/20 to-transparent" />
           </div>
           <h2 className="text-3xl md:text-5xl font-black text-[#f8fafc] text-center mb-16 leading-[1.05] max-w-4xl mx-auto">
             The problem is 30 years old.{" "}
@@ -269,7 +272,7 @@ export default function Home() {
                     key={text}
                     className="flex items-center gap-3 text-sm text-[#f8fafc]/50 font-mono"
                   >
-                    <Icon className="w-3.5 h-3.5 text-[#7DD3FC]/50 flex-shrink-0" />
+                    <Icon className="w-3.5 h-3.5 text-[#7DD3FC]/50 shrink-0" />
                     <span>{text}</span>
                   </li>
                 ))}
@@ -318,7 +321,7 @@ export default function Home() {
                     key={text}
                     className="flex items-center gap-3 text-sm text-[#f8fafc]/50 font-mono"
                   >
-                    <Icon className="w-3.5 h-3.5 text-[#7DD3FC]/50 flex-shrink-0" />
+                    <Icon className="w-3.5 h-3.5 text-[#7DD3FC]/50 shrink-0" />
                     <span>{text}</span>
                   </li>
                 ))}
@@ -424,7 +427,7 @@ export default function Home() {
       {/* ─── EXTENSIONS GRID ─── */}
       <section className="relative py-24" style={{ zIndex: 2 }}>
         {/* Top border accent */}
-        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#7DD3FC]/15 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#7DD3FC]/15 to-transparent" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section header */}
@@ -498,7 +501,7 @@ export default function Home() {
       {/* ─── CTA SECTION ─── */}
       {!searchQuery && (
         <section className="relative py-24" style={{ zIndex: 2 }}>
-          <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#7DD3FC]/15 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#7DD3FC]/15 to-transparent" />
 
           <div className="max-w-3xl mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-5xl font-black text-[#f8fafc] mb-6 leading-tight">
@@ -593,9 +596,9 @@ function FeaturedMcpSection() {
   return (
     <section className="relative py-24" style={{ zIndex: 2 }}>
       {/* Strong top separator */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#7DD3FC]/30 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#7DD3FC]/30 to-transparent" />
       {/* Subtle section bg glow */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#7DD3FC]/[0.03] to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-[#7DD3FC]/3 to-transparent pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between mb-10 gap-6 flex-wrap">
@@ -723,14 +726,14 @@ function ShippingNextStrip() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex items-center gap-4 mb-8">
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-[#7DD3FC]/20 to-transparent" />
+          <div className="h-px flex-1 bg-linear-to-r from-[#7DD3FC]/20 to-transparent" />
           <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-[#7DD3FC]/20 bg-[#7DD3FC]/5">
             <div className="w-1.5 h-1.5 rounded-full bg-[#7DD3FC] animate-beacon" />
             <span className="text-[10px] font-mono font-bold tracking-[0.3em] text-[#7DD3FC]/70 uppercase whitespace-nowrap">
               Shipping next
             </span>
           </div>
-          <div className="h-[1px] flex-1 bg-gradient-to-l from-[#7DD3FC]/20 to-transparent" />
+          <div className="h-px flex-1 bg-linear-to-l from-[#7DD3FC]/20 to-transparent" />
         </div>
         <h3 className="text-2xl md:text-4xl font-black text-[#f8fafc] text-center mb-3 leading-tight">
           v0.1 is live.{" "}
