@@ -9,14 +9,16 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./bridge": "./dist/oxp-bridge.js"
   },
   "files": [
     "dist",
     "README.md"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node build-bridge.mjs",
+    "build:bridge": "node build-bridge.mjs",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "test": "vitest run --passWithNoTests"
   },
@@ -24,6 +26,7 @@
     "@oxprotocol/types": "workspace:*"
   },
   "devDependencies": {
+    "esbuild": "^0.24.0",
     "typescript": "5.9.3",
     "vitest": "^2.1.8"
   },

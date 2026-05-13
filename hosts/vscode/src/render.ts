@@ -46,10 +46,18 @@ export interface RenderInput {
    * (the bundle is the author's WIP). NEVER set this in production / marketplace flow.
    */
   dev?: boolean;
+  /**
+   * Trusted installed bundle: the extension was signature-verified by the OXP
+   * store (TOFU + Ed25519). Inline scripts in the bundle are safe to nonce —
+   * the signature guarantees they haven't been tampered with post-publish.
+   * This enables single-file esbuild bundles (oxp-ui-only mode) to execute
+   * without requiring authors to manage nonces manually.
+   */
+  trusted?: boolean;
 }
 
 export type RenderOutcome =
-  | { kind: "html"; html: string }
+  | { kind: "html"; html: string; nonce: string }
   | { kind: "empty"; reason: string };
 
 /**
@@ -159,19 +167,23 @@ export async function renderMainUi(input: RenderInput): Promise<RenderOutcome> {
         "margin:0;padding:16px",
         !!input.dev,
       ),
+      nonce,
     };
   }
 
-  // HTML mode (escape-hatch). We rewrite asset URLs and inject CSP. Inline
-  // <script> and <style> WITHOUT a matching nonce will be blocked by CSP;
-  // authors are responsible for nonce'ing or externalising their tags.
+  // HTML mode (escape-hatch / oxp-ui-only). We rewrite asset URLs and inject
+  // CSP. Inline <script> and <style> tags get the nonce stamped when:
+  //   - dev mode: the author's WIP bundle (same trust as signature-bypass), OR
+  //   - trusted: bundle from the verified OXP store (Ed25519 + TOFU — inline
+  //     scripts are guaranteed untampered, so nonce-stamping is safe here too).
+  // Without either flag the inline tags run nonce-less and CSP blocks them.
   const bytes = await input.read(uiRel);
   let html = new TextDecoder().decode(bytes);
   html = rewriteAssetUrls(html, input.webview, input.resourceRoot, uiRel);
-  if (input.dev) html = stampInlineNonces(html, nonce);
+  if (input.dev || input.trusted) html = stampInlineNonces(html, nonce);
   html = injectCspMeta(html, input.webview, nonce, !!input.dev);
   if (input.dev) html = injectDevBootstrap(html, nonce);
-  return { kind: "html", html };
+  return { kind: "html", html, nonce };
 }
 
 /**

@@ -2,7 +2,7 @@
   "name": "oxp-vscode",
   "displayName": "OXP Host",
   "description": "Run universal OXP extensions (.wasm components) inside VS Code — one extension binary, every editor. Install from URL, sandboxed wasm runtime, in-IDE UI rendering.",
-  "version": "0.3.0",
+  "version": "0.4.3",
   "publisher": "oxprotocol",
   "license": "Apache-2.0",
   "icon": "media/marketplace-icon.png",
@@ -49,7 +49,15 @@
       { "command": "oxp.runtime.show", "title": "OXP: Open Runtime Panel" },
       { "command": "oxp.runtime.stop", "title": "OXP: Stop Runtime" },
       { "command": "oxp.runtime.installFromUrl", "title": "OXP: Install Extension from URL…" },
-      { "command": "oxp.runtime.pickUrlInstall", "title": "OXP: Activate URL Extension from CLI…" }
+      { "command": "oxp.runtime.pickUrlInstall", "title": "OXP: Activate URL Extension from CLI…" },
+      { "command": "oxp.slot.0.open", "title": "Open in Editor", "icon": "$(link-external)" },
+      { "command": "oxp.slot.1.open", "title": "Open in Editor", "icon": "$(link-external)" },
+      { "command": "oxp.slot.2.open", "title": "Open in Editor", "icon": "$(link-external)" },
+      { "command": "oxp.slot.3.open", "title": "Open in Editor", "icon": "$(link-external)" },
+      { "command": "oxp.slot.4.open", "title": "Open in Editor", "icon": "$(link-external)" },
+      { "command": "oxp.slot.5.open", "title": "Open in Editor", "icon": "$(link-external)" },
+      { "command": "oxp.slot.6.open", "title": "Open in Editor", "icon": "$(link-external)" },
+      { "command": "oxp.slot.7.open", "title": "Open in Editor", "icon": "$(link-external)" }
     ],
     "viewsContainers": {
       "activitybar": [
@@ -64,10 +72,26 @@
       "oxpDev": [
         {
           "type": "webview",
+          "id": "oxp.switchboard.view",
+          "name": "Extensions",
+          "contextualTitle": "OXP"
+        },
+        {
+          "type": "webview",
           "id": "oxp.dev.view",
           "name": "Dev Session",
           "contextualTitle": "OXP"
         }
+      ],
+      "explorer": [
+        { "type": "webview", "id": "oxp.explorer.slot.0", "name": "OXP", "when": "oxp.explorer.slot.0" },
+        { "type": "webview", "id": "oxp.explorer.slot.1", "name": "OXP", "when": "oxp.explorer.slot.1" },
+        { "type": "webview", "id": "oxp.explorer.slot.2", "name": "OXP", "when": "oxp.explorer.slot.2" },
+        { "type": "webview", "id": "oxp.explorer.slot.3", "name": "OXP", "when": "oxp.explorer.slot.3" },
+        { "type": "webview", "id": "oxp.explorer.slot.4", "name": "OXP", "when": "oxp.explorer.slot.4" },
+        { "type": "webview", "id": "oxp.explorer.slot.5", "name": "OXP", "when": "oxp.explorer.slot.5" },
+        { "type": "webview", "id": "oxp.explorer.slot.6", "name": "OXP", "when": "oxp.explorer.slot.6" },
+        { "type": "webview", "id": "oxp.explorer.slot.7", "name": "OXP", "when": "oxp.explorer.slot.7" }
       ]
     },
     "menus": {
@@ -81,7 +105,15 @@
           "command": "oxp.devStop",
           "when": "view == oxp.dev.view",
           "group": "navigation@2"
-        }
+        },
+        { "command": "oxp.slot.0.open", "when": "view == oxp.explorer.slot.0 && oxp.explorer.slot.0", "group": "navigation" },
+        { "command": "oxp.slot.1.open", "when": "view == oxp.explorer.slot.1 && oxp.explorer.slot.1", "group": "navigation" },
+        { "command": "oxp.slot.2.open", "when": "view == oxp.explorer.slot.2 && oxp.explorer.slot.2", "group": "navigation" },
+        { "command": "oxp.slot.3.open", "when": "view == oxp.explorer.slot.3 && oxp.explorer.slot.3", "group": "navigation" },
+        { "command": "oxp.slot.4.open", "when": "view == oxp.explorer.slot.4 && oxp.explorer.slot.4", "group": "navigation" },
+        { "command": "oxp.slot.5.open", "when": "view == oxp.explorer.slot.5 && oxp.explorer.slot.5", "group": "navigation" },
+        { "command": "oxp.slot.6.open", "when": "view == oxp.explorer.slot.6 && oxp.explorer.slot.6", "group": "navigation" },
+        { "command": "oxp.slot.7.open", "when": "view == oxp.explorer.slot.7 && oxp.explorer.slot.7", "group": "navigation" }
       ]
     },
     "keybindings": [
@@ -89,6 +121,35 @@
         "command": "oxp.devStart",
         "key": "f5",
         "when": "oxp.isProject && !inDebugMode && editorTextFocus"
+      }
+    ],
+    "languages": [
+      {
+        "id": "oxp-bundle",
+        "aliases": ["OXP Bundle"],
+        "extensions": [".oxp"],
+        "icon": {
+          "light": "./media/file-icon-oxp.svg",
+          "dark": "./media/file-icon-oxp.svg"
+        }
+      },
+      {
+        "id": "oxp-pubkey",
+        "aliases": ["OXP Public Key"],
+        "filenamePatterns": ["*.pub.pem"],
+        "icon": {
+          "light": "./media/file-icon-key.svg",
+          "dark": "./media/file-icon-key.svg"
+        }
+      },
+      {
+        "id": "oxp-sig",
+        "aliases": ["OXP Signature"],
+        "filenamePatterns": ["*.sig.json"],
+        "icon": {
+          "light": "./media/file-icon-sig.svg",
+          "dark": "./media/file-icon-sig.svg"
+        }
       }
     ],
     "configuration": {

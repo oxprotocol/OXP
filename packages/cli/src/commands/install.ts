@@ -29,6 +29,12 @@ import { detectHosts, type DetectedHost } from "../lib/host-detect.js";
 import { ensureAdapters, type AdapterStatus } from "../lib/host-adapter.js";
 import { broadcast } from "../lib/broadcast.js";
 import { parseOxpUrl, OxpUrlError } from "../lib/oxp-url.js";
+import {
+  installNativeWrappers,
+  readManifestForWrapper,
+  disposeWrapperBuildDir,
+  type WrapperInstallReport,
+} from "../lib/wrapper-install.js";
 import { installVsx, type VsxInstallReport } from "../lib/vsx-install.js";
 import {
   detectClients,
@@ -284,6 +290,7 @@ export async function install(args: string[]): Promise<number> {
     // Smart host detection — discover IDEs, ensure adapters, broadcast.
     let detected: DetectedHost[] = [];
     let adapters: AdapterStatus[] = [];
+    let wrapperReports: WrapperInstallReport[] = [];
     if (!opts.noDetect) {
       detected = await detectHosts();
       if (opts.hostFilter) {
@@ -292,6 +299,25 @@ export async function install(args: string[]): Promise<number> {
       adapters = await ensureAdapters(detected, {
         reportOnly: opts.noAdapter,
       });
+
+      // Generate and install a wrapper VSIX for each VS Code-family host.
+      // The adapter (oxprotocol.oxp-vscode) provides the runtime bridge;
+      // the wrapper is what gives this specific extension its own Activity
+      // Bar icon so it appears natively in the sidebar like a regular extension.
+      if (!opts.noAdapter) {
+        const vscodeHosts = detected.filter((h) => h.family === "vscode");
+        if (vscodeHosts.length > 0) {
+          const wrapperTarget = readManifestForWrapper(
+            store.resourcePath(record),
+            record.id,
+          );
+          if (wrapperTarget) {
+            wrapperReports = installNativeWrappers(wrapperTarget, vscodeHosts);
+            const built = wrapperReports.find((r) => r.vsixPath);
+            if (built?.vsixPath) disposeWrapperBuildDir(built.vsixPath);
+          }
+        }
+      }
     }
 
     await broadcast({
@@ -313,6 +339,7 @@ export async function install(args: string[]): Promise<number> {
             name: a.host.displayName,
             running: a.host.running,
             adapter: a.status,
+            wrapper: wrapperReports.find((r) => r.host.id === a.host.id)?.status ?? null,
           })),
         }) + "\n",
       );
@@ -322,7 +349,7 @@ export async function install(args: string[]): Promise<number> {
       if (record.grantedPermissions?.length) {
         info(`  granted: ${record.grantedPermissions.join(", ")}`);
       }
-      if (!opts.noDetect) printHostSummary(adapters);
+      if (!opts.noDetect) printHostSummary(adapters, wrapperReports);
     }
     return 0;
   } catch (err) {
@@ -339,7 +366,7 @@ export async function install(args: string[]): Promise<number> {
   }
 }
 
-function printHostSummary(adapters: AdapterStatus[]): void {
+function printHostSummary(adapters: AdapterStatus[], wrapperReports: WrapperInstallReport[] = []): void {
   if (adapters.length === 0) {
     info(`  hosts: none detected (install lives in shared store only)`);
     return;
@@ -368,7 +395,15 @@ function printHostSummary(adapters: AdapterStatus[]): void {
         tail = "adapter not yet built for this host";
         break;
     }
-    info(`    - ${a.host.displayName}${runTag} — ${tail}`);
+    const wr = wrapperReports.find((r) => r.host.id === a.host.id);
+    const wrapperTail = wr
+      ? wr.status === "ok"
+        ? ", sidebar ✓"
+        : wr.status === "failed"
+          ? `, sidebar failed: ${(wr.reason ?? "").slice(0, 80)}`
+          : ""
+      : "";
+    info(`    - ${a.host.displayName}${runTag} — ${tail}${wrapperTail}`);
   }
   if (needsManualPlugin) {
     info(``);

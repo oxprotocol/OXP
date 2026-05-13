@@ -1,10 +1,10 @@
 <idea-plugin>
     <id>dev.oxp.jetbrains</id>
     <name>OXP - Open Extension Protocol</name>
-    <vendor email="hi@oxprotocol.org" url="https://oxprotocol.org">OXP</vendor>
+    <vendor email="hi@oxp.sh" url="https://oxp.sh">OXP</vendor>
 
     <description><![CDATA[
-        <p><b>Run universal <a href="https://oxprotocol.org">OXP</a>
+        <p><b>Run universal <a href="https://oxp.sh">OXP</a>
         extensions (<code>.wasm</code> components) inside any JetBrains
         IDE.</b> One extension binary, every editor — write it once,
         ship it to IntelliJ IDEA, PyCharm, WebStorm, GoLand, Rider,
@@ -81,7 +81,7 @@ oxp publish         # ship to https://oxp.sh</pre>
 
         <h3>Links</h3>
         <ul>
-          <li>Specification — <a href="https://oxprotocol.org/spec">oxprotocol.org/spec</a></li>
+          <li>Specification — <a href="https://oxp.sh/spec">oxp.sh/spec</a></li>
           <li>CLI &amp; SDK — <a href="https://www.npmjs.com/package/@oxprotocol/cli">npmjs.com/@oxprotocol/cli</a></li>
           <li>Source — <a href="https://github.com/oxprotocol/oxp">github.com/oxprotocol/oxp</a></li>
           <li>Issues — <a href="https://github.com/oxprotocol/oxp/issues">github.com/oxprotocol/oxp/issues</a></li>
@@ -91,25 +91,41 @@ oxp publish         # ship to https://oxp.sh</pre>
     ]]></description>
 
     <change-notes><![CDATA[
+        <h4>0.4.x — OXP Lens &amp; Switchboard</h4>
+        <ul>
+          <li><b>OXP Lens Switchboard</b> — a management panel that lists
+            all installed extensions with toggle switches. Toggle ON → the
+            extension gets its own native JetBrains tool window (LEFT anchor).
+            Toggle OFF → it disappears instantly. No reload required.</li>
+          <li><b>Native tool windows per extension</b> — each enabled
+            extension registers as an independent sidebar panel at the same
+            level as Project, Structure, and Git views.</li>
+          <li><b>Pop-out floating windows</b> — click ↗ on any extension
+            row to open it as a full floating window for maximum screen
+            real estate.</li>
+          <li><b>Persistent state</b> — toggle preferences survive IDE
+            restarts. Previously visible extensions reopen automatically
+            on project load.</li>
+          <li><b>OXP Dev redesign</b> — friendlier idle and error states,
+            soft purple badge instead of the old dark-red warning.</li>
+          <li><b>Shared JCEF browser factory</b> — bridge wiring is now
+            DRY; both the Switchboard tool windows and the Installed tab
+            use the same injection path.</li>
+          <li>New OXP brand icon across all tool windows and marketplace.</li>
+        </ul>
+        <h4>0.3.0</h4>
+        <ul>
+          <li>Extension list UI improvements and auto-open on CLI install.</li>
+        </ul>
         <h4>0.2.0</h4>
         <ul>
-          <li><b>Installed tab</b> in the OXP tool window — lists
-            everything in <code>~/.oxp/host-store/extensions/</code>.
-            Double-click to open the extension UI inline.</li>
-          <li><b>Auto-open on install</b> — running
-            <code>oxp install @publisher/slug</code> in any terminal
-            now opens the extension live in this IDE, no clicks.</li>
-          <li><b>ui-v1 (HTML) extensions</b> render inside the tool
-            window via JCEF.</li>
-          <li>New plugin icon and full description.</li>
+          <li>Installed tab, ui-v1 JCEF rendering, auto-open on
+            <code>oxp install</code>.</li>
         </ul>
         <h4>0.1.0</h4>
         <ul>
-          <li>Initial public release of the JetBrains host.</li>
-          <li>Wasmtime-backed sandboxed runtime (Rust).</li>
-          <li>Tool windows for installed extensions and dev sessions.</li>
-          <li>Cross-host shared install store under <code>~/.oxp</code>.</li>
-          <li>Live-reload dev sessions via <code>oxp dev</code>.</li>
+          <li>Initial release — Wasmtime runtime, shared install store,
+            live-reload dev sessions.</li>
         </ul>
     ]]></change-notes>
 
@@ -129,15 +145,17 @@ oxp publish         # ship to https://oxp.sh</pre>
             displayType="BALLOON"
             isLogByDefault="true"/>
         <toolWindow
-            id="OXP"
+            id="OXP Lens"
             anchor="right"
-            icon="AllIcons.Nodes.Plugin"
+            icon="/icons/oxp-logo.svg"
             factoryClass="dev.oxp.jetbrains.ui.OxpToolWindowFactory"/>
         <toolWindow
             id="OXP Dev"
             anchor="right"
-            icon="AllIcons.Actions.Lightning"
+            icon="/icons/oxp-logo.svg"
             factoryClass="dev.oxp.jetbrains.ui.OxpDevToolWindowFactory"/>
+        <projectService
+            serviceImplementation="dev.oxp.jetbrains.ui.ExtensionToolWindowManager"/>
         <projectService
             serviceImplementation="dev.oxp.jetbrains.edh.OxpDevSession"/>
         <projectService

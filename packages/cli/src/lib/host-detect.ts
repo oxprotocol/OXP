@@ -14,7 +14,7 @@
  * `partial: true` so the caller can decide whether to skip it.
  *
  * Supported families today:
- *   - VS Code, Cursor, Windsurf, VSCodium, VS Code Insiders
+ *   - VS Code, Cursor, Windsurf, VSCodium, Antigravity, VS Code Insiders
  *     (all share the same extension format → adapter VSIX is reusable)
  *
  * JetBrains, Zed, Theia, Gitpod, Coder are placeholders — detection is
@@ -112,6 +112,15 @@ const VSCODE_FAMILY: readonly VSCodeFamilyEntry[] = [
     userDataSubdir: "VSCodium",
     extensionsSubdir: ".vscode-oss/extensions",
     processFragment: "VSCodium",
+  },
+  {
+    id: "vscode" as HostId,
+    displayName: "Antigravity",
+    bin: ["antigravity"],
+    macApps: ["Antigravity.app"],
+    userDataSubdir: "Antigravity",
+    extensionsSubdir: ".antigravity/extensions",
+    processFragment: "Antigravity",
   },
 ];
 

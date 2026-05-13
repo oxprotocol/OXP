@@ -8,8 +8,6 @@ import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.JBList
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.Content
-import com.intellij.ui.jcef.JBCefApp
-import com.intellij.ui.jcef.JBCefBrowser
 import com.intellij.util.ui.JBUI
 import dev.oxp.jetbrains.runtime.InstalledStoreReader
 import dev.oxp.jetbrains.runtime.NotifyInboxWatcher
@@ -17,7 +15,6 @@ import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import javax.swing.BorderFactory
 import javax.swing.Box
 import javax.swing.BoxLayout
 import javax.swing.DefaultListModel
@@ -108,7 +105,7 @@ internal class InstalledExtensionsPanel(
         ApplicationManager.getApplication().invokeLater {
             val entry = InstalledStoreReader.get(id) ?: return@invokeLater
             // Activate this tool window so the user actually sees the tab pop in.
-            ToolWindowManager.getInstance(project).getToolWindow("OXP")?.activate(null, true)
+            ToolWindowManager.getInstance(project).getToolWindow("OXP Lens")?.activate(null, true)
             openEntry(entry)
         }
     }
@@ -130,53 +127,8 @@ internal class InstalledExtensionsPanel(
         tabs[id] = content
     }
 
-    /**
-     * Render the extension's UI. For ui-v1 bundles this means loading
-     * `<installDir>/<main.ui>` in a JCEF browser. For wasm components
-     * we currently fall back to a hint panel (full activation is wired
-     * through the runtime panel).
-     */
-    private fun renderEntry(entry: InstalledStoreReader.Entry): JPanel {
-        val main = entry.manifest.mainUi
-        if (main != null) {
-            val htmlPath = entry.installDir.resolve(main)
-            if (JBCefApp.isSupported() && java.nio.file.Files.isRegularFile(htmlPath)) {
-                val browser = JBCefBrowser.createBuilder().setOffScreenRendering(false).build()
-                browser.loadURL(htmlPath.toUri().toString())
-                val wrap = JPanel(BorderLayout())
-                wrap.add(browser.component, BorderLayout.CENTER)
-                return wrap
-            }
-        }
-        // Fallback: show metadata only.
-        val p = JPanel(BorderLayout())
-        p.border = BorderFactory.createTitledBorder("${entry.manifest.id}@${entry.manifest.version}")
-        val text = buildString {
-            appendLine(entry.manifest.displayName ?: entry.manifest.id)
-            entry.manifest.description?.let { appendLine(it) }
-            appendLine()
-            appendLine("Kind: ${entry.kind}")
-            appendLine("Path: ${entry.installDir}")
-            if (entry.manifest.mainComponent != null) {
-                appendLine()
-                appendLine("This is a wasm component — open the Runtime tab")
-                appendLine("and click 'Start runtime' to activate it.")
-            } else if (!JBCefApp.isSupported()) {
-                appendLine()
-                appendLine("JCEF is not available — enable it in")
-                appendLine("Help → Find Action → 'Choose Boot Java Runtime…'")
-                appendLine("and pick a JBR with JCEF.")
-            }
-        }
-        val area = javax.swing.JTextArea(text).apply {
-            isEditable = false
-            lineWrap = true
-            wrapStyleWord = true
-            border = JBUI.Borders.empty(8)
-        }
-        p.add(JBScrollPane(area), BorderLayout.CENTER)
-        return p
-    }
+    private fun renderEntry(entry: InstalledStoreReader.Entry): JPanel =
+        ExtensionBrowserPanel.create(entry)
 
     private class EntryCellRenderer : ListCellRenderer<InstalledStoreReader.Entry> {
         override fun getListCellRendererComponent(

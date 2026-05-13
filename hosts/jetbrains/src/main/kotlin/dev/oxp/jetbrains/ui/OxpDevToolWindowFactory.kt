@@ -91,7 +91,7 @@ private class DevPanel(
     }
     private val badgeLabel = JBLabel("DEV").apply {
         foreground = Color.WHITE
-        background = JBColor(Color(0x7F, 0x1D, 0x1D), Color(0x7F, 0x1D, 0x1D))
+        background = JBColor(Color(0x6D, 0x28, 0xD9), Color(0x6D, 0x28, 0xD9))
         isOpaque = true
         border = JBUI.Borders.empty(2, 8)
         font = font.deriveFont(Font.BOLD, 10f)
@@ -248,8 +248,8 @@ private class DevPanel(
             is OxpDevSession.Status.Shutdown -> "Dev server stopped"
         }
         statusLabel.foreground = when (status) {
-            is OxpDevSession.Status.Error -> JBColor(Color(0xB9, 0x1C, 0x1C), Color(0xFC, 0xA5, 0xA5))
-            is OxpDevSession.Status.Connected -> JBColor(Color(0x16, 0x65, 0x34), Color(0x86, 0xEF, 0xAC))
+            is OxpDevSession.Status.Error -> JBColor(Color(0xDC, 0x60, 0x60), Color(0xF8, 0x71, 0x71))
+            is OxpDevSession.Status.Connected -> JBColor(Color(0x16, 0x80, 0x50), Color(0x6E, 0xE7, 0xB7))
             else -> UIManagerForeground()
         }
 
@@ -295,14 +295,53 @@ private class DevPanel(
     }
 
     private fun emptyHtml(message: String, error: Boolean): String {
-        val bg = if (error) "#1f0a0a" else "#1a1a1a"
-        val accent = if (error) "#fca5a5" else "#9ca3af"
+        val safeMsg = escapeHtml(message)
+        val body = if (error) {
+            """
+            <div class="card">
+              <div class="err-icon">⚠</div>
+              <div class="title">Something went wrong</div>
+              <p class="desc err-desc">$safeMsg</p>
+            </div>
+            """.trimIndent()
+        } else {
+            """
+            <div class="card">
+              <div class="idle-icon">⚡</div>
+              <div class="title">OXP Dev Mode</div>
+              <p class="desc">$safeMsg</p>
+              <p class="hint">Run <code>oxp dev</code> in your project terminal to connect.</p>
+            </div>
+            """.trimIndent()
+        }
         return """
-            <!doctype html><html><body style="margin:0;font-family:system-ui,-apple-system,sans-serif;background:$bg;color:#fff;padding:24px">
-              <div style="background:#7f1d1d;color:#fff;padding:6px 12px;border-radius:4px;font-weight:600;display:inline-block;margin-bottom:16px;font-size:11px;letter-spacing:.04em">⚠ OXP DEV — signature bypass</div>
-              <h2 style="margin:0 0 8px 0;font-weight:600">OXP Extension Development Host</h2>
-              <p style="color:$accent;margin:0">${escapeHtml(message)}</p>
-            </body></html>
+            <!doctype html>
+            <html>
+            <head><meta charset="utf-8"><style>
+            *{box-sizing:border-box;margin:0;padding:0}
+            body{
+              font-family:var(--vscode-font-family,system-ui,-apple-system,sans-serif);
+              background:var(--vscode-sideBar-background,#1e1e1e);
+              color:var(--vscode-foreground,#cccccc);
+              display:flex;align-items:center;justify-content:center;
+              min-height:100vh;padding:24px;
+            }
+            .card{text-align:center;max-width:280px}
+            .idle-icon{font-size:36px;margin-bottom:16px;opacity:.5}
+            .err-icon{font-size:36px;margin-bottom:16px;color:#f87171}
+            .title{font-size:14px;font-weight:600;margin-bottom:10px;
+              color:var(--vscode-foreground,#cccccc)}
+            .desc{font-size:12px;line-height:1.6;
+              color:var(--vscode-descriptionForeground,#888)}
+            .err-desc{color:#f87171}
+            .hint{font-size:11px;margin-top:14px;
+              color:var(--vscode-descriptionForeground,#666)}
+            code{font-family:var(--vscode-editor-font-family,monospace);
+              background:var(--vscode-textCodeBlock-background,#2a2a2a);
+              padding:2px 5px;border-radius:3px;font-size:11px}
+            </style></head>
+            <body>$body</body>
+            </html>
         """.trimIndent()
     }
 
