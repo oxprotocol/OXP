@@ -181,6 +181,8 @@ jobs:
         with: { node-version: "20", cache: pnpm }
       - name: install workspace deps
         run: pnpm install --frozen-lockfile
+      - name: build workspace packages
+        run: pnpm -r --filter "./packages/**" build
       - name: build VS Code bundle
         working-directory: hosts/vscode
         run: pnpm build
@@ -263,8 +265,8 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-      - name: pnpm -r publish (topological, rewrites workspace:*)
-        run: pnpm -r publish --no-git-checks --access public
+      - name: pnpm publish @oxprotocol/* packages (topological, rewrites workspace:*)
+        run: pnpm -r --filter "@oxprotocol/*" publish --no-git-checks --access public
 
   # -- 5. Summary -----------------------------------------------------------
   summary:
