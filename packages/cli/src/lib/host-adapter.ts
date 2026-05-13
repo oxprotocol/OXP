@@ -30,6 +30,10 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 import type { DetectedHost } from "./host-detect.js";
+import {
+  locateVendoredJetBrainsPlugin,
+  installJetBrainsPlugin,
+} from "./jb-plugin.js";
 
 const exec = promisify(execFile);
 
@@ -177,8 +181,9 @@ async function hasAdapterViaCli(cliPath: string): Promise<boolean> {
  */
 async function ensureJetBrainsAdapter(
   host: DetectedHost,
-  _opts: EnsureOptions,
+  opts: EnsureOptions,
 ): Promise<AdapterStatus> {
+  // Check if already installed in the plugins dir.
   if (host.extensionsDir) {
     try {
       const entries = await fs.readdir(host.extensionsDir);
@@ -192,9 +197,31 @@ async function ensureJetBrainsAdapter(
       });
       if (present) return { status: "present", host };
     } catch {
-      // No plugins dir yet — fall through to "unavailable".
+      // No plugins dir yet — fall through to install.
     }
   }
+
+  if (opts.reportOnly) {
+    return {
+      status: "unavailable",
+      host,
+      reason: "skipped (report-only)",
+    };
+  }
+
+  // Attempt to install from the vendored zip bundled with the CLI.
+  const plugin = locateVendoredJetBrainsPlugin();
+  if (plugin && host.userDataDir) {
+    const ok = installJetBrainsPlugin(plugin, host.userDataDir);
+    if (ok) return { status: "installed", host };
+    return {
+      status: "failed",
+      host,
+      error: "failed to extract vendored plugin zip into JetBrains plugins dir",
+    };
+  }
+
+  // No vendored zip or no config dir — fall back to manual guidance.
   if (!JETBRAINS_ADAPTER_PUBLISHED) {
     return {
       status: "unavailable",

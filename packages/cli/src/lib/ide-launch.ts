@@ -72,45 +72,12 @@ function locateVendoredVsix(): VendoredVsix | null {
 }
 
 // ── Vendored JetBrains plugin zip ─────────────────────────────────────────
+// Shared logic lives in jb-plugin.ts; re-exported here for convenience.
 
-interface VendoredJetBrainsPlugin {
-  zipPath: string;
-  version: string;
-  pluginId: string;
-  /** Top-level directory inside the zip (`oxp-jetbrains`). */
-  rootDir: string;
-}
-
-function locateVendoredJetBrainsPlugin(): VendoredJetBrainsPlugin | null {
-  const here = dirname(fileURLToPath(import.meta.url));
-  const candidates = [
-    join(here, "..", "..", "vendor"),
-    join(here, "..", "..", "..", "vendor"),
-  ];
-  for (const dir of candidates) {
-    const manifestPath = join(dir, "oxp-jetbrains.json");
-    if (!existsSync(manifestPath)) continue;
-    try {
-      const m = JSON.parse(readFileSync(manifestPath, "utf8")) as {
-        pluginId: string;
-        version: string;
-        zipFile: string;
-        rootDir: string;
-      };
-      const zip = join(dir, m.zipFile);
-      if (!existsSync(zip)) continue;
-      return {
-        zipPath: zip,
-        version: m.version,
-        pluginId: m.pluginId,
-        rootDir: m.rootDir,
-      };
-    } catch {
-      continue;
-    }
-  }
-  return null;
-}
+import {
+  locateVendoredJetBrainsPlugin,
+  installJetBrainsPlugin as installJetBrainsPluginShared,
+} from "./jb-plugin.js";
 
 // ── Vendored Neovim plugin tarball ────────────────────────────────────────
 
@@ -893,71 +860,6 @@ function compareJbVersions(a: string, b: string): number {
   return 0;
 }
 
-/**
- * Install (or upgrade) the vendored JetBrains plugin into `configDir`'s
- * `plugins/` folder. Idempotent — if the existing install already
- * matches the vendored version, this is a no-op.
- *
- * Returns the install root on success, or null on failure.
- */
-function installJetBrainsPlugin(
-  plugin: VendoredJetBrainsPlugin,
-  configDir: string,
-  debug: boolean,
-): string | null {
-  const pluginsDir = join(configDir, "plugins");
-  const target = join(pluginsDir, plugin.rootDir);
-  const stamp = join(target, ".oxp-installed-version");
-
-  // Fast path: same version already installed.
-  if (existsSync(stamp)) {
-    try {
-      const installed = readFileSync(stamp, "utf8").trim();
-      if (installed === plugin.version) {
-        if (debug) info(`  plugin: ${plugin.version} already at ${target}`);
-        return target;
-      }
-    } catch {
-      /* fall through to reinstall */
-    }
-  }
-
-  // Wipe any previous install of *our* plugin, then extract.
-  try {
-    if (existsSync(target)) rmSync(target, { recursive: true, force: true });
-    mkdirSync(pluginsDir, { recursive: true });
-  } catch (err) {
-    info(`✖ failed to prepare ${pluginsDir}: ${(err as Error).message}`);
-    return null;
-  }
-
-  const r =
-    process.platform === "win32"
-      ? spawnSync("powershell", [
-          "-NoProfile",
-          "-Command",
-          `Expand-Archive -LiteralPath '${plugin.zipPath}' -DestinationPath '${pluginsDir}' -Force`,
-        ])
-      : spawnSync("unzip", ["-oq", plugin.zipPath, "-d", pluginsDir]);
-  if (r.status !== 0) {
-    info(
-      `✖ failed to extract JetBrains plugin: ${r.stderr.trim() || "exit " + r.status}`,
-    );
-    return null;
-  }
-
-  if (!existsSync(join(target, "lib"))) {
-    info(`✖ extracted plugin missing lib/ at ${target}`);
-    return null;
-  }
-
-  try {
-    writeFileSync(stamp, plugin.version, "utf8");
-  } catch {
-    /* non-fatal */
-  }
-  return target;
-}
 
 function launchJetBrainsForDev(
   projectRoot: string,
@@ -1036,10 +938,9 @@ function launchJetBrainsForDev(
           " once so it creates one, then re-run `oxp dev`.",
       );
     } else {
-      const installed = installJetBrainsPlugin(plugin, configDir, debug);
+      const installed = installJetBrainsPluginShared(plugin, configDir);
       if (installed) {
         info(`✓ OXP plugin installed (${plugin.version})`);
-        if (debug) info(`  at: ${installed}`);
       } else {
         info("  ⚠ continuing without plugin auto-install");
       }

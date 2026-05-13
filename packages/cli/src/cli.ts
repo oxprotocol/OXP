@@ -25,6 +25,7 @@ import { keygen } from "./commands/keygen.js";
 import { token } from "./commands/token.js";
 import { protocolRegister } from "./commands/protocol-register.js";
 import { doctor } from "./commands/doctor.js";
+import { setup } from "./commands/setup.js";
 import { icon } from "./commands/icon.js";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -68,6 +69,8 @@ Usage:
                              into the shared host-store. Both VS Code and
                              JetBrains hosts pick it up automatically.
   oxp install-url --list     List previously URL-installed extensions
+  oxp setup [--yes]          Detect all installed IDEs and auto-install the
+                             OXP host adapter into each one
   oxp protocol-register      Register the oxp:// URL scheme on this machine
   oxp doctor [--json] [--project DIR]
                              Inspect this machine + (optionally) a project
@@ -117,6 +120,8 @@ async function main(argv: string[]): Promise<number> {
       return install(rest);
     case "install-url":
       return installUrl(rest);
+    case "setup":
+      return setup(rest);
     case "protocol-register":
       return protocolRegister(rest);
     case "doctor":
