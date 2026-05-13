@@ -2,8 +2,8 @@ name: Sync MCP registry
 
 # Crawls every public MCP server source (official registry, github
 # modelcontextprotocol/servers, npm keyword search, mcp.so, glama.ai) and
-# refreshes apps/web/lib/mcp-servers.json. Runs daily at 06:00 UTC and opens
-# a PR if anything changed. Also runnable manually from the Actions tab.
+# refreshes apps/web/lib/mcp-servers.json. Runs daily at 06:00 UTC and commits
+# directly to main if anything changed. Also runnable manually from the Actions tab.
 
 on:
   schedule:
@@ -12,7 +12,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   sync:
@@ -25,8 +24,6 @@ jobs:
           node-version: "20"
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -34,28 +31,17 @@ jobs:
       - name: Crawl MCP sources
         working-directory: apps/web
         env:
-          # Lifts the GitHub API rate limit while crawling
-          # github.com/modelcontextprotocol/servers contents.
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm sync:mcp
 
-      - name: Open PR if snapshot changed
-        uses: peter-evans/create-pull-request@v6
-        with:
-          commit-message: "chore(mcp): sync registry snapshot"
-          title: "chore(mcp): sync registry snapshot"
-          body: |
-            Automated daily multi-source sync of the public MCP ecosystem into
-            `apps/web/lib/mcp-servers.json`.
-
-            Sources crawled:
-            - registry.modelcontextprotocol.io
-            - github.com/modelcontextprotocol/servers
-            - npm registry (`keywords:mcp-server`)
-            - mcp.so
-            - glama.ai/mcp/servers
-
-            Triggered by `.github/workflows/sync-mcp.yml`.
-          branch: chore/sync-mcp
-          delete-branch: true
-          add-paths: apps/web/lib/mcp-servers.json
+      - name: Commit snapshot if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps/web/lib/mcp-servers.json
+          if git diff --staged --quiet; then
+            echo "mcp-servers.json unchanged — nothing to commit"
+          else
+            git commit -m "chore(mcp): sync registry snapshot [skip ci]"
+            git push
+          fi
