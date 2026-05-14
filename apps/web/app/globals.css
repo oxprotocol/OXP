@@ -391,11 +391,13 @@ html.light body {
   color: var(--foreground) !important;
 }
 
-/* ─── Surfaces (page = gray-100, cards = white, sunken = gray-50) ─── */
+/* ─── Surfaces (page = gray-100, cards/sections = white, sunken = gray-100) ─── */
 html.light .bg-\[\#060a13\],
 html.light .bg-\[\#060a13\]\/60,
 html.light .bg-\[\#060a13\]\/80,
-html.light .bg-\[\#060a13\]\/90  { background-color: var(--background) !important; }
+html.light .bg-\[\#060a13\]\/90,
+html.light .bg-\[\#060a13\]\/95  { background-color: var(--surface) !important; }
+html.light .bg-\[\#060a13\]\/40  { background-color: var(--surface-2) !important; }
 html.light .bg-\[\#0a0f1c\]      { background-color: var(--surface) !important; }
 html.light .bg-\[\#030711\],
 html.light .bg-\[\#030711\]\/60  { background-color: var(--surface-2) !important; }
@@ -771,9 +773,11 @@ html.light [data-force-dark] {
 
 /* Surfaces back to dark */
 html.light [data-force-dark] .bg-\[\#060a13\],
+html.light [data-force-dark] .bg-\[\#060a13\]\/40,
 html.light [data-force-dark] .bg-\[\#060a13\]\/60 { background-color: rgba(6, 10, 19, 0.6) !important; }
 html.light [data-force-dark] .bg-\[\#060a13\]\/80 { background-color: rgba(6, 10, 19, 0.8) !important; }
-html.light [data-force-dark] .bg-\[\#060a13\]\/90 { background-color: rgba(6, 10, 19, 0.9) !important; }
+html.light [data-force-dark] .bg-\[\#060a13\]\/90,
+html.light [data-force-dark] .bg-\[\#060a13\]\/95 { background-color: rgba(6, 10, 19, 0.9) !important; }
 html.light [data-force-dark] .bg-\[\#0a0f1c\]      { background-color: #0a0f1c !important; }
 html.light [data-force-dark] .bg-\[\#030711\],
 html.light [data-force-dark] .bg-\[\#030711\]\/60 { background-color: rgba(3, 7, 17, 0.6) !important; }
@@ -849,26 +853,58 @@ html.light [data-force-dark] .from-\[\#7DD3FC\]\/20 {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 
-/* HUD card — restore dark spaceship appearance inside the dark island */
+/* HUD card — light cards on dark island background */
 html.light [data-force-dark] .hud-card {
-  background: linear-gradient(
-    135deg,
-    rgba(125, 211, 252, 0.03) 0%,
-    rgba(6, 10, 19, 0.9) 50%,
-    rgba(125, 211, 252, 0.03) 100%
-  ) !important;
-  border: 1px solid rgba(125, 211, 252, 0.15) !important;
-  border-radius: 2px !important;
-  box-shadow: none !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 6px !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
 }
 html.light [data-force-dark] .hud-card:hover {
-  border-color: rgba(125, 211, 252, 0.4) !important;
-  box-shadow: 0 0 20px rgba(125, 211, 252, 0.08), inset 0 0 20px rgba(125, 211, 252, 0.02) !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.10) !important;
 }
 html.light [data-force-dark] .hud-card::before,
-html.light [data-force-dark] .hud-card::after { display: block !important; }
+html.light [data-force-dark] .hud-card::after { display: none !important; }
 html.light [data-force-dark] .hud-corners::before,
-html.light [data-force-dark] .hud-corners::after { display: block !important; opacity: 0.5 !important; }
+html.light [data-force-dark] .hud-corners::after { display: none !important; }
+
+/* Card text — dark on white card for readability */
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]      { color: #0f172a !important; }
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/80,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/70,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/65,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/60,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/55,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/50,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/45,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/40 { color: #334155 !important; }
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/35,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/30,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/25,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/20,
+html.light [data-force-dark] .hud-card .text-\[\#f8fafc\]\/15 { color: #64748b !important; }
+html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\],
+html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/80,
+html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/70,
+html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/60,
+html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/50,
+html.light [data-force-dark] .hud-card .text-\[\#7DD3FC\]\/40 { color: #0369a1 !important; }
+
+/* Inner chips, borders, bg tints inside white cards */
+html.light [data-force-dark] .hud-card .bg-\[\#7DD3FC\]\/5,
+html.light [data-force-dark] .hud-card .bg-\[\#7DD3FC\]\/\[0\.03\] { background-color: #f0f9ff !important; }
+html.light [data-force-dark] .hud-card .bg-\[\#7DD3FC\]\/10 { background-color: #e0f2fe !important; }
+html.light [data-force-dark] .hud-card .border-\[\#7DD3FC\]\/10,
+html.light [data-force-dark] .hud-card .border-\[\#7DD3FC\]\/15,
+html.light [data-force-dark] .hud-card .border-\[\#7DD3FC\]\/20,
+html.light [data-force-dark] .hud-card .border-\[\#7DD3FC\]\/30 { border-color: #e2e8f0 !important; }
+html.light [data-force-dark] .hud-card .fill-\[\#7DD3FC\]\/30 { fill: #0369a1 !important; }
+
+/* Code/command blocks inside light cards — light background so dark text is readable */
+html.light [data-force-dark] .hud-card .bg-\[\#060a13\]\/80 {
+  background-color: #f1f5f9 !important;
+}
 
 /* Grid overlay back to cyan whisper */
 html.light [data-force-dark] .grid-overlay {
@@ -1527,3 +1563,15 @@ html.light .doc-codeblock-head {
   background: #f8fafc;
   border-bottom-color: var(--docs-border);
 }
+
+
+/* ════════════════════════════════════════════════════════════════
+   LANDING PAGE DARK ISLAND — belt-and-suspenders for key surfaces
+   that could break in light mode. Specificity 31 beats util (21).
+   ════════════════════════════════════════════════════════════════ */
+
+/* Marquee / stats strip background */
+html.light [data-force-dark] section.bg-\[\#060a13\]\/80 {
+  background-color: rgba(6, 10, 19, 0.85) !important;
+}
+

@@ -47,7 +47,7 @@ const navLinks: NavItem[] = [
       { label: "Introduction", href: "/docs/introduction" },
       { label: "First Extension", href: "/docs/first-extension" },
       { label: "CLI Reference", href: "/docs/cli-reference" },
-      { label: "API Hooks", href: "/docs/api-hooks" },
+      { label: "SDK Reference", href: "/docs/sdk" },
       { label: "Permissions", href: "/docs/permissions" },
       { label: "Publishing", href: "/docs/publishing" },
     ],
@@ -84,7 +84,6 @@ export function NavbarClient({ user }: { user: User | null }) {
 
   return (
     <nav
-      data-force-dark
       className="w-full border-b border-[#7DD3FC]/10 bg-[#060a13]/80 backdrop-blur-xl sticky top-0"
       style={{ zIndex: 50 }}
     >
