@@ -220,6 +220,36 @@ export async function mergeServerInto(
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/* Read installed servers                                                     */
+/* -------------------------------------------------------------------------- */
+
+export interface InstalledMcpServer {
+  slug: string;
+  entry: McpServerEntry;
+}
+
+/**
+ * Read the list of MCP servers currently configured in a client's config
+ * file. Returns an empty array if the file doesn't exist or is unreadable.
+ */
+export async function listInstalledServers(
+  client: ClientTarget,
+): Promise<InstalledMcpServer[]> {
+  try {
+    const { data, existed } = await readJsonSafe(client.configPath);
+    if (!existed) return [];
+    const bucket = ensurePath(data, client.serversKey);
+    return Object.entries(bucket)
+      .filter(([, v]) => v && typeof v === "object" && !Array.isArray(v))
+      .map(([slug, v]) => ({ slug, entry: v as McpServerEntry }));
+  } catch {
+    return [];
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+
 /**
  * Remove a server entry from every detected client's config. Used by
  * `oxp uninstall` — silently skips clients that don't have the entry.

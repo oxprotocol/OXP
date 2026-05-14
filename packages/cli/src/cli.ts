@@ -25,6 +25,7 @@ import { keygen } from "./commands/keygen.js";
 import { token } from "./commands/token.js";
 import { protocolRegister } from "./commands/protocol-register.js";
 import { doctor } from "./commands/doctor.js";
+import { mcpCommand } from "./commands/mcp.js";
 import { setup } from "./commands/setup.js";
 import { icon } from "./commands/icon.js";
 import { readFileSync } from "node:fs";
@@ -72,9 +73,12 @@ Usage:
   oxp setup [--yes]          Detect all installed IDEs and auto-install the
                              OXP host adapter into each one
   oxp protocol-register      Register the oxp:// URL scheme on this machine
+  oxp mcp rollback @pub/server Remove an MCP server from all detected client
+                             configs, undoing \`oxp install\`
   oxp doctor [--json] [--project DIR]
                              Inspect this machine + (optionally) a project
-                             for build-determinism issues
+                             for build-determinism issues; includes MCP server
+                             reachability probes
   oxp keygen                 Print the local Ed25519 publisher key id
   oxp icon ...               Generate or convert extension icons
                              (run 'oxp icon help' for templates / options)
@@ -126,6 +130,8 @@ async function main(argv: string[]): Promise<number> {
       return protocolRegister(rest);
     case "doctor":
       return doctor(rest);
+    case "mcp":
+      return mcpCommand(rest);
     case "keygen":
       return keygen(rest);
     case "icon":

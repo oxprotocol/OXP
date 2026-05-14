@@ -21,6 +21,13 @@ import { fileURLToPath } from "node:url";
 import { detectHosts } from "../lib/host-detect.js";
 import { ensureAdapters } from "../lib/host-adapter.js";
 import {
+  detectClients,
+  listInstalledServers,
+  type ClientTarget,
+  type InstalledMcpServer,
+} from "../lib/mcp-clients.js";
+import { probeMcpServer, type ProbeResult } from "../lib/mcp-probe.js";
+import {
   findProjectRoot,
   info,
   oxpHome,
@@ -33,6 +40,21 @@ interface WhoamiResp {
   handle?: string | null;
   email?: string;
   token?: { scopes?: string[]; expiresAt?: string | null };
+}
+
+interface McpServerHealth {
+  slug: string;
+  command: string;
+  args: string[];
+  reachable: boolean;
+  reason?: string;
+}
+
+interface McpClientHealth {
+  id: string;
+  name: string;
+  configPath: string;
+  servers: McpServerHealth[];
 }
 
 const HELP = `oxp doctor [--json] [--project <dir>]   Inspect this machine and report what OXP can see
@@ -90,6 +112,49 @@ export async function doctor(args: string[]): Promise<number> {
   const detected = await detectHosts({ skipProcessProbe: false });
   const adapters = await ensureAdapters(detected, { reportOnly: true });
 
+  // MCP client health — detect configured servers and probe reachability.
+  // Each unique (command, args) pair is probed once in parallel.
+  const mcpClients = await detectClients();
+  const mcpHealth: McpClientHealth[] = [];
+  if (mcpClients.length > 0) {
+    const clientServers: Array<{ client: ClientTarget; servers: InstalledMcpServer[] }> = [];
+    for (const c of mcpClients) {
+      clientServers.push({ client: c, servers: await listInstalledServers(c) });
+    }
+    const probeCache = new Map<string, ProbeResult>();
+    const toProbe = new Map<string, InstalledMcpServer>();
+    for (const { servers } of clientServers) {
+      for (const s of servers) {
+        const key = `${s.entry.command}\0${s.entry.args.join("\0")}`;
+        if (!toProbe.has(key)) toProbe.set(key, s);
+      }
+    }
+    await Promise.all(
+      Array.from(toProbe.entries()).map(async ([key, s]) => {
+        const r = await probeMcpServer(s.entry.command, s.entry.args, s.entry.env);
+        probeCache.set(key, r);
+      }),
+    );
+    for (const { client: c, servers } of clientServers) {
+      mcpHealth.push({
+        id: c.id,
+        name: c.displayName,
+        configPath: c.configPath,
+        servers: servers.map((s) => {
+          const key = `${s.entry.command}\0${s.entry.args.join("\0")}`;
+          const probe = probeCache.get(key) ?? { ok: false, reason: "probe not run" };
+          return {
+            slug: s.slug,
+            command: s.entry.command,
+            args: s.entry.args,
+            reachable: probe.ok,
+            reason: probe.reason,
+          };
+        }),
+      });
+    }
+  }
+
   // Project inspection (build-determinism). Off by default only when the
   // user explicitly passes --no-project. When --project is given we use
   // that path; otherwise we look for an oxp.json at or above cwd.
@@ -145,6 +210,7 @@ export async function doctor(args: string[]): Promise<number> {
                 ? a.error
                 : undefined,
         })),
+        mcp: mcpHealth,
         project,
       }) + "\n",
     );
@@ -209,6 +275,7 @@ export async function doctor(args: string[]): Promise<number> {
     }
   }
   info(``);
+  renderMcp(mcpHealth);
   if (project) renderProject(project);
   info(`Next steps:`);
   if (!tokenPresent) info(`  • run \`oxp login\` to publish extensions`);
@@ -593,6 +660,33 @@ async function reportProject(root: string): Promise<ProjectReport> {
     manifestVersion,
     checks,
   };
+}
+
+function renderMcp(health: McpClientHealth[]): void {
+  info(`MCP servers:`);
+  if (health.length === 0) {
+    info(
+      `  (none) — install Claude Desktop, Cursor, VS Code, or Windsurf to use MCP`,
+    );
+    info(``);
+    return;
+  }
+  let anyServers = false;
+  for (const c of health) {
+    if (c.servers.length === 0) continue;
+    anyServers = true;
+    info(`  ${c.name}  (${c.configPath})`);
+    for (const s of c.servers) {
+      const reach = s.reachable
+        ? `reachable ✓`
+        : `not reachable — ${s.reason ?? "unknown"}`;
+      info(`    • ${s.slug.padEnd(30)} ${reach}`);
+    }
+  }
+  if (!anyServers) {
+    info(`  (no servers configured — run \`oxp install @publisher/server\` to add one)`);
+  }
+  info(``);
 }
 
 function renderProject(p: ProjectReport): void {

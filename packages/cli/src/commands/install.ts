@@ -43,6 +43,8 @@ import {
   type InstallReport as McpClientReport,
   type McpServerEntry,
 } from "../lib/mcp-clients.js";
+import { appendMcpLog } from "../lib/mcp-log.js";
+import { probeMcpServer, type ProbeResult } from "../lib/mcp-probe.js";
 
 interface ParsedArgs {
   id?: string;
@@ -228,12 +230,40 @@ export async function install(args: string[]): Promise<number> {
     }
     const reports: McpClientReport[] = [];
     for (const c of clients) {
-      reports.push(await mergeServerInto(c, slug, entry));
+      const r = await mergeServerInto(c, slug, entry);
+      reports.push(r);
+      // Log every config-merge attempt regardless of outcome.
+      await appendMcpLog({
+        kind: "install",
+        id: opts.id,
+        client: c.id,
+        status:
+          r.status === "installed" || r.status === "updated"
+            ? "ok"
+            : r.status === "skipped"
+              ? "skipped"
+              : "failed",
+        reason: r.reason,
+      });
     }
     const okCount = reports.filter(
       (r) => r.status === "installed" || r.status === "updated",
     ).length;
     const failed = reports.filter((r) => r.status === "failed");
+
+    // Probe the server for reachability — best-effort, non-blocking on result.
+    // Run only when at least one client was configured (no point probing when
+    // there's nowhere to install it) and we're not in --json mode.
+    let probe: ProbeResult | null = null;
+    if (okCount > 0 || reports.some((r) => r.status === "skipped")) {
+      probe = await probeMcpServer(entry.command, entry.args, spec.env);
+      await appendMcpLog({
+        kind: "probe",
+        id: opts.id,
+        status: probe.ok ? "reachable" : "unreachable",
+        reason: probe.reason,
+      });
+    }
 
     if (opts.json) {
       process.stdout.write(
@@ -243,6 +273,8 @@ export async function install(args: string[]): Promise<number> {
           id: opts.id,
           server: slug,
           launcher: { command: entry.command, args: entry.args },
+          verified: probe?.ok ?? null,
+          verifyReason: probe?.reason ?? null,
           clients: reports.map((r) => ({
             id: r.client.id,
             name: r.client.displayName,
@@ -259,7 +291,7 @@ export async function install(args: string[]): Promise<number> {
           `  env (placeholder — edit before use): ${Object.keys(spec.env).join(", ")}`,
         );
       }
-      printMcpSummary(reports);
+      printMcpSummary(reports, probe);
       if (clients.length === 0) {
         info(
           `  no MCP-aware client detected (Claude Desktop, Cursor, VS Code, Windsurf)`,
@@ -268,6 +300,7 @@ export async function install(args: string[]): Promise<number> {
       } else if (okCount > 0) {
         info(`  restart the affected client(s) to load the new server.`);
       }
+      info(`  log: ~/.oxp/logs/mcp-install.jsonl`);
     }
     return failed.length === 0 ? 0 : 1;
   }
@@ -513,7 +546,7 @@ async function tryFetchMcpMeta(id: string): Promise<McpRegistryMeta | null> {
   }
 }
 
-function printMcpSummary(reports: McpClientReport[]): void {
+function printMcpSummary(reports: McpClientReport[], probe: ProbeResult | null): void {
   if (reports.length === 0) return;
   info(`  clients:`);
   for (const r of reports) {
@@ -526,6 +559,14 @@ function printMcpSummary(reports: McpClientReport[]): void {
             ? `skipped (${r.reason ?? "unknown"})`
             : `failed: ${r.reason ?? "unknown"}`;
     info(`    - ${r.client.displayName} — ${tag}`);
+  }
+  if (probe !== null) {
+    if (probe.ok) {
+      info(`  verified reachable ✓`);
+    } else {
+      info(`  not reachable: ${probe.reason ?? "unknown"}`);
+      info(`  (server is configured — check credentials or restart client)`);
+    }
   }
 }
 
