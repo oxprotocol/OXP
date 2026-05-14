@@ -5,12 +5,12 @@ export const techniquesDocs: DocSection[] = [
     slug: "mcp-integration",
     title: "Managing MCP Servers",
     category: "Techniques",
-    summary: "OXP acts as a universal router for Model Context Protocol — install any MCP server once and it auto-configures every IDE on your machine.",
+    summary: "Install MCP servers once and OXP automatically configures every AI-aware IDE and client on your machine — with built-in reachability verification and rollback.",
     body: `## OXP as a Universal MCP Router
 
 OXP is not just an extension protocol — it is the fastest way to wire MCP servers into every AI-aware IDE on your machine simultaneously.
 
-Instead of editing JSON config files for VS Code, Cursor, JetBrains AI Assistant, and Windsurf separately, you run one command and OXP injects the server configuration into all of them automatically.
+Instead of editing JSON config files for VS Code, Cursor, Windsurf, and Claude Desktop separately, you run one command and OXP injects the server configuration into all of them automatically.
 
 \`\`\`bash
 oxp install @modelcontextprotocol/server-github
@@ -18,10 +18,24 @@ oxp install @modelcontextprotocol/server-github
 
 That single command:
 
-1. Downloads and verifies the MCP server bundle
-2. Detects every installed IDE / AI client (VS Code, Cursor, Windsurf, JetBrains, Claude Desktop)
-3. Injects the correct config block into each one
-4. No JSON editing. No restarts needed for most clients.
+1. Fetches the server spec from the OXP registry
+2. Detects every installed AI client (VS Code, VS Code Insiders, Cursor, Windsurf, Claude Desktop)
+3. Merges the launcher entry into each client's config file, atomically
+4. Probes the server with a live MCP \`initialize\` handshake and reports reachability
+
+Sample output:
+
+\`\`\`
+✓ MCP install: @modelcontextprotocol/server-github
+  launcher: npx -y @modelcontextprotocol/server-github
+  clients:
+    - Claude Desktop        — installed ✓
+    - Cursor                — installed ✓
+    - VS Code (Copilot)     — installed ✓
+  verified reachable ✓
+  restart the affected client(s) to load the new server.
+  log: ~/.oxp/logs/mcp-install.jsonl
+\`\`\`
 
 ---
 
@@ -35,7 +49,7 @@ oxp install @modelcontextprotocol/server-filesystem
 oxp install @upstash/context7-mcp
 \`\`\`
 
-### From a URL
+### From a deep link
 
 \`\`\`bash
 oxp install --from oxp://mcp/github
@@ -43,71 +57,140 @@ oxp install --from oxp://mcp/github
 
 ### Browse the full library
 
-\`\`\`bash
-oxp mcp list              # list installed servers
-oxp mcp search <query>    # search the registry
-\`\`\`
-
-Or open the [MCP Library](/mcp) in your browser and click **Install** on any server.
-
----
-
-## Viewing Active Servers in the Switchboard
-
-Once installed, your MCP servers appear in the **OXP Switchboard** inside your IDE:
-
-- **VS Code / Cursor / Windsurf** — open the OXP panel in the sidebar → MCP tab
-- **JetBrains** — Tools → OXP → MCP Servers
-- **CLI** — \`oxp doctor\` lists every active server and whether each client picked it up
+Open the [MCP Library](/mcp) in your browser and click **Install** on any server.
 
 ---
 
 ## How Auto-Injection Works
 
-OXP writes the server config into the standard config location each client expects:
+OXP writes the server config into the standard config location each client expects. The write is atomic — a temporary file is written then renamed — so you never get a partially-written config, even if the process is interrupted.
 
-| Client | Config location |
+| Client | Config file |
 |---|---|
-| VS Code / Cursor | \`.vscode/mcp.json\` or \`settings.json\` |
-| Windsurf | \`~/.codeium/windsurf/mcp_settings.json\` |
-| JetBrains AI | IDE MCP registry via plugin |
-| Claude Desktop | \`~/Library/Application Support/Claude/claude_desktop_config.json\` |
+| Claude Desktop | \`~/Library/Application Support/Claude/claude_desktop_config.json\` (macOS) |
+| Cursor | \`~/.cursor/mcp.json\` |
+| VS Code (Copilot) | \`~/Library/Application Support/Code/User/mcp.json\` (macOS) |
+| VS Code Insiders | \`~/Library/Application Support/Code - Insiders/User/mcp.json\` (macOS) |
+| Windsurf | \`~/.codeium/windsurf/mcp_config.json\` |
 
-OXP keeps these in sync — install once, every client is updated.
+On **Windows**, \`Application Support\` paths map to \`%APPDATA%\\Roaming\`. On **Linux**, they follow XDG (\`$XDG_CONFIG_HOME\` or \`~/.config/\`).
+
+OXP only writes to a client whose parent config directory already exists — you won't get a stale config entry for a client you don't have installed.
 
 ---
 
-## Scoping a Server to a Project
+## Reachability Verification
 
-Add \`--project\` to limit the server to the current workspace only:
+After injecting the config, OXP spawns the server process and runs a live MCP \`initialize\` handshake (8-second timeout). The result is shown inline and written to the log:
 
-\`\`\`bash
-oxp install @modelcontextprotocol/server-filesystem --project
+\`\`\`
+  verified reachable ✓
 \`\`\`
 
-This writes to \`.vscode/mcp.json\` (checked-in, shareable with your team) instead of the global user config.
+or, if something is wrong:
+
+\`\`\`
+  not reachable: timed out — server did not respond to initialize (may need credentials)
+  (server is configured — check credentials or restart client)
+\`\`\`
+
+The server **is still configured** even when the probe fails — most probe failures are credential issues (the server crashes immediately when \`YOUR_API_KEY\` is missing), not installation problems. Set the required env vars in the client's settings UI after installing, then the server will start cleanly.
+
+:::tip
+Env var values that look like placeholders (\`YOUR_API_KEY\`, \`<token>\`, \`CHANGE_ME\`) are automatically stripped before the probe runs, so the probe failure message is meaningful rather than "server exited with code 1".
+:::
+
+---
+
+## Install Logs
+
+Every install, update, and probe operation appends a JSON line to \`~/.oxp/logs/mcp-install.jsonl\`:
+
+\`\`\`json
+{"ts":"2025-05-14T10:00:00Z","kind":"install","id":"@modelcontextprotocol/server-github","client":"claude-desktop","status":"ok"}
+{"ts":"2025-05-14T10:00:00Z","kind":"install","id":"@modelcontextprotocol/server-github","client":"cursor","status":"ok"}
+{"ts":"2025-05-14T10:00:00Z","kind":"probe","id":"@modelcontextprotocol/server-github","status":"reachable"}
+\`\`\`
+
+The log is append-only, written with mode 0600 in a 0700 directory — readable only by your user. It is the first place to look when something goes wrong.
 
 ---
 
 ## Removing a Server
 
 \`\`\`bash
-oxp uninstall @modelcontextprotocol/server-github
+oxp mcp rollback @modelcontextprotocol/server-github
 \`\`\`
 
-OXP removes the config entry from every client it injected into.
+This removes the server entry from every detected client's config file — the exact inverse of \`oxp install\`. OXP touches only the server's own key; no other config is modified or removed.
+
+Sample output:
+
+\`\`\`
+oxp mcp rollback: @modelcontextprotocol/server-github
+  ✓ removed from Claude Desktop    ~/Library/Application Support/Claude/claude_desktop_config.json
+  ✓ removed from Cursor            ~/.cursor/mcp.json
+  · VS Code (Copilot) — not configured
+  restart the affected client(s) to apply the change.
+  log: ~/.oxp/logs/mcp-install.jsonl
+\`\`\`
+
+Use \`--json\` for machine-readable output (useful in scripts):
+
+\`\`\`bash
+oxp mcp rollback @modelcontextprotocol/server-github --json
+\`\`\`
+
+---
+
+## Checking Server Health
+
+### oxp doctor — MCP section
+
+\`oxp doctor\` includes a dedicated MCP section. It reads every detected client's config, deduplicates server specs by launcher command, and probes each unique server in parallel (bounded at 8 s per server):
+
+\`\`\`
+MCP servers:
+  Claude Desktop  (~/Library/Application Support/Claude/claude_desktop_config.json)
+    • server-github                  reachable ✓
+    • server-filesystem              not reachable — timed out (may need credentials)
+  Cursor  (~/.cursor/mcp.json)
+    • server-github                  reachable ✓
+\`\`\`
+
+\`\`\`bash
+oxp doctor         # human-readable with MCP section
+oxp doctor --json  # machine-readable; includes a top-level \`mcp\` array
+\`\`\`
+
+The \`--json\` output shape for the MCP section:
+
+\`\`\`json
+{
+  "mcp": [
+    {
+      "id": "claude-desktop",
+      "name": "Claude Desktop",
+      "configPath": "~/Library/Application Support/Claude/claude_desktop_config.json",
+      "servers": [
+        { "slug": "server-github", "command": "npx", "args": [...], "reachable": true }
+      ]
+    }
+  ]
+}
+\`\`\`
 
 ---
 
 ## Troubleshooting
 
-Run \`oxp doctor\` to see the full status of every detected IDE and MCP server:
-
-\`\`\`bash
-oxp doctor --json   # machine-readable output for CI
-\`\`\`
-
-If a client is not picking up a newly installed server, try \`oxp setup\` to re-sync all adapters.
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Server installed but not appearing in client | Client needs restart | Restart the IDE or Claude Desktop |
+| \`not reachable: command not found: npx\` | npx not on PATH | Ensure Node.js is installed; some clients don't inherit the full shell PATH |
+| \`not reachable: timed out\` | Server needs credentials | Set required env vars in the client's MCP settings UI |
+| Re-running install shows "skipped (already configured)" | Entry already identical | This is correct — OXP is idempotent. No action needed. |
+| Rollback skipped one client | Client not detected | The client's config parent directory must exist for detection to work |
 `,
   },
   {

@@ -698,29 +698,34 @@ oras copy oci.oxp.sh/acme/postgres:1.4.2 internal.corp/oxp/acme/postgres:1.4.2
     title: "Host Adapters",
     category: "Fundamentals",
     summary:
-      "How OXP integrates with VS Code, Cursor, and other IDEs through host adapters.",
+      "How OXP integrates with VS Code, JetBrains, Cursor, Windsurf, and other IDEs through host adapters.",
     body: `A **host adapter** is a small module that bridges OXP into a specific IDE. It knows how to install, activate, render, and manage OXP extensions using that IDE's own APIs. The adapter is the only OXP-specific code an IDE needs.
 
 ## Supported Hosts
 
-| Host | Status | Tier | Package |
+| Host | Status | Tier | Notes |
 |---|---|---|---|
-| VS Code | ✅ Shipped | L0 | \`@oxprotocol/host-vscode\` |
-| Cursor | ✅ Works (VS Code fork) | L0 | Same as VS Code |
-| Windsurf | ✅ Works (VS Code fork) | L0 | Same as VS Code |
-| VSCodium | ✅ Works (VS Code fork) | L0 | Same as VS Code |
-| Piye IDE | 🔄 In progress | L2 (native) | \`hosts/piye/\` |
-| JetBrains | 📋 Planned | — | — |
+| VS Code | ✅ Shipped | L0 | \`hosts/vscode/\` — reference implementation |
+| Cursor | ✅ Works | L0 | VS Code fork; uses the same adapter |
+| Windsurf | ✅ Works | L0 | VS Code fork; uses the same adapter |
+| VS Code Insiders | ✅ Works | L0 | VS Code fork; uses the same adapter |
+| VSCodium | ✅ Works | L0 | VS Code fork; uses the same adapter |
+| JetBrains family | 🔄 In progress | L1 | \`hosts/jetbrains/\` — IntelliJ Platform plugin |
+| Piye IDE | 🔄 In progress | L2 (native) | \`hosts/piye/\` — GPUI-based native renderer |
 | Zed | 📋 Planned | — | — |
 | Theia | 📋 Planned | — | — |
 
-## The VS Code Host
+---
 
-The VS Code host adapter (\`hosts/vscode/\`) is a standard VS Code extension that:
+## The VS Code Family Host
 
-1. **Discovers** installed OXP extensions from the shared store (\`~/.oxp/host-store/\`)
+The VS Code host adapter (\`hosts/vscode/\`) is a standard VS Code extension. Because Cursor, Windsurf, VS Code Insiders, and VSCodium are all forks of VS Code, **the same \`.vsix\` package works in all of them**.
+
+The adapter:
+
+1. **Discovers** OXP extensions from the shared store (\`~/.oxp/host-store/\`)
 2. **Activates** them by instantiating the WASI component via the jco backend
-3. **Renders** UI trees using \`@oxprotocol/ui/dom\` in a webview panel
+3. **Renders** UI trees using \`@oxprotocol/ui/dom\` in a sandboxed webview panel
 4. **Mediates** host calls through the capability broker
 5. **Enforces** CSP with per-render nonces (\`default-src 'none'\`)
 
@@ -734,6 +739,9 @@ The VS Code host adapter (\`hosts/vscode/\`) is a standard VS Code extension tha
 | \`OXP: Uninstall Extension…\` | Remove an OXP extension |
 | \`OXP: Attach to Dev Server…\` | Connect to \`oxp dev\` for hot-reload |
 | \`OXP: Reload Installed Extensions\` | Re-scan and reload all |
+| \`OXP: Restart Dev Session\` | Dispose + reconnect (dev mode only) |
+| \`OXP: Reload Bundle\` | Re-instantiate from current dev bundle |
+| \`OXP: Detach Dev Session\` | Disconnect dev server, leave window open |
 
 ### Settings
 
@@ -742,11 +750,38 @@ The VS Code host adapter (\`hosts/vscode/\`) is a standard VS Code extension tha
 | \`oxp.registry\` | \`https://oxp.sh\` | Registry base URL |
 | \`oxp.useSharedStore\` | \`true\` | Use \`~/.oxp/host-store/\` so one \`oxp install\` works across all IDEs |
 
+---
+
+## The JetBrains Host
+
+The JetBrains host (\`hosts/jetbrains/\`) is an IntelliJ Platform plugin that works across the entire JetBrains family: **IntelliJ IDEA, PyCharm, WebStorm, GoLand, Rider, CLion, PhpStorm, DataGrip**, and more.
+
+The plugin:
+
+1. **Discovers** OXP extensions from the same shared store (\`~/.oxp/host-store/\`)
+2. **Activates** them via the WASI runtime
+3. **Renders** UI trees in a right-side **Tool Window** (equivalent to VS Code's sidebar)
+4. **Mediates** host calls through the same capability broker interface
+5. Exposes commands via **Help → Find Action** (\`Ctrl+Shift+A\` / \`Cmd+Shift+A\`)
+
+Because the OXP wire protocol is identical across IDE families, **the same \`.oxp\` bundle runs in VS Code and JetBrains without any changes**. The manifest, WIT contract, UI tree, and RPC calls are bit-equivalent.
+
+### VS Code Family vs JetBrains Comparison
+
+| Behavior | VS Code / Cursor / Windsurf | JetBrains (any IntelliJ-Platform IDE) |
+|---|---|---|
+| Extension UI location | Activity bar → Sidebar panel | Right tool window, OXP stripe button |
+| Dev EDH spawn | \`code --new-window <workspace>\` | \`idea\` / \`pycharm\` / … via runtime-bin launcher |
+| Command access | Command Palette (\`Ctrl+Shift+P\`) | Find Action (\`Ctrl+Shift+A\`) |
+| Output channel | Output panel → \`OXP Dev Host\` | OXP Dev Host tool window (bottom dock) |
+| Hot-reload mechanism | WebSocket → \`Extension.dispose()\` + re-instantiate | WebSocket → coroutine cancel + re-instantiate |
+| Detach gesture | \`OXP: Detach Dev Session\` command | Tools → OXP → Detach |
+
+---
+
 ## The Shared Store
 
-By default, \`oxp install\` places extensions in \`~/.oxp/host-store/\`. Every host adapter reads from this directory. This means a single install command makes the extension available in VS Code, Cursor, Windsurf, and any other host on the machine.
-
-The directory structure is:
+\`oxp install\` places extensions in \`~/.oxp/host-store/\`. Every host adapter — VS Code family and JetBrains — reads from this same directory. A single install makes the extension available everywhere.
 
 \`\`\`
 ~/.oxp/host-store/
@@ -760,19 +795,39 @@ The directory structure is:
                 └── SIGNATURE
 \`\`\`
 
+---
+
+## MCP Client Detection
+
+When \`oxp install\` encounters an MCP server registry entry, it writes the server config into each detected MCP-aware client's config file. Clients are detected by checking whether their config parent directory exists:
+
+| Client | Config file | Key |
+|---|---|---|
+| Claude Desktop | \`~/Library/Application Support/Claude/claude_desktop_config.json\` | \`mcpServers\` |
+| Cursor | \`~/.cursor/mcp.json\` | \`mcpServers\` |
+| VS Code (Copilot) | \`~/Library/Application Support/Code/User/mcp.json\` | \`servers\` |
+| VS Code Insiders | \`~/Library/Application Support/Code - Insiders/User/mcp.json\` | \`servers\` |
+| Windsurf | \`~/.codeium/windsurf/mcp_config.json\` | \`mcpServers\` |
+
+All paths follow platform conventions: \`%APPDATA%\\Roaming\` on Windows, \`$XDG_CONFIG_HOME\` on Linux.
+
+---
+
 ## Integration Tiers
 
 ### L0 — Sideload (works today)
 
-The IDE does nothing special. OXP installs as a regular extension via the IDE's own CLI or extension directory. The VS Code adapter handles everything.
+The IDE does nothing special. OXP installs as a regular extension via the IDE's CLI or extension directory. The VS Code and JetBrains adapters handle everything from within the IDE.
 
 ### L1 — Registry Adapter
 
-The IDE surfaces \`oxp.sh\` results in its built-in extension search. Users discover and install OXP extensions natively. The IDE calls the OXP resolve/install APIs behind the scenes.
+The IDE surfaces \`oxp.sh\` results in its built-in extension search. Users discover and install OXP extensions natively. The IDE calls the OXP resolve/install APIs behind the scenes. *(JetBrains target.)*
 
 ### L2 — Native Renderer
 
-The IDE implements the \`@oxprotocol/ui\` component set in its native toolkit (e.g., GPUI for Zed, Swing for JetBrains). The same \`.oxp\` bundle gets 120fps native rendering without any webview overhead.
+The IDE implements the \`@oxprotocol/ui\` component set in its native toolkit — GPUI for Piye, Swing for a future JetBrains L2. The same \`.oxp\` bundle gets 120fps native rendering without any webview overhead.
+
+---
 
 ## Building a Host Adapter
 

@@ -7,7 +7,7 @@ export const referenceDocs: DocSection[] = [
     category: "Reference",
     summary:
       "Complete reference for every oxp subcommand with flags, examples, and environment variables.",
-    body: `The \`oxp\` CLI is the primary tool for creating, developing, packing, and publishing OXP extensions. It ships as a single npm package with no external dependencies.
+    body: `The \`oxp\` CLI is the primary tool for creating, developing, packing, publishing, and managing OXP extensions and MCP servers. It ships as a single npm package with no external dependencies.
 
 ## Installation
 
@@ -20,7 +20,7 @@ pnpm add -g @oxprotocol/cli
 
 | Flag | Description |
 |---|---|
-| \`--help\`, \`-h\` | Show help |
+| \`--help\`, \`-h\` | Show help for any command |
 | \`--version\`, \`-v\` | Print version |
 
 ## Environment Variables
@@ -28,8 +28,12 @@ pnpm add -g @oxprotocol/cli
 | Variable | Default | Description |
 |---|---|---|
 | \`OXP_REGISTRY\` | \`https://oxp.sh\` | Registry base URL |
-| \`OXP_HOME\` | \`~/.oxp\` | Config + credentials directory |
+| \`OXP_HOME\` | \`~/.oxp\` | Config, credentials, and logs directory |
 | \`OXP_DEV_PORT\` | \`7373\` | Default port for \`oxp dev\` |
+| \`OXP_TRUST_PUBLISHER\` | — | Comma-separated \`@publisher\` handles that skip the install consent prompt (e.g. \`@acme,@oxprotocol\`) |
+| \`OXP_IDE_LAUNCHER\` | auto-detected | Force a specific IDE launcher binary (e.g. \`cursor\`) |
+
+---
 
 ## Commands
 
@@ -49,36 +53,46 @@ oxp create --list-templates
 | \`-t\`, \`--template <name>\` | Template to use (default: \`hello-html\`) |
 | \`--list-templates\` | List available templates and exit |
 
-**Templates:** \`hello-html\`, \`hello-code\`, \`hello-tree\`, \`hello-rust\`
+**Templates:** \`hello-html\` (React+TS), \`hello-code\` (code extension), \`hello-tree\` (declarative JSON UI), \`hello-rust\` (WASI component in Rust)
 
-The \`publisher\` field is derived from your OS username. The \`slug\` is the project name lowercased.
+---
 
 ### \`oxp dev\`
 
-Watch a project, re-pack on changes, and serve over WebSocket + HTTP for hot-reload.
+Watch a project, re-pack on changes, and serve over WebSocket + HTTP for hot-reload. Spawns a fresh Extension Development Host window automatically.
 
 \`\`\`bash
 oxp dev
 oxp dev --port 8080
 oxp dev ./my-extension
+oxp dev --host jetbrains   # force a specific IDE family
+oxp dev --no-spawn         # start server without opening an EDH window
 \`\`\`
 
 | Flag | Description |
 |---|---|
-| \`-p\`, \`--port <n>\` | Server port (default: 7373) |
+| \`-p\`, \`--port <n>\` | Server port (default: \`7373\`) |
+| \`--host <family>\` | Force EDH to open in \`vscode\` or \`jetbrains\` |
+| \`--no-spawn\` | Start the dev server without spawning an EDH |
 
-Endpoints served:
+Dev-server endpoints:
 
-- \`ws://localhost:<port>/dev\` — WebSocket reload channel
-- \`GET /info\` — manifest, digest, size
-- \`GET /manifest\` — raw oxp.json
-- \`GET /bundle\` — raw .oxp bytes
+| Endpoint | Description |
+|---|---|
+| \`ws://localhost:<port>/dev\` | WebSocket reload channel |
+| \`GET /info\` | Manifest, digest, bundle size |
+| \`GET /manifest\` | Raw \`oxp.json\` |
+| \`GET /bundle\` | Raw \`.oxp\` bytes |
 
-> Dev mode skips Ed25519 signing. Connected hosts show a "DEV" badge.
+:::warning
+Dev mode skips Ed25519 signing for speed. The EDH shows a **"DEV: signature bypass"** badge. The production \`oxp publish\` flow is unchanged.
+:::
+
+---
 
 ### \`oxp pack\`
 
-Build a deterministic, signed \`.oxp\` bundle.
+Build a deterministic, signed \`.oxp\` bundle from a project directory.
 
 \`\`\`bash
 oxp pack
@@ -87,7 +101,9 @@ oxp pack ./my-extension
 
 Output: \`dist/<slug>-<version>.oxp\`
 
-The pack pipeline: validate manifest → enforce bundle policy → tar+zstd → hash → sign → write.
+Pipeline: validate \`oxp.json\` → enforce bundle policy → tar+zstd → hash → Ed25519 sign → write.
+
+---
 
 ### \`oxp login\`
 
@@ -98,7 +114,33 @@ oxp login              # email + password in terminal
 oxp login --browser    # OAuth device flow via browser
 \`\`\`
 
-Tokens stored at \`~/.oxp/credentials\` (mode 0600).
+Tokens are stored at \`~/.oxp/credentials\` (mode 0600).
+
+---
+
+### \`oxp logout\`
+
+Revoke credentials locally (and on the server by default).
+
+\`\`\`bash
+oxp logout
+oxp logout --local-only   # delete local token without revoking on the server
+\`\`\`
+
+---
+
+### \`oxp whoami\`
+
+Show the identity behind the stored credentials.
+
+\`\`\`bash
+oxp whoami
+oxp whoami --json
+\`\`\`
+
+Prints handle, email, token scopes, and expiry. Uses the \`/api/v1/auth/whoami\` endpoint.
+
+---
 
 ### \`oxp publish\`
 
@@ -107,28 +149,125 @@ Upload a signed bundle to the registry.
 \`\`\`bash
 oxp publish
 oxp publish dist/my-ext-1.0.0.oxp
+oxp publish --dry-run     # validate without uploading
 \`\`\`
 
-Requires authentication (\`oxp login\`) and a signing key (\`oxp keygen\`).
+Requires \`oxp login\` and \`oxp keygen\`.
+
+---
 
 ### \`oxp install\`
 
-Install an extension from the registry.
+Install an extension or MCP server from the registry. Automatically detects installed IDEs and MCP-aware clients.
 
 \`\`\`bash
 oxp install @publisher/slug
-oxp install @publisher/slug -y           # skip confirmation
-oxp install @publisher/slug --json       # machine-readable output
-oxp install --from oxp://publisher/slug  # from deep link
+oxp install @publisher/slug -y            # skip permission prompts
+oxp install @publisher/slug --json        # machine-readable output
+oxp install --from oxp://publisher/slug   # install from deep link
+oxp install @publisher/slug --host vscode # limit to a specific IDE
 \`\`\`
 
 | Flag | Description |
 |---|---|
-| \`-y\` | Auto-accept permission prompts |
-| \`--json\` | Output in JSON format |
+| \`-y\`, \`--yes\` | Auto-accept every permission prompt |
+| \`--json\` | Emit a single JSON line (includes \`verified\` and \`verifyReason\` for MCP installs) |
 | \`--from <url>\` | Install from an \`oxp://\` deep link |
+| \`--host <id>\` | Limit IDE detection to a specific host (repeatable) |
+| \`--no-detect\` | Skip IDE detection; install to shared store only |
+| \`--no-adapter\` | Skip auto-installing missing host adapters |
 
-The install pipeline: resolve version → download → verify signature → verify digest → extract → verify per-file integrity → permission prompt → detect IDEs → install host wrappers.
+**For native OXP extensions**, the pipeline is: resolve → download → verify signature → verify digest → extract → verify per-file integrity → permission prompt → detect IDEs → install host wrappers.
+
+**For MCP servers** (registry entries with \`install.command\`), the pipeline is: fetch spec → detect MCP-aware clients (VS Code, VS Code Insiders, Cursor, Windsurf, Claude Desktop) → merge config atomically into each → probe server reachability → log to \`~/.oxp/logs/mcp-install.jsonl\`.
+
+MCP install output:
+
+\`\`\`
+✓ MCP install: @modelcontextprotocol/server-github
+  launcher: npx -y @modelcontextprotocol/server-github
+  clients:
+    - Claude Desktop        — installed ✓
+    - Cursor                — installed ✓
+    - VS Code (Copilot)     — installed ✓
+  verified reachable ✓
+  restart the affected client(s) to load the new server.
+  log: ~/.oxp/logs/mcp-install.jsonl
+\`\`\`
+
+---
+
+### \`oxp install-url\`
+
+Install a raw \`.wasm\` component from an \`https://\`, \`http://\`, or \`file://\` URL directly into the shared host-store.
+
+\`\`\`bash
+oxp install-url https://example.com/my-ext.wasm
+oxp install-url --list     # list previously URL-installed extensions
+\`\`\`
+
+---
+
+### \`oxp mcp rollback\`
+
+Remove an MCP server from every detected client config, undoing \`oxp install\`.
+
+\`\`\`bash
+oxp mcp rollback @publisher/server
+oxp mcp rollback @publisher/server --json
+\`\`\`
+
+OXP touches only the server's own key — no other config is modified. The rollback is logged to \`~/.oxp/logs/mcp-install.jsonl\`.
+
+\`\`\`
+oxp mcp rollback: @modelcontextprotocol/server-github
+  ✓ removed from Claude Desktop    ~/Library/Application Support/Claude/claude_desktop_config.json
+  ✓ removed from Cursor            ~/.cursor/mcp.json
+  · VS Code (Copilot) — not configured
+  restart the affected client(s) to apply the change.
+  log: ~/.oxp/logs/mcp-install.jsonl
+\`\`\`
+
+---
+
+### \`oxp doctor\`
+
+Inspect this machine and report what OXP can see. Never modifies anything.
+
+\`\`\`bash
+oxp doctor
+oxp doctor --json
+oxp doctor --project ./my-extension
+oxp doctor --no-project
+\`\`\`
+
+| Flag | Description |
+|---|---|
+| \`--json\` | Machine-readable JSON report |
+| \`--project <dir>\` | Also inspect an OXP project for build-determinism issues |
+| \`--no-project\` | Skip project inspection even when \`cwd\` has an \`oxp.json\` |
+
+The report covers:
+
+- **CLI + node** — version, platform, Node.js version
+- **Registry** — URL, login state, handle, token scopes, expiry
+- **Filesystem** — \`~/.oxp/\` layout: credentials, keys, host-store, cache, runtime binary
+- **IDEs** — every detected host (VS Code, Cursor, Windsurf, JetBrains) with adapter status and paths
+- **MCP servers** — every MCP-aware client's configured servers, each probed for reachability in parallel
+- **Project** — build-determinism checks: lockfile, \`engines.node\` pin, gitignore, Rust toolchain pin
+
+---
+
+### \`oxp setup\`
+
+Detect all installed IDEs and auto-install the OXP host adapter into each one.
+
+\`\`\`bash
+oxp setup
+oxp setup --yes    # skip confirmation prompts
+\`\`\`
+
+---
 
 ### \`oxp keygen\`
 
@@ -138,6 +277,10 @@ Print the local Ed25519 publisher key ID, creating a new keypair if needed.
 oxp keygen
 # → ed25519:0xABCD1234...
 \`\`\`
+
+Keys are stored at \`~/.oxp/keys/\` (mode 0600).
+
+---
 
 ### \`oxp token rotate\`
 
@@ -152,9 +295,23 @@ oxp token rotate --scope "publish:@acme/*"
 
 | Flag | Description |
 |---|---|
-| \`--days <n>\` | Token lifetime (default: 90) |
+| \`--days <n>\` | Token lifetime in days (default: 90) |
 | \`--name <label>\` | Human-readable token label |
-| \`--scope <scope>\` | Token scope (e.g. \`publish:@acme/*\`) |
+| \`--scope <scope>\` | Scope (e.g. \`publish:@acme/*\` or \`publish:@acme/specific-ext\`) |
+
+---
+
+### \`oxp icon\`
+
+Generate or convert extension icons. Useful for creating the activity-bar SVG that VS Code family IDEs render as a monochrome mask.
+
+\`\`\`bash
+oxp icon help              # list available templates and options
+oxp icon generate <name>   # generate a template icon
+oxp icon convert <file>    # convert an existing image to OXP-compatible SVG
+\`\`\`
+
+---
 
 ### \`oxp protocol-register\`
 
@@ -164,14 +321,16 @@ Register the \`oxp://\` URL scheme on this machine so deep links open the CLI.
 oxp protocol-register
 \`\`\`
 
+---
+
 ## Programmatic Use
 
-All subcommands are exported as functions:
+All subcommands are exported as async functions that return an exit code:
 
 \`\`\`typescript
-import { create, pack, publish } from "@oxprotocol/cli";
+import { create, pack, publish, install } from "@oxprotocol/cli";
 
-const code = await create(["my-ext", "-t", "hello-rust"]);
+const code = await install(["@modelcontextprotocol/server-github", "--json"]);
 \`\`\``,
   },
   {
