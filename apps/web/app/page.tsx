@@ -108,84 +108,14 @@ export default function Home() {
 
           {/* Title */}
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-[#f8fafc] mb-6 max-w-4xl leading-[0.95]">
-            The last extension you&apos;ll{" "}
-            <span className="text-holo">ever port</span>.
+            Build one extension.{" "}
+            <span className="text-holo">Run across every IDE.</span>
           </h1>
 
           <p className="text-base md:text-lg text-[#f8fafc]/40 mb-8 max-w-2xl leading-relaxed font-mono">
-            OXP is an open protocol for IDE extensions. Write once. Ship to
-            every editor, forever.
+            VS Code · JetBrains · Neovim · Cursor · Windsurf — write it once,
+            ship it everywhere on the open OXP runtime.
           </p>
-
-          {/* ─── MCP Feature Block ─── */}
-          <div className="flex flex-col items-center gap-5 mb-8 w-full max-w-3xl">
-            {/* Divider with live indicator */}
-            <div className="flex w-full items-center gap-4">
-              <div className="flex-1 h-px bg-linear-to-r from-transparent to-[#7DD3FC]/20" />
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-[#7DD3FC]/20 bg-[#7DD3FC]/5">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon" />
-                <span className="text-[9px] font-mono font-bold tracking-[0.3em] text-[#7DD3FC]/60 uppercase">
-                  AI Ready
-                </span>
-              </div>
-              <div className="flex-1 h-px bg-linear-to-l from-transparent to-[#7DD3FC]/20" />
-            </div>
-
-            {/* Tech card */}
-            <div className="relative w-full hud-card hud-corners px-6 md:px-10 py-8 overflow-hidden text-center">
-              {/* Animated top scan line */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#7DD3FC]/60 to-transparent animate-pulse-glow" />
-              {/* Subtle circuit-grid background */}
-              <div
-                className="absolute inset-0 opacity-[0.025] pointer-events-none"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(#7DD3FC 1px, transparent 1px), linear-gradient(90deg, #7DD3FC 1px, transparent 1px)",
-                  backgroundSize: "28px 28px",
-                }}
-              />
-
-              {/* Eyebrow */}
-              <div className="flex items-center justify-center gap-3 mb-5 relative">
-                <div className="h-px w-8 bg-linear-to-r from-transparent to-[#7DD3FC]/30" />
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon shrink-0" />
-                <Server className="w-4 h-4 text-[#7DD3FC]/60" />
-                <span className="text-xl md:text-2xl font-black tracking-[0.2em] uppercase text-holo">
-                  MCP Servers
-                </span>
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon shrink-0" />
-                <div className="h-px w-8 bg-linear-to-l from-transparent to-[#7DD3FC]/30" />
-              </div>
-
-              {/* Headline — no dash */}
-              <h2 className="relative text-3xl md:text-5xl font-black tracking-tight text-[#f8fafc] leading-[0.95] mb-7 max-w-xl mx-auto">
-                Every AI tool installed into every editor.{" "}
-                <span className="text-holo">One command.</span>
-              </h2>
-
-              {/* Command */}
-              <button
-                type="button"
-                onClick={() => copyStep(0, "oxp install @modelcontextprotocol/server-github")}
-                className="group relative flex items-center gap-2 sm:gap-3 w-full max-w-lg px-4 sm:px-5 py-3 rounded border border-[#7DD3FC]/20 bg-[#060a13]/80 hover:border-[#7DD3FC]/50 hover:bg-[#7DD3FC]/5 transition-all duration-300 mx-auto overflow-hidden"
-                title="Copy: oxp install @modelcontextprotocol/server-github"
-              >
-                <span className="shrink-0 text-[9px] font-mono font-bold tracking-[0.2em] uppercase text-[#7DD3FC]/50 border border-[#7DD3FC]/20 px-1.5 py-0.5 rounded">
-                  MCP
-                </span>
-                <span className="flex-1 min-w-0 truncate text-left">
-                  <code className="text-xs sm:text-sm font-mono text-[#f8fafc]/70 group-hover:text-[#f8fafc] transition-colors">
-                    <span className="text-[#7DD3FC]/40">$</span>{" "}
-                    oxp install @modelcontextprotocol/server-github
-                  </code>
-                </span>
-                <span className="shrink-0 inline-block w-px h-3.5 bg-[#7DD3FC]/70 animate-terminal-blink" />
-                <span className="shrink-0 text-[10px] font-mono text-[#f8fafc]/30 group-hover:text-[#7DD3FC] transition-colors">
-                  {copiedStep === 0 ? "Copied!" : "Copy"}
-                </span>
-              </button>
-            </div>
-          </div>
 
           {/* Search */}
           <div className="w-full flex justify-center mb-8">
@@ -494,6 +424,71 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {/* ─── MCP FEATURE BLOCK ─── */}
+      {!searchQuery && (
+        <section className="relative py-16" style={{ zIndex: 2 }}>
+          <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#7DD3FC]/15 to-transparent" />
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-5">
+            <div className="flex w-full items-center gap-4">
+              <div className="flex-1 h-px bg-linear-to-r from-transparent to-[#7DD3FC]/20" />
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-[#7DD3FC]/20 bg-[#7DD3FC]/5">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon" />
+                <span className="text-[9px] font-mono font-bold tracking-[0.3em] text-[#7DD3FC]/60 uppercase">
+                  AI Ready
+                </span>
+              </div>
+              <div className="flex-1 h-px bg-linear-to-l from-transparent to-[#7DD3FC]/20" />
+            </div>
+
+            <div className="relative w-full hud-card hud-corners px-6 md:px-10 py-8 overflow-hidden text-center">
+              <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-[#7DD3FC]/60 to-transparent animate-pulse-glow" />
+              <div
+                className="absolute inset-0 opacity-[0.025] pointer-events-none"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(#7DD3FC 1px, transparent 1px), linear-gradient(90deg, #7DD3FC 1px, transparent 1px)",
+                  backgroundSize: "28px 28px",
+                }}
+              />
+              <div className="flex items-center justify-center gap-3 mb-5 relative">
+                <div className="h-px w-8 bg-linear-to-r from-transparent to-[#7DD3FC]/30" />
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon shrink-0" />
+                <Server className="w-4 h-4 text-[#7DD3FC]/60" />
+                <span className="text-xl md:text-2xl font-black tracking-[0.2em] uppercase text-holo">
+                  MCP Servers
+                </span>
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-beacon shrink-0" />
+                <div className="h-px w-8 bg-linear-to-l from-transparent to-[#7DD3FC]/30" />
+              </div>
+              <h2 className="relative text-3xl md:text-5xl font-black tracking-tight text-[#f8fafc] leading-[0.95] mb-7 max-w-xl mx-auto">
+                Every AI tool installed into every editor.{" "}
+                <span className="text-holo">One command.</span>
+              </h2>
+              <button
+                type="button"
+                onClick={() => copyStep(0, "oxp install @modelcontextprotocol/server-github")}
+                className="group relative flex items-center gap-2 sm:gap-3 w-full max-w-lg px-4 sm:px-5 py-3 rounded border border-[#7DD3FC]/20 bg-[#060a13]/80 hover:border-[#7DD3FC]/50 hover:bg-[#7DD3FC]/5 transition-all duration-300 mx-auto overflow-hidden"
+                title="Copy: oxp install @modelcontextprotocol/server-github"
+              >
+                <span className="shrink-0 text-[9px] font-mono font-bold tracking-[0.2em] uppercase text-[#7DD3FC]/50 border border-[#7DD3FC]/20 px-1.5 py-0.5 rounded">
+                  MCP
+                </span>
+                <span className="flex-1 min-w-0 truncate text-left">
+                  <code className="text-xs sm:text-sm font-mono text-[#f8fafc]/70 group-hover:text-[#f8fafc] transition-colors">
+                    <span className="text-[#7DD3FC]/40">$</span>{" "}
+                    oxp install @modelcontextprotocol/server-github
+                  </code>
+                </span>
+                <span className="shrink-0 inline-block w-px h-3.5 bg-[#7DD3FC]/70 animate-terminal-blink" />
+                <span className="shrink-0 text-[10px] font-mono text-[#f8fafc]/30 group-hover:text-[#7DD3FC] transition-colors">
+                  {copiedStep === 0 ? "Copied!" : "Copy"}
+                </span>
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ─── FEATURED MCP SERVERS ─── */}
       {!searchQuery && <FeaturedMcpSection />}

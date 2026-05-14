@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
@@ -20,13 +21,50 @@ const inter = Inter({
   weight: ["600", "700", "800"],
 });
 
+const BASE = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "https://oxp.sh";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE),
   title: {
-    default: "OXP | Open eXtensions Protocol",
-    template: "OXP | %s",
+    default: "OXP — Build once. Run across every IDE.",
+    template: "%s | OXP",
   },
   description:
-    "The universal package registry for IDE extensions. Build once, run anywhere.",
+    "Build one IDE extension, ship it to VS Code, JetBrains, Neovim, Cursor, and Windsurf. OXP is the open protocol for universal IDE extensions.",
+  keywords: [
+    "IDE extension",
+    "VS Code extension",
+    "JetBrains plugin",
+    "Neovim plugin",
+    "Cursor extension",
+    "open protocol",
+    "extension marketplace",
+    "MCP server",
+    "developer tools",
+    "OXP",
+  ],
+  authors: [{ name: "OXP Protocol", url: "https://oxp.sh" }],
+  openGraph: {
+    type: "website",
+    url: BASE,
+    siteName: "OXP",
+    title: "OXP — Build once. Run across every IDE.",
+    description:
+      "Write one extension, ship it to VS Code, JetBrains, Neovim, Cursor, and every editor built on the open OXP runtime.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "OXP — Open eXtensions Protocol" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OXP — Build once. Run across every IDE.",
+    description: "Write one extension, ship it everywhere. Open protocol, signed runtime.",
+    images: ["/og-image.png"],
+    creator: "@oxprotocol",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+  },
 };
 
 // The root layout reads the auth session (cookies) via Navbar.getCurrentUser().
@@ -65,6 +103,7 @@ export default function RootLayout({
           {children}
         </main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
