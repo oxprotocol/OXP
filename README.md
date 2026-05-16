@@ -1,82 +1,121 @@
-# OXP
+# OXP — Open eXtensions Protocol
 
-> **🔒 Security lock active.** All non-security feature work is paused until Phase A + B + C of [`ROADMAP-SECURITY.md`](./ROADMAP-SECURITY.md) are complete. See [`SECURITY.md`](./SECURITY.md) for current threat model and posture, and [`ROADMAP-FEATURES.md`](./ROADMAP-FEATURES.md) for the bookmark of paused feature work.
+Build one IDE extension. Run it across VS Code, Cursor, Windsurf, JetBrains, and more — without recompiling.
 
-One extension binary, every editor. No accounts, no logins, no settings to edit.
+OXP is a cross-IDE extension protocol. Authors write a single signed `.oxp` bundle (UI layer + optional WASI component); the OXP runtime installs it into every IDE on the machine. No porting, no forking, no IDE-specific API differences.
+
+- **Registry & docs** — [oxp.sh](https://oxp.sh)
+- **Full documentation** — [oxp.sh/docs](https://oxp.sh/docs)
+- **CLI** — `@oxprotocol/cli`
 
 ---
 
-## For users — install and run an extension
+## For users — install an extension
 
-Two commands, total. The second one prompts you once to approve permissions; everything else is automatic.
-
-```sh
-# 1. One-line install (works on macOS / Linux / WSL).
-curl -fsSL https://oxp.sh/install | sh
-
-# 2. Install any extension. The CLI auto-installs the host plugin into
-#    every IDE it detects (VS Code, Cursor, Windsurf, VSCodium, IntelliJ
-#    family, Neovim), downloads the extension, asks once for permissions,
-#    then opens the extension UI in every running IDE window.
-oxp install @aldgar/git-panel
-```
-
-Alternative installers:
+Requires **Node ≥ 22**:
 
 ```sh
-npm  install -g @oxprotocol/cli      # if you already have Node ≥ 20
-brew install oxprotocol/tap/oxp      # once the Homebrew tap is live
+npm install -g @oxprotocol/cli
 ```
 
-Want to install the IDE plugin yourself instead of letting the CLI do it? Search **OXP** in your IDE's marketplace — VS Code Marketplace, Open VSX, or JetBrains Marketplace.
+Then install any extension. The CLI detects your installed IDEs (VS Code, Cursor, Windsurf, VS Code Insiders, VSCodium), auto-installs the OXP host adapter if needed, downloads and verifies the bundle, and prompts once for permission consent.
 
-**That is the entire user workflow.** No browser tab, no account, no API key, no config file. The only prompt you'll ever see is the one-time permission consent for each extension — required by the security model, never skippable except via `--yes` for trusted-publisher allowlists.
+```sh
+oxp install @publisher/extension-name
+```
+
+The only prompt you will ever see is the one-time permission consent per extension — required by the security model. Skip it for trusted publishers with `--yes` or `OXP_TRUST_PUBLISHER=@publisher`.
+
+### MCP servers
+
+OXP also manages MCP servers across every AI-aware client in one command:
+
+```sh
+# Injects config into VS Code, VS Code Insiders, Cursor, Windsurf, Claude Desktop
+oxp install @modelcontextprotocol/server-github
+
+# Undo
+oxp mcp rollback @modelcontextprotocol/server-github
+
+# Check health of all configured servers
+oxp doctor
+```
 
 ---
 
 ## For extension authors
 
-→ [`QUICKSTART.md`](./QUICKSTART.md) — build a `.wasm` extension once, run it in VS Code _and_ JetBrains in 10 minutes.
+→ [QUICKSTART.md](./QUICKSTART.md) — build a `.oxp` bundle and run it in VS Code and JetBrains in 10 minutes.
 
-## For OXP maintainers — publishing to marketplaces
-
-→ [`MARKETPLACE-PUBLISHING.md`](./MARKETPLACE-PUBLISHING.md) — tag-triggered CI publishes the CLI, the VS Code extension (to Marketplace + Open VSX), and the JetBrains plugin in one shot.
+→ [oxp.sh/docs](https://oxp.sh/docs) — complete documentation: manifest reference, SDK, UI components, permissions, bundle format, Rust extensions, dev workflow, and publishing.
 
 ---
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Monorepo structure
 
-## Getting Started
+| Path | Contents |
+|---|---|
+| `spec/v1/` | Normative spec: manifest JSON Schema, bundle format, WIT world |
+| `packages/cli/` | `@oxprotocol/cli` — the `oxp` command-line tool |
+| `packages/sdk/` | `@oxprotocol/sdk` — author-facing extension SDK |
+| `packages/ui/` | `@oxprotocol/ui` — cross-IDE UI component vocabulary |
+| `packages/bundle/` | Bundle packing, signing, and verification |
+| `packages/host-core/` | Install / verify / activate pipeline (shared by all host adapters) |
+| `packages/host-runtime/` | WASI component runtime (jco-based) |
+| `packages/schema/` | JSON Schema validation for manifests |
+| `packages/wit/` | WIT world definition and canonical hash |
+| `packages/types/` | Shared TypeScript types |
+| `hosts/vscode/` | VS Code host adapter — works in Cursor, Windsurf, VSCodium ✅ |
+| `hosts/jetbrains/` | JetBrains IntelliJ Platform plugin — in progress 🔄 |
+| `hosts/piye/` | Piye native GPUI renderer — in progress 🔄 |
+| `apps/web/` | Registry website + REST API (Next.js, Prisma, Postgres) |
+| `examples/` | Example extensions and test fixtures |
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Development setup
+
+Prerequisites: **Node ≥ 22**, **pnpm ≥ 10**, **Docker**, optionally **Rust** (for WASI component tests)
+
+```sh
+git clone https://github.com/oxprotocol/OXP
+cd OXP
+pnpm install
+pnpm build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start the local registry (Postgres + MinIO via Docker Compose):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+docker compose up -d
+cp apps/web/.env.example apps/web/.env.local
+pnpm --filter @oxprotocol/web db:push
+pnpm dev    # registry at http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run all tests:
 
-## Learn More
+```sh
+pnpm test
+```
 
-To learn more about Next.js, take a look at the following resources:
+See the [Contributing guide](https://oxp.sh/docs/contributing) for the full workflow, code style, and PR guidelines.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Publishing to marketplaces
 
-## Deploy on Vercel
+→ [MARKETPLACE-PUBLISHING.md](./MARKETPLACE-PUBLISHING.md) — tag-triggered CI publishes the CLI to npm, the VS Code extension to Marketplace + Open VSX, and the JetBrains plugin to JetBrains Marketplace in one shot.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Security
+
+OXP is built security-first:
+
+- Every bundle is **Ed25519-signed** and verified at install time
+- Extensions run inside a **WASI sandbox** — no syscall access outside declared permissions
+- Users **consent to permissions** at install; the capability broker enforces grants at runtime
+- Publisher keys are **TOFU-pinned** — key rotation requires proof of the old key
+
+→ [SECURITY.md](./SECURITY.md) — full threat model, defense layers, and known gaps.

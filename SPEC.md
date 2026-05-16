@@ -2,7 +2,7 @@
 
 **One spec. Any IDE. No marketplace lock-in.**
 
-OXP is a small, neutral specification for IDE extensions: a manifest format, a sandboxed runtime, a JSON-RPC SDK, and a sideloading registry. It lets a developer publish an extension once and install it into any IDE that has an OXP host adapter — VS Code, Cursor, Windsurf, VSCodium, JetBrains, Theia, Gitpod, Coder, and Piye today; others as adapters land.
+OXP is a small, neutral specification for IDE extensions: a manifest format, a sandboxed runtime, a JSON-RPC SDK, and a sideloading registry. It lets a developer publish an extension once and install it into any IDE that has an OXP host adapter — VS Code, Cursor, Windsurf, VS Code Insiders, and VSCodium today; JetBrains in progress; Zed, Neovim, and others as adapters land.
 
 OXP is to IDE extensions what **LSP** is to language tooling and what **npm** is to JavaScript packages: a thin, boring, standards-based layer that ends N×M integration work.
 
@@ -40,7 +40,7 @@ OXP launches at L0 across all VS Code forks. L1 and L2 are public specs with ref
 ## What this unlocks
 
 - **For developers:** write standard React + Tailwind + Rust/Wasm. Publish once. Install anywhere. AI tools work because the code is conventional.
-- **For IDE vendors (Cursor, Theia, Gitpod, Coder, Zed, JetBrains):** an extension story that isn't legally constrained by Microsoft's marketplace ToS. Adopt L1 in a week, L2 when ready.
+- **For IDE vendors (Cursor, Zed, JetBrains, and any IDE that wants a native extension story):** an extension story that isn't legally constrained by Microsoft's marketplace ToS. Adopt L1 in a week, L2 when ready.
 - **For enterprises:** private OXP registries (OCI-compatible), signed by Sigstore, auditable by default.
 
 ## Status
@@ -56,4 +56,4 @@ OXP's spec is intended to be donated to a neutral foundation (CNCF Sandbox or Ec
 
 ---
 
-*Maintained by Piye Studios. Spec contributions welcome via RFC at [github.com/oxp-dev/spec](https://github.com/oxp-dev/spec).*
+*Maintained by the OXP project — [oxp.sh](https://oxp.sh). Spec contributions welcome via RFC at [github.com/oxprotocol/OXP](https://github.com/oxprotocol/OXP).*

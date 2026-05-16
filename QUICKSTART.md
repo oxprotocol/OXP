@@ -8,32 +8,33 @@ This guide takes ~10 minutes.
 
 ---
 
-## 1. Install the host extensions
+## 1. Install the OXP host adapter
 
-Download the latest release artifacts from
-<https://github.com/oxprotocol/oxp/releases>:
+The host adapter is what makes your IDE aware of OXP extensions. It is
+available on all major marketplaces.
 
-- `oxp-vscode-<version>.vsix` — VS Code host
-- `oxp-jetbrains-<version>.zip` — JetBrains host (works in any 2024.3+ IDE)
+### VS Code / Cursor / Windsurf / VSCodium
 
-### VS Code
+Search **"OXP"** in the Extensions view (Ctrl+Shift+X), or install from
+the terminal:
 
 ```bash
-code --install-extension oxp-vscode-0.1.0.vsix
+code --install-extension oxprotocol.oxp-vscode
 ```
 
-Or: **Extensions** view → ⋯ menu → **Install from VSIX…** → pick the file.
+### JetBrains (IntelliJ, PyCharm, WebStorm, GoLand, Rider, CLion, …)
 
-### JetBrains
+**Settings** → **Plugins** → **Marketplace** → search **"OXP"** → Install → restart.
 
-In any JetBrains IDE: **Settings** → **Plugins** → ⚙️ → **Install Plugin
-from Disk…** → pick the `.zip` → restart.
+> **Alternative:** if you have the `oxp` CLI installed, running
+> `oxp install @any/extension` will auto-install the host adapter for you
+> when it is not already present.
 
 ---
 
 ## 2. Scaffold an extension
 
-You need a recent Rust toolchain (`rustup`) and Node 20+.
+You need a recent Rust toolchain (`rustup`) and Node ≥ 22.
 
 ```bash
 # Add the wasm component target once.
@@ -55,56 +56,41 @@ target/wasm32-wasip2/release/my_ext.wasm
 
 ---
 
-## 3. Serve it locally
+## 3. Install into your IDE from a local file
+
+Use the CLI to install directly from the built `.wasm` file:
 
 ```bash
-cd target/wasm32-wasip2/release
-python3 -m http.server 8765
+oxp install-url file://$(pwd)/target/wasm32-wasip2/release/my_ext.wasm
 ```
 
-Leave that terminal running.
+The CLI auto-detects your installed IDEs, installs the OXP host adapter if
+needed, and loads your extension. Approve the permission prompt that appears.
+
+> For remote distribution later, host the `.wasm` at any `https://` URL and
+> swap the `file://` path. `http://` is only allowed for `localhost` / `127.0.0.1`.
+
+### Verify it loaded
+
+- **VS Code / Cursor / Windsurf**: **Cmd-Shift-P** → **OXP: Show Installed Extensions**
+- **JetBrains**: Open the **OXP** tool window (right side) → **Installed** tab
 
 ---
 
-## 4. Install into your IDE
+## 4. Iterate with hot-reload
 
-### VS Code
-
-1. **Cmd-Shift-P** → **OXP: Open Runtime Panel** → **Start runtime**.
-2. Click **Install from URL…** → paste:
-   ```
-   http://localhost:8765/my_ext.wasm
-   ```
-3. Approve the requested permissions in the prompt.
-4. Your extension's UI appears as a new editor tab.
-
-### JetBrains
-
-1. Open the **OXP** tool window (right edge).
-2. Click the **Runtime** tab → **Start runtime**.
-3. Click **From URL…** → paste:
-   ```
-   http://localhost:8765/my_ext.wasm
-   ```
-4. Approve the requested permissions in the dialog.
-5. Your extension's UI appears as a new tab in the OXP tool window.
-
-> `http://` URLs are only allowed for `localhost` / `127.0.0.1` / `::1`.
-> Any other host requires `https://`.
-
----
-
-## 5. Iterate
-
-Edit `src/lib.rs`, rebuild:
+For an active development loop, use `oxp dev` instead — it watches the
+project, rebuilds on every `src/lib.rs` change, and reloads the extension in
+the connected IDE automatically:
 
 ```bash
-cargo build --release --target wasm32-wasip2
+oxp dev
 ```
 
-Re-paste the URL — the host re-fetches and reloads automatically.
-The bundle is cached by SHA-256 under `~/.oxp/cache/url-installs/`,
-so unchanged builds skip the download.
+The EDH (Extension Development Host) window opens automatically. Edit
+`src/lib.rs`, save — the IDE picks up the new build within a second.
+
+`oxp dev` serves the bundle over WebSocket locally; no file URL needed.
 
 ---
 
@@ -113,7 +99,7 @@ so unchanged builds skip the download.
 - **Render UI** through `oxp:ui/v1` (declarative; the host renders
   HTML/components, your wasm just emits state).
 - **Receive command invocations** from the host via `extension/command`.
-- **Request permissions** declaratively in your `oxp.toml` manifest. The
+- **Request permissions** declaratively in your `oxp.json` manifest. The
   user approves them once, before activation.
 
 The full WIT interface lives in [`packages/wit/wit/`](packages/wit/wit/).

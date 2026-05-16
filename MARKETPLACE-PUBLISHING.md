@@ -262,9 +262,9 @@ every entry shows `adapter ✓` after `oxp install`, we're done.
 
 | Marketplace            | Status      | Tracking flag |
 | ---------------------- | ----------- | ------------- |
-| VS Code Marketplace    | not yet     | `ADAPTER_PUBLISHED` |
-| Open VSX               | not yet     | `ADAPTER_PUBLISHED` |
-| JetBrains Marketplace  | not yet     | `JETBRAINS_ADAPTER_PUBLISHED` |
+| VS Code Marketplace    | ✅ live     | `ADAPTER_PUBLISHED = true` |
+| Open VSX               | ✅ live     | `ADAPTER_PUBLISHED = true` |
+| JetBrains Marketplace  | ✅ live     | `JETBRAINS_ADAPTER_PUBLISHED = true` |
 | Neovim (GitHub)        | not yet     | (always available once tagged) |
-| npm @oxprotocol/cli    | not yet     | (manual smoke test) |
+| npm @oxprotocol/cli    | ✅ live     | (manual smoke test) |
 | npm @oxprotocol/runtime| not yet     | (manual smoke test) |
