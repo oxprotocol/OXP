@@ -1,5 +1,5 @@
 {
-  "syncedAt": "2026-08-24T06:38:36.143Z",
+  "syncedAt": "2026-08-25T06:30:56.955Z",
   "source": "oxp-sync-mcp",
   "sources": [
     "registry",
@@ -941,37 +941,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/acp-mcp",
-      "name": "Acp Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "prmichaelsen",
-      "description": "MCP server for a remote machine MCP server that will be wrapped by /home/prmichaelsen/mcp-auth",
-      "homepage": "https://www.npmjs.com/package/@prmichaelsen/acp-mcp",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "acp",
-        "remote"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@prmichaelsen/acp-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/acronis-platform-mcp",
       "name": "Mcp",
       "publisher": "modelcontextprotocol",
@@ -1058,6 +1027,38 @@
           "args": [
             "-y",
             "@ad-preflight/cli"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/adamhancock-bullmq-mcp",
+      "name": "Bullmq Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "adamhancock",
+      "description": "Model Context Protocol server for BullMQ job queue management",
+      "homepage": "https://github.com/adamhancock/bullmq-mcp#readme",
+      "repository": "git+https://github.com/adamhancock/bullmq-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "bullmq-mcp",
+        "bullmq",
+        "mcp",
+        "model-context-protocol"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@adamhancock/bullmq-mcp"
           ]
         }
       ],
@@ -1603,38 +1604,6 @@
           "args": [
             "-y",
             "agent-device"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/agent-guard-mcp",
-      "name": "Agent Guard Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "md.fifty",
-      "description": "MCP server that detects and prevents infinite agent loops — circuit breakers, pattern detection, and stuck-agent recovery for agentic systems",
-      "homepage": "https://github.com/mdfifty50-boop/agent-guard-mcp#readme",
-      "repository": "git+https://github.com/mdfifty50-boop/agent-guard-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "loop-detection",
-        "circuit-breaker"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "agent-guard-mcp"
           ]
         }
       ],
@@ -2887,6 +2856,56 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/agented",
+      "name": "Agented",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "fbandov",
+      "description": "A text editor for LLMs, not humans. Stateful CLI + MCP server with a versioned edit-history tree. This package downloads the ae binary for your platform from GitHub releases (sha256-verified, cached) — try it with `npx agented`.",
+      "homepage": "https://github.com/frane/agented#readme",
+      "repository": "git+https://github.com/frane/agented.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "ai-agents",
+        "llm",
+        "mcp",
+        "mcp-server"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "agented"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/agentforge",
+      "name": "agentforge",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Provides 300+ MCP tools for orchestrating AI agents — including swarm coordination, self-learning memory, and task management — enabling MCP clients like Claude Code and Cursor to spawn, coordinate, and learn from specialist agents across sessions.",
+      "homepage": "https://glama.ai/mcp/servers/osjuyyhvuk",
+      "repository": {
+        "url": "https://github.com/Soulcynics404/AgentForge"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/agentfund-mcp",
       "name": "Mcp",
       "publisher": "modelcontextprotocol",
@@ -3622,38 +3641,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/ai-ads-agent",
-      "name": "Ai Ads Agent",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "shared_sharma",
-      "description": "AI Ads Agent — the senior AI ads agent for Claude Code & Codex CLI. Audit, optimize, and launch paid-media campaigns across Google Ads, Meta (Facebook/Instagram), TikTok, LinkedIn, Bing Ads, GA4, Shopify, Klaviyo, and Search Console — via natural language",
-      "homepage": "https://gomarble.ai",
-      "repository": "git+https://github.com/gomarble-ai/ai-ads-agent.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "ai-ads-agent",
-        "ai-ads",
-        "ai-ads-os",
-        "ai-ads-tool"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "ai-ads-agent"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/ai-agent-team",
       "name": "Ai Agent Team",
       "publisher": "modelcontextprotocol",
@@ -3683,6 +3670,24 @@
       ],
       "sources": [
         "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/ai-cloud-memory",
+      "name": "AI Cloud Memory",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Enables AI clients to access a shared, authenticated memory and project management system with durable storage, task tracking, roadmaps, and semantic search, deployed on Cloudflare.",
+      "homepage": "https://glama.ai/mcp/servers/owltch4gn7",
+      "repository": {
+        "url": "https://github.com/DrewMauldin/AI-Cloud-Memory"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
       ]
     },
     {
@@ -3998,6 +4003,38 @@
           "args": [
             "-y",
             "aichat-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/aicomglobal",
+      "name": "Aicomglobal",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "moonspacenow",
+      "description": "MCP server for aicomglobal.com — 78 free deterministic tool services for AI agents (JSON repair, hashing, safe arithmetic, prompt-injection scan, secret redaction…), the live x402 Reliability Index of 20,000+ paid agent services, the Agora agent-to-agent",
+      "homepage": "https://aicomglobal.com",
+      "repository": "git+https://github.com/moonspacenow-tech/aicomglobal.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "modelcontextprotocol",
+        "ai-agents"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "aicomglobal"
           ]
         }
       ],
@@ -5860,38 +5897,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/app-publisher-mcp",
-      "name": "App Publisher Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "seungmanchoi",
-      "description": "MCP server for vibe coders - AI app icon generation, auto-resizing for iOS/Android, and store publishing automation",
-      "homepage": "https://github.com/seungmanchoi/app-publisher-mcp#readme",
-      "repository": "git+https://github.com/seungmanchoi/app-publisher-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "claude-code"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@seungmanchoi/app-publisher-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/app-store-connect-mcp",
       "name": "App Store Connect Mcp",
       "publisher": "modelcontextprotocol",
@@ -6784,38 +6789,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/astexplore-mcp",
-      "name": "Astexplore Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "kingjem",
-      "description": "MCP server that parses JS/TS source into an AST using a selectable parser (babel, acorn, typescript, espree, @typescript-eslint/parser) — astexplorer.net as an MCP tool.",
-      "homepage": "https://github.com/KingJem/astexplore-mcp#readme",
-      "repository": "git+https://github.com/KingJem/astexplore-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "modelcontextprotocol",
-        "ast"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "astexplore-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/astramindapp",
       "name": "Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -7263,38 +7236,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/atproto-mcp",
-      "name": "Atproto Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "GitHub Actions",
-      "description": "A comprehensive MCP server for AT Protocol integration, enabling LLMs to interact directly with the AT Protocol ecosystem",
-      "homepage": "https://github.com/cameronrye/atproto-mcp#readme",
-      "repository": "git+https://github.com/cameronrye/atproto-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "atproto"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "atproto-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/attack-surface",
       "name": "Attack Surface Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -7319,6 +7260,38 @@
           "args": [
             "-y",
             "@cyanheads/attack-surface-mcp-server"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/attention-matters-cli",
+      "name": "Cli",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "attention-matters",
+      "description": "Geometric memory for AI coding agents. Installs the 'attention-matters' package.",
+      "homepage": "https://github.com/srobinson/attention-matters",
+      "repository": "git+https://github.com/srobinson/attention-matters.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "memory",
+        "ai",
+        "claude"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@attention-matters/cli"
           ]
         }
       ],
@@ -7509,70 +7482,6 @@
           "args": [
             "-y",
             "authshore"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/automate-io-api-testing-mcp",
-      "name": "Api Testing Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "automate-io",
-      "description": "MCP server for HTTP API testing with Playwright. Supports full CRUD operations, path/query parameters, and comprehensive error handling for API automation workflows.",
-      "homepage": "https://github.com/Naveen-Automation/mcp-server#readme",
-      "repository": "git+https://github.com/Naveen-Automation/mcp-server.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "ai",
-        "api-automation"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@automate-io/api-testing-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/autoremediator",
-      "name": "Autoremediator",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "GitHub Actions",
-      "description": "Agentic CVE remediation platform for Node.js. Correlates threat intelligence, applies policy-governed fixes, and delivers auditable remediation outcomes across CI/CD pipelines, agent workflows, and service portfolios.",
-      "homepage": "https://github.com/Rawlings/autoremediator#readme",
-      "repository": "git+https://github.com/Rawlings/autoremediator.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "agent-tooling",
-        "agentic",
-        "ai",
-        "claude-mcp"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "autoremediator"
           ]
         }
       ],
@@ -8442,38 +8351,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/base-network",
-      "name": "Base Network Mcp Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "tinabae",
-      "description": "Model Context Protocol server for Base network blockchain operations",
-      "homepage": "https://github.com/yourusername/base-mcp-server#readme",
-      "repository": "git+https://github.com/yourusername/base-mcp-server.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "base",
-        "blockchain"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "base-network-mcp-server"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/base-price-oracle-mcp",
       "name": "Base Price Oracle Mcp",
       "publisher": "modelcontextprotocol",
@@ -8568,22 +8445,22 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/bazaar-mcp",
-      "name": "Bazaar Mcp",
+      "id": "modelcontextprotocol/batuta-mcp",
+      "name": "Batuta Mcp",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "fl-sean03",
-      "description": "MCP server for the OpSpawn x402 Bazaar — screenshot capture, AI analysis, PDF/HTML generation, code security scanning, and dependency auditing via x402 micropayments",
-      "homepage": "https://a2a.opspawn.com",
-      "repository": "git+https://github.com/opspawn/bazaar-mcp-server.git",
+      "originalPublisher": "vorluno",
+      "description": "MCP server that splits a task into plans with disjoint file boundaries and scaffolds a git worktree per plan — conflict-free parallel coding agents.",
+      "homepage": "https://github.com/vorluno/batuta-mcp#readme",
+      "repository": "git+https://github.com/vorluno/batuta-mcp.git",
       "transports": [
         "stdio"
       ],
       "tags": [
         "npm",
         "mcp",
+        "model-context-protocol",
         "mcp-server",
-        "x402",
-        "bazaar"
+        "claude"
       ],
       "install": [
         {
@@ -8591,7 +8468,7 @@
           "command": "npx",
           "args": [
             "-y",
-            "bazaar-mcp"
+            "@vorluno/batuta-mcp"
           ]
         }
       ],
@@ -9334,6 +9211,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/bitget-agent-mcp",
+      "name": "Bitget Agent Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "bitget-ai",
+      "description": "Official Bitget MCP Server for the Unified Trading Account (UTA / v3) API — exposes a curated, progressively-discoverable intent surface (account, trade, market, strategy, …) to any MCP-compatible AI host (Claude Desktop, Cursor, Continue, …) over stdio.",
+      "homepage": "https://github.com/Bitget-AI/agent-mcp#readme",
+      "repository": "git+https://github.com/Bitget-AI/agent-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "bitget",
+        "bitget-api",
+        "bitget-mcp",
+        "mcp"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@bitget-ai/bitget-agent-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/bitrix24-mcp",
       "name": "Bitrix24 Mcp",
       "publisher": "modelcontextprotocol",
@@ -9750,6 +9659,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/bothread",
+      "name": "Bothread",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "adamace9",
+      "description": "A local, human-governed room where MCP-compatible AI coding agents talk to each other and collaborate on one codebase while you watch and stay in command. Agents claim files before editing so collisions are denied live, coordinate in a shared thread and t",
+      "homepage": "https://bothread.vercel.app",
+      "repository": "git+https://github.com/AdamACE9/bothread.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "mcp-server",
+        "ai-agents"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "bothread"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/bouncer",
       "name": "Bouncer",
       "publisher": "modelcontextprotocol",
@@ -9774,38 +9715,6 @@
           "args": [
             "-y",
             "@nugehs/bouncer"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/boxberry-mcp",
-      "name": "Boxberry Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "theyahia",
-      "description": "MCP server for Boxberry — delivery points, shipping calculation, tracking (Russia)",
-      "homepage": "https://github.com/theYahia/boxberry-mcp#readme",
-      "repository": "git+https://github.com/theYahia/boxberry-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@theyahia/boxberry-mcp"
           ]
         }
       ],
@@ -10230,38 +10139,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/browse-mcp",
-      "name": "Browse Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "GitHub Actions",
-      "description": "Headless-browser MCP server for any MCP-capable agent (Claude, Codex, Gemini CLI, Cursor, ...). Playwright-based, with accessibility-tree refs, Readability, search, annotated screenshots, and a self-improvement feedback loop. Windows, Linux, and macOS.",
-      "homepage": "https://github.com/That1Drifter/browse-mcp#readme",
-      "repository": "git+https://github.com/That1Drifter/browse-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "model-context-protocol",
-        "mcp-server",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "browse-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/browser-devtools-mcp",
       "name": "Browser Devtools Mcp",
       "publisher": "modelcontextprotocol",
@@ -10678,10 +10555,10 @@
       "id": "modelcontextprotocol/bullmq-mcp",
       "name": "Bullmq Mcp",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "adamhancock",
-      "description": "Model Context Protocol server for BullMQ job queue management",
-      "homepage": "https://github.com/adamhancock/bullmq-mcp#readme",
-      "repository": "git+https://github.com/adamhancock/bullmq-mcp.git",
+      "originalPublisher": "mmollick",
+      "description": "Model Context Protocol server for BullMQ job queue management (fork with Redis Cluster and configurable prefix support)",
+      "homepage": "https://github.com/mmollick/bullmq-mcp#readme",
+      "repository": "git+https://github.com/mmollick/bullmq-mcp.git",
       "transports": [
         "stdio"
       ],
@@ -10698,7 +10575,7 @@
           "command": "npx",
           "args": [
             "-y",
-            "@adamhancock/bullmq-mcp"
+            "@mmollick/bullmq-mcp"
           ]
         }
       ],
@@ -11126,7 +11003,7 @@
       "name": "Mcp Server",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "cachly-dev",
-      "description": "Your AI forgets everything between sessions. cachly fixes that permanently: 122 MCP tools for Claude Code, Cursor, Copilot & Windsurf. Learns from every bug fix, commit and CI run. Arrives pre-briefed. Free tier forever, EU servers, GDPR.",
+      "description": "Your AI forgets everything between sessions. cachly fixes that permanently: 123 MCP tools for Claude Code, Cursor, Copilot & Windsurf. Learns from every bug fix, commit and CI run. Arrives pre-briefed. Free tier forever, EU servers, GDPR.",
       "homepage": "https://cachly.dev/docs/mcp",
       "repository": "git+https://github.com/cachly-dev/cachly-mcp.git",
       "transports": [
@@ -12049,6 +11926,37 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/chaingpt-mcp",
+      "name": "Chaingpt Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "Bring ChainGPT Capabilities into your AI Agent. Web3.",
+      "homepage": "https://www.npmjs.com/package/@mseep/chaingpt-mcp",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "chaingpt",
+        "mcp",
+        "ai",
+        "web3"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/chaingpt-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/chamade",
       "name": "Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -12233,6 +12141,38 @@
           "args": [
             "-y",
             "chassis-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/chat-recall",
+      "name": "Chat Recall",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "GitHub Actions",
+      "description": "One memory across every AI coding tool — indexes Claude Code, Gemini CLI, Codex, OpenCode, Antigravity and Cursor sessions, redacts secrets, and exposes them to your agent over MCP.",
+      "homepage": "https://chatrecall.dev",
+      "repository": "git+https://github.com/munhq/chat-recall.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "claude-code"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "chat-recall"
           ]
         }
       ],
@@ -13614,24 +13554,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/clevertap-mcp",
-      "name": "clevertap-mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Enables an LLM agent to directly control CleverTap for planning, launching, and measuring CRM campaigns, including multi-channel sends, profile and event management, and trend analysis.",
-      "homepage": "https://glama.ai/mcp/servers/hsvwhbsmyk",
-      "repository": {
-        "url": "https://github.com/Saiswrp7/clevertap-mcp"
-      },
-      "transports": [
-        "stdio"
-      ],
-      "tags": [],
-      "sources": [
-        "glama"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/clfly-cli",
       "name": "Cli",
       "publisher": "modelcontextprotocol",
@@ -13884,24 +13806,6 @@
       ],
       "sources": [
         "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/clinical-mcp",
-      "name": "clinical-mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Enables clinical workflows including search and summarization of synthetic FHIR patient records, PubMed literature search, and HIPAA Safe Harbor de-identification of text, via any MCP client.",
-      "homepage": "https://glama.ai/mcp/servers/k6epn4lwgi",
-      "repository": {
-        "url": "https://github.com/sarathi-aiml/clinical-mcp"
-      },
-      "transports": [
-        "stdio"
-      ],
-      "tags": [],
-      "sources": [
-        "glama"
       ]
     },
     {
@@ -14183,6 +14087,38 @@
           "args": [
             "-y",
             "@paretools/cmake"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/cmux-mcp",
+      "name": "Cmux Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "daegweon",
+      "description": "A Model Context Protocol server that provides access to the currently active tab of cmux",
+      "homepage": "https://github.com/daegweon/cmux-mcp#readme",
+      "repository": "git+https://github.com/daegweon/cmux-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "cmux"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "cmux-mcp"
           ]
         }
       ],
@@ -14661,6 +14597,38 @@
           "args": [
             "-y",
             "codebase-context"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/codebase-mcp",
+      "name": "Codebase Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "dipanshu00",
+      "description": "Auto-generate AI-ready context from your codebase. One command → CONTEXT.md ready to paste into Claude, Cursor, ChatGPT or any MCP agent. Full MCP server mode included.",
+      "homepage": "https://github.com/Dipanshu-js/codebase-mcp#readme",
+      "repository": "git+https://github.com/Dipanshu-js/codebase-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "codebase",
+        "context"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "codebase-mcp"
           ]
         }
       ],
@@ -15500,14 +15468,14 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/community-mcp-gateway",
-      "name": "mcp-gway",
+      "id": "modelcontextprotocol/community-mcp",
+      "name": "Android Control MCP Server",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "community",
-      "description": "Enables aggregating multiple MCP servers behind a single HTTP/SSE endpoint, with Code Mode to reduce token usage and support for OAuth and sandboxed execution.",
-      "homepage": "https://glama.ai/mcp/servers/auwnz4ph09",
+      "description": "Enables AI assistants to observe, reason about, and control connected Android devices via ADB, providing tools for screenshots, UI hierarchy parsing, semantic element clicking, gestures, text input, and app lifecycle management.",
+      "homepage": "https://glama.ai/mcp/servers/f0i8hvhju2",
       "repository": {
-        "url": "https://github.com/deuriib/mcp-gateway"
+        "url": "https://github.com/swamiabhishek45/mcp"
       },
       "transports": [
         "stdio"
@@ -15646,6 +15614,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/componecat-mcp",
+      "name": "Componecat Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "shaftware",
+      "description": "Stdio bridge for the Componecat MCP server — connect stdio-only MCP clients to your organization's software component catalog at app.componecat.ai.",
+      "homepage": "https://www.componecat.ai",
+      "repository": "git+https://github.com/componecat/mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "modelcontextprotocol",
+        "componecat"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@shaftware/componecat-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/compute-finance-mcp",
       "name": "Mcp",
       "publisher": "modelcontextprotocol",
@@ -15702,38 +15702,6 @@
           "args": [
             "-y",
             "computeledger-cli"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/concord-mcp",
-      "name": "Concord Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "masstensor",
-      "description": "MCP stdio server for Concord — multi-agent collaboration rooms with end-to-end encryption and server-enforced coordination primitives. Works in Claude Code, Codex CLI, Gemini CLI, and Cursor.",
-      "homepage": "https://concord.fenginwind.com",
-      "repository": "git+https://github.com/zkwasm/concord-plugin.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "concord-mcp"
           ]
         }
       ],
@@ -16088,6 +16056,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/contentstack-app-mcp",
+      "name": "Contentstack App Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "MCP server for building Contentstack Marketplace apps with AI agents",
+      "homepage": "https://github.com/abhishek305/contentstack-app-mcp#readme",
+      "repository": "git+https://github.com/abhishek305/contentstack-app-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "contentstack",
+        "marketplace",
+        "ai"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/contentstack-app-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/context-fabric",
       "name": "Context Fabric",
       "publisher": "modelcontextprotocol",
@@ -16176,38 +16176,6 @@
           "args": [
             "-y",
             "context-matters"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/context-matters-cli",
-      "name": "Cli",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "context-matters",
-      "description": "Structured context store for AI agents - MCP server with SQLite backend",
-      "homepage": "https://github.com/srobinson/context-matters",
-      "repository": "git+https://github.com/srobinson/context-matters.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "context",
-        "ai",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@context-matters/cli"
           ]
         }
       ],
@@ -17268,7 +17236,7 @@
       "name": "Crawlforge Mcp Server",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "slacey75",
-      "description": "CrawlForge MCP Server - Professional Model Context Protocol server with 27 web scraping, crawling, deep-research, and autonomous-extraction tools. Returns clean Markdown and structured JSON for Claude, Cursor, and any MCP client. Defaults to local Ollama",
+      "description": "CrawlForge MCP Server - Professional Model Context Protocol server with 28 web scraping, crawling, deep-research, and autonomous-extraction tools. Returns clean Markdown and structured JSON for Claude, Cursor, and any MCP client. Defaults to local Ollama",
       "homepage": "https://crawlforge.dev",
       "repository": "git+https://github.com/mysleekdesigns/crawlforge-mcp.git",
       "transports": [
@@ -17448,6 +17416,38 @@
           "args": [
             "-y",
             "create-nimbus-connector"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/create-opc-wiki",
+      "name": "Create Opc Wiki",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mackclaws",
+      "description": "Scaffold a personal LLM wiki (Karpathy pattern). MCP-ready, multi-agent, publishable. Zero-prompt install for IM agents (OpenClaw, Hermes, Codex, Claude Code).",
+      "homepage": "https://github.com/MackDing/create-opc-wiki",
+      "repository": "git+https://github.com/MackDing/create-opc-wiki.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "llm-wiki",
+        "karpathy",
+        "personal-knowledge-base",
+        "second-brain"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "create-opc-wiki"
           ]
         }
       ],
@@ -18702,38 +18702,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/dbhub-analytics",
-      "name": "Dbhub Analytics",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "amansingh63",
-      "description": "MCP server for Databricks SQL, Google BigQuery, PostgreSQL, MySQL, SQL Server, SQLite, MariaDB — connect AI assistants to cloud data warehouses and databases",
-      "homepage": "https://github.com/amansingh63/dbhub-analytics#readme",
-      "repository": "git+https://github.com/amansingh63/dbhub-analytics.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "databricks",
-        "bigquery"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "dbhub-analytics"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/dealflowpro-mcp",
       "name": "Dealflowpro Mcp",
       "publisher": "modelcontextprotocol",
@@ -19054,38 +19022,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/delovye-linii-mcp",
-      "name": "Delovye Linii Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "theyahia",
-      "description": "MCP server for Delovye Linii — freight delivery, tariff calculation (Russia)",
-      "homepage": "https://github.com/theYahia/delovye-linii-mcp#readme",
-      "repository": "git+https://github.com/theYahia/delovye-linii-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@theyahia/delovye-linii-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/delx",
       "name": "Delx Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -19338,24 +19274,6 @@
       ],
       "sources": [
         "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/desyncedmcp",
-      "name": "DesyncedMCP",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Enables AI assistants to develop Desynced mods by providing direct access to the game's Lua API reference, base-game source, live logs, and installed mods, plus live control via a debugger link for evaluating and reloading Lua in the running game.",
-      "homepage": "https://glama.ai/mcp/servers/roummaqhnr",
-      "repository": {
-        "url": "https://github.com/angeldeejay/DesyncedMCP"
-      },
-      "transports": [
-        "stdio"
-      ],
-      "tags": [],
-      "sources": [
-        "glama"
       ]
     },
     {
@@ -19925,56 +19843,6 @@
           "args": [
             "-y",
             "mcp-server-dig"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/dingdawg-finance-agent",
-      "name": "dingdawg-finance-agent",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Enables AI assistants to perform financial analysis, budget forecasting, compliance checks, expense categorization, and risk assessment, returning structured JSON with audit-ready governance receipts.",
-      "homepage": "https://glama.ai/mcp/servers/uahot43c4y",
-      "repository": {
-        "url": "https://github.com/dingdawg/dingdawg-finance-agent"
-      },
-      "transports": [
-        "stdio"
-      ],
-      "tags": [],
-      "sources": [
-        "glama"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/dingtalk",
-      "name": "Dingtalk Mcp Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "onlyloveher",
-      "description": "钉钉MCP服务器 - 让Claude Code能操作钉钉（消息/待办/日程）",
-      "homepage": "https://github.com/yourusername/dingtalk-mcp-server#readme",
-      "repository": "git+https://github.com/yourusername/dingtalk-mcp-server.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "dingtalk",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "dingtalk-mcp-server"
           ]
         }
       ],
@@ -20686,38 +20554,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/domain-memory-server",
-      "name": "Domain Memory Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "mashware",
-      "description": "Domain Memory MCP server (stdio). Local-first MCP server that serves the business-domain knowledge of a project to any MCP-compatible agent.",
-      "homepage": "https://github.com/mashware/domain-memory#readme",
-      "repository": "git+https://github.com/mashware/domain-memory.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "model-context-protocol",
-        "mcp-server",
-        "domain-knowledge"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@mashware/domain-memory-server"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/dominus-cli",
       "name": "Dominus Cli",
       "publisher": "modelcontextprotocol",
@@ -21134,6 +20970,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/dsh-mcp-view",
+      "name": "Dsh Mcp View",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "stopchewing",
+      "description": "MCP Tools panel for the DeepSeek Harness Web GUI: see every MCP server and tool available in your session, grouped by server, with transport info, JSON schemas, live search and last-used times derived from real session logs.",
+      "homepage": "https://github.com/stopchewing/dsh-mcp-view#readme",
+      "repository": "git+https://github.com/stopchewing/dsh-mcp-view.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "dsh",
+        "deepseek-harness",
+        "deepseek",
+        "plugin"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "dsh-mcp-view"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/dsh-web-search-exa",
       "name": "Dsh Web Search Exa",
       "publisher": "modelcontextprotocol",
@@ -21221,6 +21089,38 @@
           "args": [
             "-y",
             "dungbeetle-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/dwic-audit",
+      "name": "Dwic Audit",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "imrandwc",
+      "description": "dwic — a product designer inside your terminal. MCP server + CLI that audits your design tokens + markup for WCAG contrast failures, mandated-accent drift, and structural gaps, then remembers findings across sessions.",
+      "homepage": "https://designwithclaude.com",
+      "repository": "git+https://github.com/imsaif/design-with-claude.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "dwic",
+        "design-with-claude",
+        "claude-code",
+        "mcp"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "dwic-audit"
           ]
         }
       ],
@@ -22248,6 +22148,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/empir3-bridge",
+      "name": "Empir3 Bridge",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "empir3hq",
+      "description": "Local-first browser and desktop control bridge for AI agents using MCP.",
+      "homepage": "https://github.com/empir3hq/empir3-bridge",
+      "repository": "git+https://github.com/empir3hq/empir3-bridge.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "claude",
+        "claude-code",
+        "mcp",
+        "browser"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@empir3hq/empir3-bridge"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/engedi-mcp",
       "name": "Engedi Mcp",
       "publisher": "modelcontextprotocol",
@@ -22400,6 +22332,38 @@
           "args": [
             "-y",
             "enigmagent-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/enke-cli",
+      "name": "Enke Cli",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "zenkee",
+      "description": "en.ke CLI — secure link & context relay for AI agents. Includes MCP server.",
+      "homepage": "https://www.npmjs.com/package/enke-cli",
+      "repository": "git@github-zenkee:zenkeellc/enke-cli.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "enke",
+        "cli",
+        "mcp",
+        "mcp-server"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "enke-cli"
           ]
         }
       ],
@@ -23587,21 +23551,35 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/fastly-mcp",
-      "name": "fastly-mcp",
+      "id": "modelcontextprotocol/fastmail",
+      "name": "Fastmail Mcp Server",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Enables interaction with the Fastly REST API through user-scoped authentication, supporting service management, purging, token updates, and full API coverage via a configurable request tool.",
-      "homepage": "https://glama.ai/mcp/servers/ghih3um3p5",
-      "repository": {
-        "url": "https://github.com/LesterAJohn/fastly-mcp"
-      },
+      "originalPublisher": "jordonh19",
+      "description": "MCP server for Fastmail — enables AI assistants to read, search, send, and manage emails, calendars, and contacts via the JMAP protocol",
+      "homepage": "https://github.com/Jordonh18/fastmail-mcp-server#readme",
+      "repository": "git+https://github.com/Jordonh18/fastmail-mcp-server.git",
       "transports": [
         "stdio"
       ],
-      "tags": [],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "fastmail"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@jordonh19/fastmail-mcp-server"
+          ]
+        }
+      ],
       "sources": [
-        "glama"
+        "npm"
       ]
     },
     {
@@ -26538,6 +26516,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/gatefare-mcp",
+      "name": "Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "gatefare",
+      "description": "MCP server for the Gatefare paid-API marketplace. Works with Claude Desktop, Cursor, Continue, and any MCP client. Pay per API call in USDC on Base via the open x402 standard. Non-custodial.",
+      "homepage": "https://gatefare.io",
+      "repository": "git+https://github.com/gatefareio/mcp-server.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "claude"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@gatefare/mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/gbif-biodiversity",
       "name": "Gbif Biodiversity Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -27135,38 +27145,6 @@
           "args": [
             "-y",
             "@getappniche/mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/getcolter-cli",
-      "name": "Cli",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "getcolter",
-      "description": "Colter Recommendation Audit CLI for Shopify product pages, evidence gaps, and agent-commerce monitoring. Includes Check, Fix, Test, Lens, UCP, ACP, MCP, and WebMCP.",
-      "homepage": "https://agenticcom.ai",
-      "repository": "git+https://github.com/mfbahc/colter.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "colter",
-        "agentic-commerce",
-        "ucp",
-        "acp"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@getcolter/cli"
           ]
         }
       ],
@@ -28358,6 +28336,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/google-analytics-mcp",
+      "name": "Google Analytics Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "surendranb",
+      "description": "Model Context Protocol (MCP) server for Google Analytics 4 (GA4) data and schema discovery via NPX. Spawns the Python package through uvx with full stdio passthrough.",
+      "homepage": "https://ga4.builditwithai.xyz",
+      "repository": "git+https://github.com/surendranb/google-analytics-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "google-analytics",
+        "ga4"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@surendranb/google-analytics-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/google-calendar",
       "name": "Google Calendar Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -28510,6 +28520,38 @@
           "args": [
             "-y",
             "google-play-developer-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/google-search-console-mcp",
+      "name": "Google Search Console Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "surendranb",
+      "description": "Model Context Protocol (MCP) server for Google Search Console (GSC) inspection, search performance, and sitemaps via NPX. Spawns the Python package through uvx with full stdio passthrough.",
+      "homepage": "https://gsc.builditwithai.xyz",
+      "repository": "git+https://github.com/surendranb/google-search-console-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "google-search-console",
+        "gsc"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@surendranb/google-search-console-mcp"
           ]
         }
       ],
@@ -29252,6 +29294,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/gridwork-license",
+      "name": "Gridwork License",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "thegridwork",
+      "description": "MCP server that scans project dependencies for license compliance — detects conflicts, copyleft risks, and undeclared licenses",
+      "homepage": "https://github.com/thegridwork/license#readme",
+      "repository": "git+https://github.com/thegridwork/license.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "license",
+        "compliance"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "gridwork-license"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/gridwork-privacy",
       "name": "Gridwork Privacy",
       "publisher": "modelcontextprotocol",
@@ -29479,7 +29553,7 @@
       "name": "Ground Mcp",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "createsomething",
-      "description": "Grounded claims for code. MCP server that prevents AI hallucination in code analysis.",
+      "description": "Evidence-first code analysis for agents in TypeScript, JavaScript, and Svelte codebases.",
       "homepage": "https://github.com/createsomethingtoday/create-something-monorepo/tree/main/packages/ground",
       "repository": "git+https://github.com/createsomethingtoday/create-something-monorepo.git",
       "transports": [
@@ -29531,38 +29605,6 @@
           "args": [
             "-y",
             "grpvn-cli"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/gstaccelerator",
-      "name": "Gstaccelerator",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "gstaccelerator.in",
-      "description": "India GST API Client and MCP Server for AI Agents (HSN/SAC Rates)",
-      "homepage": "https://gstaccelerator.in",
-      "repository": "git+https://github.com/thedivine1/gstaccelerator-js.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "gst",
-        "gstin",
-        "hsn",
-        "sac"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "gstaccelerator"
           ]
         }
       ],
@@ -30816,38 +30858,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/hirebase-mcp",
-      "name": "Hirebase Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "dolusoft",
-      "description": "HireBase - AI-powered CV search engine with LanceDB and MCP",
-      "homepage": "https://github.com/dolusoft/hirebase#readme",
-      "repository": "git+https://github.com/dolusoft/hirebase.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "rag",
-        "lancedb"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@dolusoft/hirebase-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/hive-intelligence",
       "name": "Hive Intelligence",
       "publisher": "modelcontextprotocol",
@@ -31064,37 +31074,6 @@
           "args": [
             "-y",
             "@revfleet/hscli"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/html2pdfconverter",
-      "name": "Mcp Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "html2pdfconverter",
-      "description": "MCP server for HTML2PDF Converter",
-      "homepage": "https://www.npmjs.com/package/@html2pdfconverter/mcp-server",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp-server",
-        "mcp",
-        "pdf",
-        "html2pdf"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@html2pdfconverter/mcp-server"
           ]
         }
       ],
@@ -31351,38 +31330,6 @@
           "args": [
             "-y",
             "humansurvey-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/huntflow-mcp",
-      "name": "Huntflow Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "theyahia",
-      "description": "MCP server for Huntflow — ATS, vacancies, candidates, recruiting (Russia)",
-      "homepage": "https://github.com/theYahia/huntflow-mcp#readme",
-      "repository": "git+https://github.com/theYahia/huntflow-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@theyahia/huntflow-mcp"
           ]
         }
       ],
@@ -32889,6 +32836,24 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/invoice-extraction-mcp",
+      "name": "doc-extract",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Enables reading entire PDF documents into validated structured JSON, including tables, key-values, and markdown, with read-only extraction tools and layout reconstruction.",
+      "homepage": "https://glama.ai/mcp/servers/f2n2jevq56",
+      "repository": {
+        "url": "https://github.com/AlanAAG/invoice-extraction-mcp"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/invompt-mcp",
       "name": "Invompt Mcp",
       "publisher": "modelcontextprotocol",
@@ -33232,6 +33197,38 @@
           "args": [
             "-y",
             "itr-agent"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/jablum-weather-mcp",
+      "name": "Weather Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "jablum",
+      "description": "MCP (Model Context Protocol) server providing weather data from NOAA and Open-Meteo APIs. Supports forecasts, current conditions, and historical weather data (1940-present) with no API keys required.",
+      "homepage": "https://github.com/jablum/weather-mcp/weather-mcp#readme",
+      "repository": "git+https://github.com/jablum/weather-mcp/weather-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "weather"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@jablum/weather-mcp"
           ]
         }
       ],
@@ -33880,6 +33877,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/jonusnattapong-oracle",
+      "name": "Oracle",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "jonusnattapong",
+      "description": "Oracle Assistant — an MCP-powered AI assistant with persistent memory, a knowledge base, web access, and an inter-agent message bus for Claude Code, opencode, and other coding agents.",
+      "homepage": "https://github.com/OraclePersonal/Oracle#readme",
+      "repository": "git+https://github.com/OraclePersonal/Oracle.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "oracle-assistant",
+        "mcp",
+        "mcp-server",
+        "ai-assistant"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@jonusnattapong/oracle"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/js-reverse-mcp",
       "name": "Js Reverse Mcp",
       "publisher": "modelcontextprotocol",
@@ -34008,38 +34037,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/juejin-mcp",
-      "name": "Juejin Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "wojiaoxiaofenfen",
-      "description": "掘金 MCP Server — 通过 MCP 协议接入掘金社区，支持文章、沸点、用户等操作的增删改查",
-      "homepage": "https://github.com/fengyongsheng520/mcp-server#readme",
-      "repository": "git+https://github.com/fengyongsheng520/mcp-server.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "juejin",
-        "掘金",
-        "model-context-protocol"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@wojiaoxiaofenfen/juejin-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/jules-dispatch",
       "name": "Jules Dispatch",
       "publisher": "modelcontextprotocol",
@@ -34072,21 +34069,22 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/jura-zentao-mcp",
-      "name": "Jura Zentao Mcp",
+      "id": "modelcontextprotocol/jupyterlab-collab-mcp",
+      "name": "Jupyterlab Collab Mcp",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "perity",
-      "description": "禅道（Zentao）MCP Server —— 让 AI 直接拉取禅道需求/Bug/任务/文档",
-      "homepage": "https://www.npmjs.com/package/jura-zentao-mcp",
+      "originalPublisher": "GitHub Actions",
+      "description": "MCP server for real-time JupyterLab notebook collaboration",
+      "homepage": "https://ianhuntisaak.com/jupyterlab-collab-mcp/",
+      "repository": "git+https://github.com/ianhi/jupyterlab-collab-mcp.git",
       "transports": [
         "stdio"
       ],
       "tags": [
         "npm",
-        "zentao",
         "mcp",
         "mcp-server",
-        "model-context-protocol"
+        "jupyterlab",
+        "jupyter"
       ],
       "install": [
         {
@@ -34094,7 +34092,7 @@
           "command": "npx",
           "args": [
             "-y",
-            "jura-zentao-mcp"
+            "jupyterlab-collab-mcp"
           ]
         }
       ],
@@ -34870,13 +34868,13 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/kiln3d",
-      "name": "Kiln3d",
+      "id": "modelcontextprotocol/killbottleneck-mcp",
+      "name": "Killbottleneck Mcp",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "kiln3d",
-      "description": "Launcher for Kiln — the open-source MCP server for 3D printing. Lets AI agents (Claude, Codex, or any MCP client) design, slice, print, monitor, and recover real 3D prints. Runs the Python package `kiln3d` via uv/pipx.",
-      "homepage": "https://kiln3d.com",
-      "repository": "git+https://github.com/codeofaxel/Kiln.git",
+      "originalPublisher": "tengolabs",
+      "description": "MCP server for killBottleneck — connect your AI assistant (Claude Desktop, Claude Code, …) to your killBottleneck instance and build goal maps conversationally.",
+      "homepage": "https://killbottleneck.com",
+      "repository": "git+https://github.com/tengolabs/killbottleneck.git",
       "transports": [
         "stdio"
       ],
@@ -34885,7 +34883,7 @@
         "mcp",
         "mcp-server",
         "model-context-protocol",
-        "3d-printing"
+        "killbottleneck"
       ],
       "install": [
         {
@@ -34893,7 +34891,7 @@
           "command": "npx",
           "args": [
             "-y",
-            "kiln3d"
+            "killbottleneck-mcp"
           ]
         }
       ],
@@ -35246,6 +35244,38 @@
           "args": [
             "-y",
             "@zsc-glitch/knowledge-keeper-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/knowledgine",
+      "name": "Mcp Server",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "knowledgine",
+      "description": "MCP server exposing knowledge search tools for AI coding assistants",
+      "homepage": "https://github.com/3062-in-zamud/knowledgine#readme",
+      "repository": "git+https://github.com/3062-in-zamud/knowledgine.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "knowledge",
+        "markdown"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@knowledgine/mcp-server"
           ]
         }
       ],
@@ -36209,38 +36239,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/ledd-mcp-audit-server",
-      "name": "Ledd Mcp Audit Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "GitHub Actions",
-      "description": "MCP server interface for AI agent and MCP security auditing — config analysis, trust audits, prompt injection testing, tool probing, and data flow tracing",
-      "homepage": "https://github.com/joepangallo/mcp-audit-server#readme",
-      "repository": "git+https://github.com/joepangallo/mcp-audit-server.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "security",
-        "audit",
-        "ai-agent"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "ledd-mcp-audit-server"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/ledgenter-mcp",
       "name": "Mcp",
       "publisher": "modelcontextprotocol",
@@ -36784,38 +36782,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/linkedincli",
-      "name": "Linkedincli",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "bcharleson",
-      "description": "CLI and MCP server for LinkedIn — 43 commands for profiles, posts, messaging, connections, search, feed, and more. Cookie session auth, AI agent native.",
-      "homepage": "https://github.com/bcharleson/linkedincli#readme",
-      "repository": "git+https://github.com/bcharleson/linkedincli.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "linkedin",
-        "cli",
-        "mcp",
-        "mcp-server"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@bcharleson/linkedincli"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/lint",
       "name": "Lint",
       "publisher": "modelcontextprotocol",
@@ -36872,38 +36838,6 @@
           "args": [
             "-y",
             "@liquefy-ui/mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/listbee-mcp",
-      "name": "Listbee Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "listbee",
-      "description": "MCP server for ListBee — commerce API for AI agents",
-      "homepage": "https://listbee.so",
-      "repository": "git+https://github.com/listbee-dev/listbee-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "listbee",
-        "commerce"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "listbee-mcp"
           ]
         }
       ],
@@ -37645,6 +37579,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/lorg",
+      "name": "Lorg Mcp Server",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "lorgai",
+      "description": "MCP server for the Lorg AI agent knowledge archive — contribute, search, and validate structured knowledge with Claude Desktop and other MCP clients",
+      "homepage": "https://lorg.ai",
+      "repository": "git+https://github.com/LorgAI/lorg-mcp-server.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "ai-agents",
+        "claude"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "lorg-mcp-server"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/luma-mcp",
       "name": "Luma Mcp",
       "publisher": "modelcontextprotocol",
@@ -37804,6 +37770,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/m2msentinel-sdk",
+      "name": "Sdk",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "m2msentinel",
+      "description": "JavaScript client for M2M Sentinel Base bytecode capability, proxy and market observations",
+      "homepage": "https://m2msentinel.com",
+      "repository": "git+https://github.com/M2M-Sentinel/m2m-sentinel-sdk.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "web3",
+        "x402",
+        "m2m-sentinel",
+        "base"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@m2msentinel/sdk"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/macbeth",
       "name": "Macbeth",
       "publisher": "modelcontextprotocol",
@@ -37828,38 +37826,6 @@
           "args": [
             "-y",
             "macbeth"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/macfax-mcp",
-      "name": "Macfax Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "macfax",
-      "description": "MCP server for the used-Mac market: quality-gated live listings with deep links, asking-price stats per configuration, listing trust checks, serial lookup, verified condition reports, and standing alerts. Wraps the free Macfax API (macfax.com/developers).",
-      "homepage": "https://macfax.com/developers",
-      "repository": "git+https://github.com/macfax/macfax-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "macfax-mcp"
           ]
         }
       ],
@@ -37904,7 +37870,7 @@
       "name": "Macos Vision Mcp",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "GitHub Actions",
-      "description": "Local OCR, PDF text extraction & image analysis for MCP clients (Claude, Cursor) — Apple Vision Framework, fully offline, no API keys.",
+      "description": "Local OCR and on-device screen reading for MCP clients (Claude, Cursor): read any window, locate elements to click, assert what's on screen. Apple Vision, no API keys, nothing uploaded.",
       "homepage": "https://github.com/woladi/macos-vision-mcp#readme",
       "repository": "git+https://github.com/woladi/macos-vision-mcp.git",
       "transports": [
@@ -38472,22 +38438,22 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/marketic-mcp",
-      "name": "Marketic Mcp",
+      "id": "modelcontextprotocol/markdy",
+      "name": "Mcp Server",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "dasrebel",
-      "description": "Marketic Marketing Intelligence MCP Server — 32 tools for competitor analysis, ad creative generation, campaign optimization, social media, SEO, HubSpot CRM, and attribution modeling",
-      "homepage": "https://github.com/Das-rebel/marketic",
-      "repository": "git+https://github.com/Das-rebel/marketic.git",
+      "originalPublisher": "markdy",
+      "description": "Model Context Protocol server for Markdy diagram validation, transpilation, and generation.",
+      "homepage": "https://markdy.com",
+      "repository": "git+https://github.com/HoangYell/markdy-com.git",
       "transports": [
         "stdio"
       ],
       "tags": [
         "npm",
+        "markdy",
         "mcp",
         "mcp-server",
-        "marketing",
-        "marketing-intelligence"
+        "model-context-protocol"
       ],
       "install": [
         {
@@ -38495,7 +38461,7 @@
           "command": "npx",
           "args": [
             "-y",
-            "marketic-mcp"
+            "@markdy/mcp-server"
           ]
         }
       ],
@@ -38572,9 +38538,9 @@
       "name": "Marketnow Mcp",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "eddyflores100",
-      "description": "MarketNow MCP Server v1.10.0 — ATC/1.0 Spec Verifier release. Adds marketnow_verify_atc_spec, a self-contained ATC/1.0 conformance verifier that accepts ANY Agent Trust Card (regardless of issuer — MarketNow Sentinel CA, third-party CA, or self-signed tes",
+      "description": "MarketNow MCP Server v1.10.0 â€” ATC/1.0 Spec Verifier release. Adds marketnow_verify_atc_spec, a self-contained ATC/1.0 conformance verifier that accepts ANY Agent Trust Card (regardless of issuer â€” MarketNow Sentinel CA, third-party CA, or self-signed",
       "homepage": "https://marketnow.site",
-      "repository": "git+https://github.com/edgarfloresguerra2011-a11y/marketnow.git",
+      "repository": "git+https://github.com/alicelabs-llc/universal-trust-adapter.git",
       "transports": [
         "stdio"
       ],
@@ -38597,24 +38563,6 @@
       ],
       "sources": [
         "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/marketplace-reality-check-mcp",
-      "name": "marketplace-reality-check-mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Enables evaluation of digital marketplaces by classifying demand signals, scoring commercial viability, sanity-checking claims, and comparing candidate channels.",
-      "homepage": "https://glama.ai/mcp/servers/ndvxldihol",
-      "repository": {
-        "url": "https://github.com/OkuboHeavyIndustries/marketplace-reality-check-mcp"
-      },
-      "transports": [
-        "stdio"
-      ],
-      "tags": [],
-      "sources": [
-        "glama"
       ]
     },
     {
@@ -38674,6 +38622,38 @@
           "args": [
             "-y",
             "markfetch"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/markitup",
+      "name": "Markitup Mcp Server",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "smythmyke",
+      "description": "MCP server for MarkItUp — AI image annotation and marketing visuals via Claude + Gemini",
+      "homepage": "https://markitup.app",
+      "repository": "git+https://github.com/smythmyke/markitup-mcp-server.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "ai"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "markitup-mcp-server"
           ]
         }
       ],
@@ -39002,6 +38982,35 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/math-mcp",
+      "name": "Math Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "A Model Context Protocol (MCP) server that provides basic mathematical, statistical and trigonometric functions to Large Language Models (LLMs). This server enables LLMs to perform accurate numerical calculations through a simple API.",
+      "homepage": "https://www.npmjs.com/package/@mseep/math-mcp",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mseep",
+        "mcp-server"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/math-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/mcp",
       "name": "Mcp",
       "publisher": "modelcontextprotocol",
@@ -39034,6 +39043,24 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/mcp-adb-sms",
+      "name": "adb-sms",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Enables agents to read Android SMS verification codes via ADB and use them to complete web-based SMS login flows.",
+      "homepage": "https://glama.ai/mcp/servers/x931sllfvs",
+      "repository": {
+        "url": "https://github.com/zalazp/mcp-adb-sms"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/mcp-aena",
       "name": "Mcp Aena",
       "publisher": "modelcontextprotocol",
@@ -39058,38 +39085,6 @@
           "args": [
             "-y",
             "mcp-aena"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mcp-agent-trace-inspector",
-      "name": "Mcp Agent Trace Inspector",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "dbsectrainer",
-      "description": "Step-by-step observability for MCP agent workflows",
-      "homepage": "https://github.com/dbsectrainer/mcp-agent-trace-inspector#readme",
-      "repository": "git+https://github.com/dbsectrainer/mcp-agent-trace-inspector.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "observability",
-        "tracing"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "mcp-agent-trace-inspector"
           ]
         }
       ],
@@ -39705,38 +39700,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/mcp-checkup",
-      "name": "Mcp Checkup",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "yifan897645",
-      "description": "MCP server that analyzes your MCP setup: token costs, bloated schemas, duplicate tools, and optimization tips",
-      "homepage": "https://github.com/yifanyifan897645/mcp-checkup#readme",
-      "repository": "git+https://github.com/yifanyifan897645/mcp-checkup.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "token-cost"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "mcp-checkup"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/mcp-china-stocks",
       "name": "Mcp China Stocks",
       "publisher": "modelcontextprotocol",
@@ -39761,38 +39724,6 @@
           "args": [
             "-y",
             "@pipeworx/mcp-china-stocks"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mcp-citybikes",
-      "name": "Mcp Citybikes",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "pipeworx",
-      "description": "Citybikes MCP — wraps CityBik.es API (free, no auth required)",
-      "homepage": "https://github.com/pipeworx-io/mcp-citybikes#readme",
-      "repository": "git+https://github.com/pipeworx-io/mcp-citybikes.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "pipeworx"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@pipeworx/mcp-citybikes"
           ]
         }
       ],
@@ -40017,6 +39948,38 @@
           "args": [
             "-y",
             "mcp-connectwise-psa"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/mcp-controld",
+      "name": "Mcp Controld",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "fundryi",
+      "description": "MCP server for the Control D API. Manage DNS profiles, filters, rules, and devices from any MCP client.",
+      "homepage": "https://github.com/Fundryi/MCP-ControlD#readme",
+      "repository": "git+https://github.com/Fundryi/MCP-ControlD.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "controld"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-controld"
           ]
         }
       ],
@@ -40471,38 +40434,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/mcp-doffin",
-      "name": "Mcp Doffin",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "pipeworx",
-      "description": "Doffin MCP — Norwegian government public procurement notices (BYOK / platform key).",
-      "homepage": "https://github.com/pipeworx-io/mcp-doffin#readme",
-      "repository": "git+https://github.com/pipeworx-io/mcp-doffin.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "pipeworx"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@pipeworx/mcp-doffin"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/mcp-domains",
       "name": "Mcp Domains",
       "publisher": "modelcontextprotocol",
@@ -40559,6 +40490,38 @@
           "args": [
             "-y",
             "@mcp-z/mcp-drive"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/mcp-easycompliance",
+      "name": "Mcp Easycompliance",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "scgmbh",
+      "description": "MCP server (Model Context Protocol) for the easycompliance sanctions list and PEP screening API",
+      "homepage": "https://www.easycompliance.de/schnittstellen/mcp/",
+      "repository": "git+https://github.com/Siemssen-Consulting-GmbH/mcp-easycompliance.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "mcp-server",
+        "easycompliance"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-easycompliance"
           ]
         }
       ],
@@ -40687,6 +40650,37 @@
           "args": [
             "-y",
             "@verygoodplugins/mcp-evernote"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/mcp-example-server",
+      "name": "Mcp Example Server",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "MCP server with database and calculator tools",
+      "homepage": "https://www.npmjs.com/package/@mseep/mcp-example-server",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "server",
+        "database",
+        "calculator"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/mcp-example-server"
           ]
         }
       ],
@@ -40879,6 +40873,38 @@
           "args": [
             "-y",
             "@bitbooth/mcp-fetch"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/mcp-firewall-core",
+      "name": "Mcp Firewall Core",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "bithyte",
+      "description": "MCP Firewall policy daemon",
+      "homepage": "https://github.com/bithyte/mcp-firewall#readme",
+      "repository": "https://github.com/bithyte/mcp-firewall.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "mcp-firewall",
+        "mcp-gateway"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@bithyte/mcp-firewall-core"
           ]
         }
       ],
@@ -41111,38 +41137,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/mcp-gnews",
-      "name": "Mcp Gnews",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "pipeworx",
-      "description": "GNews MCP — Global news search via GNews API (gnews.io)",
-      "homepage": "https://github.com/pipeworx-io/mcp-gnews#readme",
-      "repository": "git+https://github.com/pipeworx-io/mcp-gnews.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "pipeworx"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@pipeworx/mcp-gnews"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/mcp-google-calendar",
       "name": "Mcp Google Calendar",
       "publisher": "modelcontextprotocol",
@@ -41335,70 +41329,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/mcp-hilma",
-      "name": "Mcp Hilma",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "pipeworx",
-      "description": "Hilma MCP — Finnish government public procurement notices (keyed).",
-      "homepage": "https://github.com/pipeworx-io/mcp-hilma#readme",
-      "repository": "git+https://github.com/pipeworx-io/mcp-hilma.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "pipeworx"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@pipeworx/mcp-hilma"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mcp-icloud",
-      "name": "Mcp Icloud",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "GitHub Actions",
-      "description": "MCP server for Apple services - Email, Calendar, Contacts, Reminders, Notes, Messages and Safari - with dual local (AppleScript) and cloud (IMAP/CalDAV/CardDAV) modes",
-      "homepage": "https://github.com/MrGo2/icloud-mcp#readme",
-      "repository": "git+https://github.com/MrGo2/icloud-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "icloud"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "mcp-icloud"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/mcp-identity",
       "name": "Mcp Identity",
       "publisher": "modelcontextprotocol",
@@ -41519,37 +41449,6 @@
           "args": [
             "-y",
             "mcp-image-openrouter"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mcp-imagetovideoai-server",
-      "name": "Mcp Imagetovideoai Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "waeckerlinfederowicz66",
-      "description": "MCP server for planning image-to-video shots and building production-ready AI video prompts",
-      "homepage": "https://imagetovideoai.pro/",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "image-to-video",
-        "ai-video"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "mcp-imagetovideoai-server"
           ]
         }
       ],
@@ -42057,6 +41956,38 @@
           "args": [
             "-y",
             "mcp-kafka"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/mcp-kibela-server",
+      "name": "Mcp Kibela Server",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "MCP server for Kibela API integration",
+      "homepage": "https://github.com/kiwamizamurai/mcp-kibela-server#readme",
+      "repository": "git+https://github.com/kiwamizamurai/mcp-kibela-server.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "kibela",
+        "documentation",
+        "API",
+        "server"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/mcp-kibela-server"
           ]
         }
       ],
@@ -42929,36 +42860,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/mcp-nas",
-      "name": "Mcp Nas",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "cneuen",
-      "description": "MCP server for NAS and Docker management (V1.0 Beta)",
-      "homepage": "https://www.npmjs.com/package/@cneuen/mcp-nas",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "nas"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@cneuen/mcp-nas"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/mcp-nequeo",
       "name": "Mcp Nequeo",
       "publisher": "modelcontextprotocol",
@@ -42988,6 +42889,24 @@
       ],
       "sources": [
         "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/mcp-new-caledonia",
+      "name": "mcp-new-caledonia",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Enables querying New Caledonia public open datasets from data.gouv.nc across 10 domains and 29 tools, including holidays, companies, employment, weather, mining, environment, population, tourism, and transport, via stdio for MCP clients.",
+      "homepage": "https://glama.ai/mcp/servers/jsgcb0a8hb",
+      "repository": {
+        "url": "https://github.com/lacausecrypto/mcp-new-caledonia"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
       ]
     },
     {
@@ -43311,38 +43230,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/mcp-overpass",
-      "name": "Mcp Overpass",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "pipeworx",
-      "description": "OpenStreetMap Overpass MCP — programmatic queries against the OSM database",
-      "homepage": "https://github.com/pipeworx-io/mcp-overpass#readme",
-      "repository": "git+https://github.com/pipeworx-io/mcp-overpass.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "pipeworx"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@pipeworx/mcp-overpass"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/mcp-owl",
       "name": "Mcp Owl",
       "publisher": "modelcontextprotocol",
@@ -43495,6 +43382,38 @@
           "args": [
             "-y",
             "mcp-pg-server"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/mcp-pirsch",
+      "name": "Mcp Pirsch",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "verygoodplugins",
+      "description": "MCP server for Pirsch Analytics: stats, comparisons, trends",
+      "homepage": "https://github.com/verygoodplugins/mcp-pirsch#readme",
+      "repository": "git+https://github.com/verygoodplugins/mcp-pirsch.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "modelcontextprotocol",
+        "pirsch"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@verygoodplugins/mcp-pirsch"
           ]
         }
       ],
@@ -44143,38 +44062,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/mcp-samgov",
-      "name": "Mcp Samgov",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "pipeworx",
-      "description": "SAM.gov MCP — Federal contract opportunities and entity registration data",
-      "homepage": "https://github.com/pipeworx-io/mcp-samgov#readme",
-      "repository": "git+https://github.com/pipeworx-io/mcp-samgov.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "pipeworx"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@pipeworx/mcp-samgov"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/mcp-sap-assistant",
       "name": "Mcp Sap Assistant",
       "publisher": "modelcontextprotocol",
@@ -44590,6 +44477,70 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/mcp-source-browser",
+      "name": "Mcp Source Browser",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "walkeros",
+      "description": "MCP server for walkerOS data-elb HTML tagging — generate, parse, and validate tracking attributes with real DOM parsing",
+      "homepage": "https://github.com/elbwalker/walkerOS#readme",
+      "repository": "git+https://github.com/elbwalker/walkerOS.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "walkerOS",
+        "mcp",
+        "model-context-protocol",
+        "mcp-server"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@walkeros/mcp-source-browser"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/mcp-spec-test",
+      "name": "Mcp Spec Test",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "hasmcp",
+      "description": "Black-box conformance suite for any MCP server. Tests the two most recent spec revisions (currently 2026-07-28 and 2025-11-25) against the published schema, plus official-SDK interop.",
+      "homepage": "https://github.com/hasmcp/mcp-spec-test#readme",
+      "repository": "git+https://github.com/hasmcp/mcp-spec-test.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "conformance",
+        "spec"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@hasmcp/mcp-spec-test"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/mcp-sputnikx-market",
       "name": "Mcp Sputnikx Market",
       "publisher": "modelcontextprotocol",
@@ -44678,38 +44629,6 @@
           "args": [
             "-y",
             "mcp-ssh-manager"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mcp-ssh-terminal",
-      "name": "Mcp Ssh Terminal",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "kzhdanov",
-      "description": "MCP server exposing persistent, interactive SSH sessions driven through the real OpenSSH client and a headless terminal emulator.",
-      "homepage": "https://github.com/zhdkirill/mcp-ssh-terminal#readme",
-      "repository": "git+https://github.com/zhdkirill/mcp-ssh-terminal.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "ssh",
-        "terminal"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "mcp-ssh-terminal"
           ]
         }
       ],
@@ -45261,37 +45180,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/mcp-trello",
-      "name": "Mcp Trello",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "sorodriguez",
-      "description": "Servidor MCP para Trello: 35 herramientas para que tu IA lea tareas, cree y mueva tarjetas, comente, gestione checklists, etiquetas y miembros",
-      "homepage": "https://www.npmjs.com/package/@sorodriguez/mcp-trello",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "trello",
-        "model-context-protocol",
-        "mcp-server"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@sorodriguez/mcp-trello"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/mcp-ts-core",
       "name": "Mcp Ts Core",
       "publisher": "modelcontextprotocol",
@@ -45472,38 +45360,6 @@
           "args": [
             "-y",
             "mcp-universal-icons"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mcp-us-gov-contracts",
-      "name": "Mcp Us Gov Contracts",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "pipeworx",
-      "description": "US state & local government contracts + spending, normalized across jurisdictions — keyless",
-      "homepage": "https://github.com/pipeworx-io/mcp-us-gov-contracts#readme",
-      "repository": "git+https://github.com/pipeworx-io/mcp-us-gov-contracts.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "pipeworx"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@pipeworx/mcp-us-gov-contracts"
           ]
         }
       ],
@@ -45823,38 +45679,6 @@
           "args": [
             "-y",
             "mcp-workbench"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mcp-workbench-cli",
-      "name": "Cli",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "mcp-workbench",
-      "description": "MCP Workbench — test, inspect, and validate MCP servers",
-      "homepage": "https://github.com/raeseoklee/mcp-workbench#readme",
-      "repository": "git+https://github.com/raeseoklee/mcp-workbench.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "model-context-protocol",
-        "mcp-server",
-        "mcp-testing"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@mcp-workbench/cli"
           ]
         }
       ],
@@ -46793,7 +46617,7 @@
       "id": "modelcontextprotocol/memnant",
       "name": "Memnant",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "GitHub Actions",
+      "originalPublisher": "peureka",
       "description": "It just remembers.",
       "homepage": "https://memnant.com",
       "repository": "git+https://github.com/peureka/memnant.git",
@@ -47018,9 +46842,9 @@
       "name": "Memory_plugin",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "lotargo",
-      "description": "100% local hybrid RAG memory for AI coding agents (OpenCode, Claude Code, Codex, Antigravity). MCP server + plugin: persistent user facts, document ingestion, vector + SQLite FTS5 retrieval across sessions.",
-      "homepage": "https://github.com/Lotargo/memory_pugin#readme",
-      "repository": "git+https://github.com/Lotargo/memory_pugin.git",
+      "description": "Local-first memory, hybrid RAG, and agent personalization for AI coding agents (OpenCode, Claude Code, Codex, Gemini CLI, Antigravity). MCP server + CLI with persistent context, document ingestion, vector + SQLite FTS5 retrieval, sync, setup, and safe uni",
+      "homepage": "https://github.com/Lotargo/memory_plugin#readme",
+      "repository": "git+https://github.com/Lotargo/memory_plugin.git",
       "transports": [
         "stdio"
       ],
@@ -47028,8 +46852,8 @@
         "npm",
         "memory",
         "persistent-memory",
-        "ai-memory",
-        "ai-agent"
+        "long-term-memory",
+        "ai-memory"
       ],
       "install": [
         {
@@ -47101,38 +46925,6 @@
           "args": [
             "-y",
             "memorylens-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/memstate-mcp",
-      "name": "Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "memstate",
-      "description": "Versioned memory for AI agents — structured keypaths, conflict detection, and 80% fewer tokens than alternatives.",
-      "homepage": "https://memstate.ai",
-      "repository": "git+https://github.com/memstate-ai/memstate-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "ai",
-        "memory",
-        "agents"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@memstate/mcp"
           ]
         }
       ],
@@ -47298,6 +47090,24 @@
       ],
       "sources": [
         "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/message-container",
+      "name": "message-container",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Enables AI clients to read and search macOS Messages history through a read-only MCP interface.",
+      "homepage": "https://glama.ai/mcp/servers/ylyleefnm0",
+      "repository": {
+        "url": "https://github.com/B-HS/message-container"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
       ]
     },
     {
@@ -47485,6 +47295,37 @@
           "args": [
             "-y",
             "@mentu/metamcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/method-crm-mcp-workers",
+      "name": "Method Crm Mcp Workers",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "Method CRM MCP Server for Cloudflare Workers with OAuth 2.1",
+      "homepage": "https://www.npmjs.com/package/@mseep/method-crm-mcp-workers",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "cloudflare-workers",
+        "typescript"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/method-crm-mcp-workers"
           ]
         }
       ],
@@ -47708,38 +47549,6 @@
           "args": [
             "-y",
             "@miapre/mimic-ai"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mindbox-mcp",
-      "name": "Mindbox Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "theyahia",
-      "description": "MCP server for Mindbox — CDP, customer profiles, orders, segmentation (Russia)",
-      "homepage": "https://github.com/theYahia/mindbox-mcp#readme",
-      "repository": "git+https://github.com/theYahia/mindbox-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "modelcontextprotocol"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@theyahia/mindbox-mcp"
           ]
         }
       ],
@@ -48154,38 +47963,6 @@
           "args": [
             "-y",
             "mmmtrc"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mmollick-bullmq-mcp",
-      "name": "Bullmq Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "mmollick",
-      "description": "Model Context Protocol server for BullMQ job queue management (fork with Redis Cluster and configurable prefix support)",
-      "homepage": "https://github.com/mmollick/bullmq-mcp#readme",
-      "repository": "git+https://github.com/mmollick/bullmq-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "bullmq-mcp",
-        "bullmq",
-        "mcp",
-        "model-context-protocol"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@mmollick/bullmq-mcp"
           ]
         }
       ],
@@ -49183,6 +48960,37 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/multi-cloud-docs-search",
+      "name": "Multi Cloud Docs Search",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "octopuszy",
+      "description": "MCP Server for multi-cloud provider documentation search — search and retrieve official cloud vendor docs directly in AI coding assistants",
+      "homepage": "https://www.npmjs.com/package/multi-cloud-docs-search",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "multi-cloud",
+        "documentation"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "multi-cloud-docs-search"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/mup",
       "name": "Mup Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -49279,6 +49087,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/musterd-mcp",
+      "name": "Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "musterd",
+      "description": "musterd universal harness adapter: one MCP server that joins any MCP-capable agent to a team",
+      "homepage": "https://musterd.io",
+      "repository": "git+https://github.com/SandRiseStudio/musterd.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "agents",
+        "multi-agent",
+        "coordination",
+        "mcp"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@musterd/mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/myclaw-toolkit",
       "name": "Myclaw Toolkit",
       "publisher": "modelcontextprotocol",
@@ -49335,38 +49175,6 @@
           "args": [
             "-y",
             "@mymedi-ai/mcp-server"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/mymeet",
-      "name": "Mcp Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "mymeet",
-      "description": "MCP server for MyMeet.ai — connect your AI assistant to your meetings",
-      "homepage": "https://github.com/MyMeetAI/mymeet-mcp-server#readme",
-      "repository": "git+https://github.com/MyMeetAI/mymeet-mcp-server.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "mymeet",
-        "meetings"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@mymeet/mcp-server"
           ]
         }
       ],
@@ -49622,6 +49430,38 @@
           "args": [
             "-y",
             "n8n-nodes-mcp-auth-trigger"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/nankai-trough-mcp",
+      "name": "Nankai Trough Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mrslbt",
+      "description": "Nankai Trough (南海トラフ地震) earthquake hazard and building-safety for AI assistants. Official Japanese government figures, cited and dated, never a safety verdict.",
+      "homepage": "https://nankaitrough.bymarsel.me",
+      "repository": "git+https://github.com/mrslbt/nankai-trough-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "nankai"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "nankai-trough-mcp"
           ]
         }
       ],
@@ -50554,6 +50394,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/noaa-climate",
+      "name": "Noaa Climate Mcp Server",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "cyanheads",
+      "description": "Search NOAA climate stations and datasets, fetch historical weather observations via MCP. STDIO or Streamable HTTP.",
+      "homepage": "https://github.com/cyanheads/noaa-climate-mcp-server#readme",
+      "repository": "git+https://github.com/cyanheads/noaa-climate-mcp-server.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "typescript"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@cyanheads/noaa-climate-mcp-server"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/noaa-marine",
       "name": "Noaa Marine Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -51261,7 +51133,7 @@
       "name": "Npi Providers Mcp Server",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "cyanheads",
-      "description": "Look up US healthcare providers in the NPPES NPI registry and resolve NUCC specialty codes via MCP. STDIO or Streamable HTTP.",
+      "description": "Search NPPES providers and resolve NUCC specialty codes via MCP over STDIO or Streamable HTTP.",
       "homepage": "https://github.com/cyanheads/npi-providers-mcp-server#readme",
       "repository": "git+https://github.com/cyanheads/npi-providers-mcp-server.git",
       "transports": [
@@ -53144,6 +53016,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/opencontrib-mcp",
+      "name": "Opencontrib Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "meisiristhebest",
+      "description": "Agent-Native Open Source Contribution Engine & Model Context Protocol (MCP) Server",
+      "homepage": "https://github.com/MeiSiristhebest/opencontrib#readme",
+      "repository": "git+https://github.com/MeiSiristhebest/opencontrib.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "open-source"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "opencontrib-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/openeagleeye",
       "name": "Openeagleeye",
       "publisher": "modelcontextprotocol",
@@ -53819,19 +53723,19 @@
       "id": "modelcontextprotocol/oracle",
       "name": "Oracle",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "jonusnattapong",
-      "description": "Oracle Assistant — an MCP-powered AI assistant with persistent memory, a knowledge base, web access, and an inter-agent message bus for Claude Code, opencode, and other coding agents.",
-      "homepage": "https://github.com/OraclePersonal/Oracle#readme",
-      "repository": "git+https://github.com/OraclePersonal/Oracle.git",
+      "originalPublisher": "oracle-agent",
+      "description": "Oracle: standalone multichain agent control plane with an optional encrypted, loopback-only self-hosted signer.",
+      "homepage": "https://github.com/demi-hl/oracle",
+      "repository": "git+https://github.com/demi-hl/oracle.git",
       "transports": [
         "stdio"
       ],
       "tags": [
         "npm",
-        "oracle-assistant",
-        "mcp",
-        "mcp-server",
-        "ai-assistant"
+        "ai-agent",
+        "multichain",
+        "evm",
+        "self-custody"
       ],
       "install": [
         {
@@ -53839,7 +53743,7 @@
           "command": "npx",
           "args": [
             "-y",
-            "@jonusnattapong/oracle"
+            "@oracle-agent/oracle"
           ]
         }
       ],
@@ -54445,6 +54349,38 @@
           "args": [
             "-y",
             "@littlebearapps/outlook-assistant"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/outscraper-mcp",
+      "name": "Outscraper Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "Official Outscraper MCP server for business discovery, Google Maps intelligence, company enrichment, reviews, contact data, and structured web extraction.",
+      "homepage": "https://github.com/outscraper/outscraper-mcp-server#readme",
+      "repository": "git+https://github.com/outscraper/outscraper-mcp-server.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "outscraper",
+        "model-context-protocol",
+        "node"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/outscraper-mcp"
           ]
         }
       ],
@@ -55117,38 +55053,6 @@
           "args": [
             "-y",
             "@paretools/search"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/parley-core",
-      "name": "Parley Core",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "sharptrick",
-      "description": "Parley core: the transport-agnostic seam, normalized Message, cursor/dedup engine, and dual-role MCP channel server. Zero backend dependencies.",
-      "homepage": "https://github.com/sharpTrick/parley/tree/main/packages/bridge-core#readme",
-      "repository": "git+https://github.com/sharpTrick/parley.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "model-context-protocol",
-        "mcp-server",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@sharptrick/parley-core"
           ]
         }
       ],
@@ -55862,7 +55766,7 @@
       "name": "Pendpost",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "pendpost",
-      "description": "pendpost is a free, open-source (MIT), local-first social media planner where an AI agent drafts and schedules posts across Instagram, Facebook, LinkedIn, YouTube, X, Telegram, Discord, Mastodon, Nostr, WordPress, and Ghost behind a human approval gate yo",
+      "description": "pendpost is a free, open-source (MIT), local-first social media planner where an AI agent drafts and schedules posts across Instagram, Facebook, LinkedIn, YouTube, X, Telegram, Discord, Mastodon, and Nostr, plus long-form blogs on WordPress and Ghost, wit",
       "homepage": "https://pendpost.com",
       "repository": "git+https://github.com/pendpost/pendpost.git",
       "transports": [
@@ -55914,37 +55818,6 @@
           "args": [
             "-y",
             "@cyanheads/pentest-mcp-server"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/perceptdot-github",
-      "name": "Github",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "perceptdot",
-      "description": "AI agent vision for GitHub repository monitoring — with ROI measurement. perceptdot.com",
-      "homepage": "https://www.npmjs.com/package/@perceptdot/github",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "ai-agent"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@perceptdot/github"
           ]
         }
       ],
@@ -56103,37 +55976,6 @@
           "args": [
             "-y",
             "perp-cli"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/perplexity",
-      "name": "Perplexity Mcp Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "cyanheads",
-      "description": "A Perplexity API Model Context Protocol (MCP) server that unlocks Perplexity's search-augmented AI capabilities for LLM agents. Features robust error handling, secure input validation, and transparent reasoning with the showThinking parameter. Built with",
-      "homepage": "https://www.npmjs.com/package/perplexity-mcp-server",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "typescript",
-        "MCP",
-        "model-context-protocol",
-        "perplexity"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "perplexity-mcp-server"
           ]
         }
       ],
@@ -57961,6 +57803,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/prism-coder",
+      "name": "Prism Coder",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "GitHub Actions",
+      "description": "Prism Coder — Local LLM fleet + MCP cognitive memory for AI agents. Wraps prism-mcp-server with the prism-coder brand CLI. Install once, run anywhere.",
+      "homepage": "https://github.com/dcostenco/prism-coder",
+      "repository": "git+https://github.com/dcostenco/prism-coder.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "ai-agent"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "prism-coder"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/privacyscrubber",
       "name": "Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -58408,6 +58282,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/proofite-mcp",
+      "name": "Proofite Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "nicolam",
+      "description": "MCP server for your information diet: read your AI-written daily briefing and retune the filter behind it — RSS feeds, newsletters, monitored web searches, topic preferences, read-later queue and podcast.",
+      "homepage": "https://proofite.com/mcp",
+      "repository": "git+https://github.com/hanicker/proofite-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "mcp-server",
+        "ai"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "proofite-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/prooflayer-agent-security",
       "name": "Prooflayer Agent Security",
       "publisher": "modelcontextprotocol",
@@ -58432,6 +58338,38 @@
           "args": [
             "-y",
             "prooflayer-agent-security"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/prop65",
+      "name": "Prop65",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "toolstop",
+      "description": "MCP server for California Proposition 65: whether a chemical is listed, its toxicity endpoint, safe-harbour level, listing date, and whether it was later delisted.",
+      "homepage": "https://prop65.toolstop.dev",
+      "repository": "git+https://github.com/toolstop/toolstop.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "modelcontextprotocol",
+        "mcp-server",
+        "proposition-65"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@toolstop/prop65"
           ]
         }
       ],
@@ -59688,7 +59626,7 @@
       "name": "Ragmir",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "jcode.labs",
-      "description": "Confidential local RAG for coding agents, with offline cited retrieval through CLI, MCP, and TypeScript.",
+      "description": "Open-source confidential local RAG for coding agents, with offline cited retrieval through CLI, MCP, and TypeScript.",
       "homepage": "https://github.com/jcode-works/jcode-ragmir#readme",
       "repository": "git+https://github.com/jcode-works/jcode-ragmir.git",
       "transports": [
@@ -60097,6 +60035,24 @@
       ],
       "sources": [
         "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/reach120-mcp",
+      "name": "Reach120 MCP Server",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Enables AI agents to fetch TOEFL iBT Writing practice prompts and score written responses via the Reach120 practice API, returning automated practice scores and rationales.",
+      "homepage": "https://glama.ai/mcp/servers/opln52umhz",
+      "repository": {
+        "url": "https://github.com/reach120/reach120-mcp"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
       ]
     },
     {
@@ -61443,38 +61399,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/retailcrm-mcp",
-      "name": "Retailcrm Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "theyahia",
-      "description": "MCP server for RetailCRM — orders, customers, inventory, payments, tasks & e-commerce analytics (Russia)",
-      "homepage": "https://github.com/theYahia/retailcrm-mcp#readme",
-      "repository": "git+https://github.com/theYahia/retailcrm-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@theyahia/retailcrm-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/retentioncheck",
       "name": "Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -61499,6 +61423,38 @@
           "args": [
             "-y",
             "@retentioncheck/mcp-server"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/reviewwebsite",
+      "name": "Reviewwebsite Mcp Server",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mrgoonie",
+      "description": "TypeScript Model Context Protocol (MCP) server for ReviewWebsite. Includes CLI support and extensible structure for connecting AI systems (LLMs) to ReviewWebsite API",
+      "homepage": "https://github.com/mrgoonie/reviewwebsite-mcp-server#readme",
+      "repository": "git+https://github.com/mrgoonie/reviewwebsite-mcp-server.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model context protocol",
+        "typescript",
+        "claude"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "reviewwebsite-mcp-server"
           ]
         }
       ],
@@ -62946,6 +62902,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/sage",
+      "name": "Sage",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "shin1ohno",
+      "description": "AI Task Management Assistant MCP Server for Claude Desktop and Claude Code",
+      "homepage": "https://github.com/shin1ohno/sage#readme",
+      "repository": "git+https://github.com/shin1ohno/sage.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "claude",
+        "claude-desktop"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@shin1ohno/sage"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/saihm",
       "name": "Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -63290,6 +63278,38 @@
           "args": [
             "-y",
             "sayba-platform"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/sber-mcp",
+      "name": "Sber Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "theyahia",
+      "description": "MCP server for Sberbank — business accounts, balance, statements, payments, counterparties (Russia)",
+      "homepage": "https://github.com/theYahia/sber-mcp#readme",
+      "repository": "git+https://github.com/theYahia/sber-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "claude"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@theyahia/sber-mcp"
           ]
         }
       ],
@@ -63713,6 +63733,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/scvd-tab",
+      "name": "Scvd Tab",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "keeper-scvd",
+      "description": "The Tab: an MCP server that keeps the running account of every tool a builder signs up for — trial deadlines, burn, price drift, and what each signup demanded of a human. Local JSONL, append-only, zero dependencies; nothing leaves the file without deliber",
+      "homepage": "https://scvd.store",
+      "repository": "git+https://github.com/seancrecord/scvd-general-store-repo.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "subscriptions",
+        "trials"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "scvd-tab"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/sdk",
       "name": "Sdk",
       "publisher": "modelcontextprotocol",
@@ -64033,21 +64085,35 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/security-gate-x402",
-      "name": "security-gate-x402",
+      "id": "modelcontextprotocol/security-audit",
+      "name": "Security Audit",
       "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Agent Security & Hallucination Gate (x402)",
-      "homepage": "https://glama.ai/mcp/servers/qxjjb01l17",
-      "repository": {
-        "url": "https://github.com/nohosa001-pixel/security-gate-x402"
-      },
+      "originalPublisher": "leddconsulting",
+      "description": "MCP server for MetalTorque Security Audit — gives AI agents the ability to scan websites for security vulnerabilities.",
+      "homepage": "https://github.com/joepangallo/agent-audit#readme",
+      "repository": "git+https://github.com/joepangallo/agent-audit.git",
       "transports": [
         "stdio"
       ],
-      "tags": [],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "security"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-server-security-audit"
+          ]
+        }
+      ],
       "sources": [
-        "glama"
+        "npm"
       ]
     },
     {
@@ -64182,7 +64248,7 @@
       "name": "Seekstone",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "GitHub Actions",
-      "description": "The Obsidian MCP server that needs no plugin, no running Obsidian app — and doesn't blow your context window. Filesystem-direct: single-digit-ms search, ~2 KB payloads, 19 tools.",
+      "description": "The Obsidian MCP server that needs no plugin, no running Obsidian app — and doesn't blow your context window. Filesystem-direct: single-digit-ms keyword search, ~14 ms local semantic search, ~2 KB payloads, 19 tools.",
       "homepage": "https://seekstone.dev",
       "repository": "git+https://github.com/shaqmughal/seekstone.git",
       "transports": [
@@ -65258,38 +65324,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/shio",
-      "name": "Shio",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "viglet",
-      "description": "The Shio CMS command-line interface — scaffold sites, generate types, and manage your content model as code (post-types pull/push). The 'JS dev, zero Java' workflow.",
-      "homepage": "https://shio.viglet.org/",
-      "repository": "git+https://github.com/openviglet/shio.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "shio",
-        "viglet",
-        "cms",
-        "headless-cms"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@viglet/shio"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/ship-mcp",
       "name": "Ship Mcp",
       "publisher": "modelcontextprotocol",
@@ -65921,38 +65955,6 @@
           "args": [
             "-y",
             "siteglass-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/sitelauncher",
-      "name": "Sitelauncher Mcp Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "ftracker",
-      "description": "MCP server for deploying live HTTPS websites in seconds. Instant subdomains ($1 USDC) or custom .xyz domains ($10 USDC) on Base chain.",
-      "homepage": "https://sitelauncher.xyz",
-      "repository": "git+https://github.com/trackerfitness729-jpg/sitelauncher-mcp-server.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "website-deploy",
-        "ai-agent"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "sitelauncher-mcp-server"
           ]
         }
       ],
@@ -67106,6 +67108,70 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/sovereign-github-stats-mcp",
+      "name": "Sovereign Github Stats Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "sovereigntaylor2",
+      "description": "MCP server for GitHub repository statistics — stars, forks, issues, PRs, languages, contributors, commit activity. No auth needed for public repos.",
+      "homepage": "https://github.com/ryudi84/sovereign-mcp-servers#readme",
+      "repository": "git+https://github.com/ryudi84/sovereign-mcp-servers.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "github stats"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "sovereign-github-stats-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/sovereign-seo-analyzer-mcp",
+      "name": "Sovereign Seo Analyzer Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "sovereigntaylor2",
+      "description": "MCP server for SEO analysis — check meta tags, heading hierarchy, link analysis, keyword density, robots.txt and sitemap generation.",
+      "homepage": "https://github.com/ryudi84/sovereign-mcp-servers#readme",
+      "repository": "git+https://github.com/ryudi84/sovereign-mcp-servers.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol",
+        "seo analyzer"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "sovereign-seo-analyzer-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/spa-reader-mcp",
       "name": "Spa Reader Mcp",
       "publisher": "modelcontextprotocol",
@@ -67522,38 +67588,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/spm",
-      "name": "Spm",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "skillbase",
-      "description": "AI skills manager — install, publish, and deploy reusable prompts, personas, and MCP tools across 15 AI clients",
-      "homepage": "https://skillbase.space",
-      "repository": "git+https://github.com/useskillbase/spm.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "ai",
-        "skills",
-        "package-manager",
-        "mcp"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@skillbase/spm"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/sports",
       "name": "Sports Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -67937,6 +67971,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/starlight-mcp",
+      "name": "Starlight Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "Give your Astro or Starlight docs site an MCP server — search_docs, get_doc and list_docs over stateless streamable HTTP. Astro integration, pure fetch handler, and Cloudflare static-assets glue included.",
+      "homepage": "https://github.com/bkspace/starlight-mcp#readme",
+      "repository": "git+https://github.com/bkspace/starlight-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "astro",
+        "astro-integration",
+        "withastro",
+        "starlight"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/starlight-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/starwell-mcp",
       "name": "Starwell Mcp",
       "publisher": "modelcontextprotocol",
@@ -68089,6 +68155,38 @@
           "args": [
             "-y",
             "@stateset/cli"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/steamgpt-mcp",
+      "name": "Steamgpt Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "robertclarke",
+      "description": "MCP server for Steam data: profiles, SteamID conversion, VAC and game bans, FACEIT stats, friends. Free remote server at steamgpt.net; this package is a stdio proxy for clients without native Streamable HTTP support.",
+      "homepage": "https://steamgpt.net/ai",
+      "repository": "git+https://github.com/SteamGPTnet/steamgpt-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "modelcontextprotocol",
+        "steam"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "steamgpt-mcp"
           ]
         }
       ],
@@ -68384,38 +68482,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/stitchmath-core",
-      "name": "Stitchmath Core",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "double2dev",
-      "description": "Open-source knitting and crochet math calculation SDK & MCP Server by StitchMath.com",
-      "homepage": "https://stitchmath.com",
-      "repository": "git+https://github.com/stitchmath/stitchmath-core.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "knitting",
-        "crochet",
-        "yarn",
-        "gauge"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "stitchmath-core"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/stock-nse-india",
       "name": "Stock Nse India",
       "publisher": "modelcontextprotocol",
@@ -68536,38 +68602,6 @@
           "args": [
             "-y",
             "storefront-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/storyblok-mcp",
-      "name": "Storyblok Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "arjuncodess",
-      "description": "MCP server for Storyblok integration",
-      "homepage": "https://github.com/ArjunCodess/storyblok-mcp#readme",
-      "repository": "git+https://github.com/ArjunCodess/storyblok-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "storyblok",
-        "mcp-server",
-        "mcp-server-storyblok"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "storyblok-mcp"
           ]
         }
       ],
@@ -69120,6 +69154,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/supabase",
+      "name": "Supabase",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "modelfetch",
+      "description": "Supabase runtime adapter for MCP servers built with ModelFetch",
+      "homepage": "https://www.modelfetch.com",
+      "repository": "git+https://github.com/phuctm97/modelfetch.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "model-context-protocol",
+        "mcp",
+        "mcp-server",
+        "ai"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@modelfetch/supabase"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/superhighway-mcp",
       "name": "Superhighway Mcp",
       "publisher": "modelcontextprotocol",
@@ -69600,38 +69666,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/synapse-mt5",
-      "name": "Synapse Mt5",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "mfalmeh",
-      "description": "Synapse MT5 — Native C++ MCP server bridging AI assistants to MetaTrader 5. Sub-millisecond latency, zero Python dependencies.",
-      "homepage": "https://github.com/Mfalmeh/MCP-MQL5",
-      "repository": "git+https://github.com/Mfalmeh/MCP-MQL5.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "metatrader",
-        "metatrader5"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "synapse-mt5"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/syndicate-links-mcp",
       "name": "Syndicate Links Mcp",
       "publisher": "modelcontextprotocol",
@@ -70008,6 +70042,38 @@
           "args": [
             "-y",
             "@taisly/agent"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/tako-mcp",
+      "name": "Tako Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "MCP server for Octopus Energy API",
+      "homepage": "https://github.com/arrow2nd/tako-mcp#readme",
+      "repository": "git+https://github.com/arrow2nd/tako-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "octopus-energy",
+        "mseep",
+        "mcp-server"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/tako-mcp"
           ]
         }
       ],
@@ -70519,6 +70585,38 @@
           "args": [
             "-y",
             "telegram-mcp-connect"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/telegram-slack-mcp",
+      "name": "Telegram Slack Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "GitHub Actions",
+      "description": "MCP servers that give Claude access to your personal Telegram and Slack accounts",
+      "homepage": "https://github.com/nileshpatil6/telegram-slack-mcp#readme",
+      "repository": "git+https://github.com/nileshpatil6/telegram-slack-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "claude",
+        "claude-code"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "telegram-slack-mcp"
           ]
         }
       ],
@@ -71099,38 +71197,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/th",
-      "name": "Th",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "xiaer333",
-      "description": "FlashPay Thailand Payment API - MCP Server",
-      "homepage": "https://github.com/anthropics/flashpay-mcp#readme",
-      "repository": "git+https://github.com/anthropics/flashpay-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "payment",
-        "flashpay"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@xiaer333/mcp-server-th"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/thatch",
       "name": "Thatch",
       "publisher": "modelcontextprotocol",
@@ -71419,6 +71485,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/think-mcp",
+      "name": "Think Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "agentutil",
+      "description": "MCP server — intent security pre-flight checks for autonomous AI agents",
+      "homepage": "https://think.agentutil.net",
+      "repository": "git+https://github.com/craig-whitfield/think-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "agent-safety",
+        "intent-security"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@agentutil/think-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/thisispaper-mcp",
       "name": "Thisispaper Mcp",
       "publisher": "modelcontextprotocol",
@@ -71507,6 +71605,38 @@
           "args": [
             "-y",
             "threadline-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/thredz-mcp",
+      "name": "Thredz Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "studiomaxops",
+      "description": "Zero-dependency stdio MCP server for Thredz — long-term memory (wiki recall, semantic/keyword search, upsert, reflection signals), durable goals & tasks, and agent-to-agent messaging over the Thredz REST API. Point any Model Context Protocol client at it",
+      "homepage": "https://github.com/crewhaus/thredz-mcp#readme",
+      "repository": "git+https://github.com/crewhaus/thredz-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "modelcontextprotocol",
+        "mcp-server"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "thredz-mcp"
           ]
         }
       ],
@@ -71835,38 +71965,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/tilde-ai",
-      "name": "Tilde Ai",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "topskychen",
-      "description": "Your AI agents' home directory — privacy-first MCP server for portable AI identity. Configure once, use everywhere. Supports profile management, skills, resume import, and team sync. A thin wrapper to run the tilde MCP server via Python/uv",
-      "homepage": "https://github.com/topskychen/tilde#readme",
-      "repository": "git+https://github.com/topskychen/tilde.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "ai",
-        "identity"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "tilde-ai"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/tiled",
       "name": "Tiled Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -71891,6 +71989,38 @@
           "args": [
             "-y",
             "tiled-mcp-server"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/tiled-mcp-pro",
+      "name": "Tiled Mcp Pro",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "GitHub Actions",
+      "description": "A safety-first MCP server for inspecting and editing Tiled maps.",
+      "homepage": "https://github.com/sitapix/tiled-mcp-pro#readme",
+      "repository": "git+https://github.com/sitapix/tiled-mcp-pro.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "mcp-server",
+        "tiled"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "tiled-mcp-pro"
           ]
         }
       ],
@@ -72237,6 +72367,37 @@
           "args": [
             "-y",
             "tokenhub-websearch"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/tokentrail-mcp",
+      "name": "Tokentrail Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "rajatpal96",
+      "description": "Model Context Protocol (MCP) Server for TokenTrail AI Usage & Observability",
+      "homepage": "https://www.npmjs.com/package/@rajatpal96/tokentrail-mcp",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "tokentrail",
+        "mcp",
+        "mcp-server",
+        "model-context-protocol"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@rajatpal96/tokentrail-mcp"
           ]
         }
       ],
@@ -72725,38 +72886,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/trace-forge-mcp",
-      "name": "Trace Forge Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "md.fifty",
-      "description": "MCP server for writing structured traces, spans, and decisions — the only write-path observability MCP for EU AI Act traceability compliance",
-      "homepage": "https://github.com/mdfifty50-boop/trace-forge-mcp#readme",
-      "repository": "git+https://github.com/mdfifty50-boop/trace-forge-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "tracing",
-        "observability"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "trace-forge-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/tracepulse",
       "name": "Tracepulse",
       "publisher": "modelcontextprotocol",
@@ -72981,38 +73110,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/travelpayouts-mcp",
-      "name": "Travelpayouts Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "theyahia",
-      "description": "MCP server for Travelpayouts — flight search, hotel prices, travel deals (Russia)",
-      "homepage": "https://github.com/theYahia/travelpayouts-mcp#readme",
-      "repository": "git+https://github.com/theYahia/travelpayouts-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "claude"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@theyahia/travelpayouts-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/treasury-fiscaldata",
       "name": "Treasury Fiscaldata Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -73109,38 +73206,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/tripwire-mcp",
-      "name": "Tripwire Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "bonesdefi",
-      "description": "Security gateway for MCP agents: blocks prompt-injection-driven tool calls (poisoned payments, fabricated results) with cryptographic receipts, value-provenance enforcement, and multi-model consensus. The verification layer no syntactic MCP firewall has.",
-      "homepage": "https://github.com/bonesdefi/Tripwire#readme",
-      "repository": "git+https://github.com/bonesdefi/Tripwire.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "model-context-protocol",
-        "mcp-server",
-        "mcp-proxy"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "tripwire-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/tripwire-roblox",
       "name": "Tripwire Roblox",
       "publisher": "modelcontextprotocol",
@@ -73170,24 +73235,6 @@
       ],
       "sources": [
         "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/trustflow-mcp-data-agent",
-      "name": "trustflow-companyx",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Enables natural language queries to be converted into policy-verified SQL, vector search, and knowledge graph plans, with evidence-backed answers and an audit log.",
-      "homepage": "https://glama.ai/mcp/servers/au4vojdayr",
-      "repository": {
-        "url": "https://github.com/SakJaeLim/trustflow-mcp-data-agent"
-      },
-      "transports": [
-        "stdio"
-      ],
-      "tags": [],
-      "sources": [
-        "glama"
       ]
     },
     {
@@ -73343,38 +73390,6 @@
           "args": [
             "-y",
             "tweetsave-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/twinkly-mcp",
-      "name": "Twinkly Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "paztek",
-      "description": "A MCP Server to give control of your Twinkly lights to your AI Agents",
-      "homepage": "https://github.com/paztek/twinkly-mcp#readme",
-      "repository": "git+https://github.com/paztek/twinkly-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "modelcontextprotocol",
-        "model-context-protocol",
-        "mcp-server"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "twinkly-mcp"
           ]
         }
       ],
@@ -73575,38 +73590,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/ufn",
-      "name": "Ufn Mcp Server",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "unifuncs",
-      "description": "UniFuncs MCP Server",
-      "homepage": "https://www.npmjs.com/package/@unifuncs/ufn-mcp-server",
-      "repository": "https://github.com/unifuncs/ufn-mcp-server.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "unifuncs",
-        "mcp",
-        "mcp-server",
-        "unifuncs-mcp-server"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "@unifuncs/ufn-mcp-server"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/ugc-brief-mcp",
       "name": "Ugc Brief Mcp",
       "publisher": "modelcontextprotocol",
@@ -73734,38 +73717,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/ui-lineage",
-      "name": "Ui Lineage",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "officialcodework",
-      "description": "React & TypeScript static analysis that maps every UI component to the APIs, state, and events behind it — and serves that context to AI coding agents over MCP. Screenshot or ticket in; component, data lineage, user journeys, and blast radius out. Determi",
-      "homepage": "https://github.com/officialCodeWork/CodeRadar#readme",
-      "repository": "git+https://github.com/officialCodeWork/CodeRadar.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "react",
-        "typescript",
-        "static-analysis",
-        "code-analysis"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "ui-lineage"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/ui-master",
       "name": "Ui Master",
       "publisher": "modelcontextprotocol",
@@ -73789,6 +73740,38 @@
           "args": [
             "-y",
             "@hallaxius/ui-master"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/uisight",
+      "name": "Uisight",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "sololabs",
+      "description": "AI and human watch the same live browser session — mobile + desktop side by side, with a measurement engine (contrast, touch targets, theme drift) that reports findings as text your AI agent can act on. MCP server included.",
+      "homepage": "https://github.com/sololabstr/uisight#readme",
+      "repository": "git+https://github.com/sololabstr/uisight.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "mcp-server",
+        "playwright",
+        "mobile"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "uisight"
           ]
         }
       ],
@@ -74244,6 +74227,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/urlcheck-openclaw",
+      "name": "Urlcheck Openclaw",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "URLCheck plugin for OpenClaw. Assess target URLs for potential threats and alignment with the user's browsing intent before agent navigation.",
+      "homepage": "https://urlcheck.dev",
+      "repository": "git+https://github.com/cybrlab-ai/urlcheck-openclaw.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "openclaw",
+        "openclaw-plugin",
+        "mcp",
+        "url-scanner"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/urlcheck-openclaw"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/urls-le-mcp",
       "name": "Urls Le Mcp",
       "publisher": "modelcontextprotocol",
@@ -74555,38 +74570,6 @@
           "args": [
             "-y",
             "utilsforagents-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/uuid-forge-mcp",
-      "name": "Uuid Forge Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "sovereigntaylor2",
-      "description": "MCP server for generating UUIDs (v4, v7), ULIDs, nanoids, and random IDs. Every project needs unique identifiers.",
-      "homepage": "https://github.com/ryudi84/sovereign-mcp-servers#readme",
-      "repository": "git+https://github.com/ryudi84/sovereign-mcp-servers.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "mcp-server",
-        "model-context-protocol",
-        "uuid forge"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "uuid-forge-mcp"
           ]
         }
       ],
@@ -75107,24 +75090,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/vcf-mcp",
-      "name": "vcf-ops-mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "community",
-      "description": "Provides authenticated read-only access to VMware Cloud Foundation Operations inventory, metrics, alerts, report definitions, targets, and skills via Streamable HTTP, with a durable audit trail and an admin UI.",
-      "homepage": "https://glama.ai/mcp/servers/yi0dzwpuh3",
-      "repository": {
-        "url": "https://github.com/sentania-labs/vcf-mcp"
-      },
-      "transports": [
-        "stdio"
-      ],
-      "tags": [],
-      "sources": [
-        "glama"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/vecline",
       "name": "Vecline",
       "publisher": "modelcontextprotocol",
@@ -75253,38 +75218,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/venice-mcp",
-      "name": "Venice Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "glitchenstein",
-      "description": "MCP server for Venice AI - chat, images, TTS, embeddings, and account management",
-      "homepage": "https://venice.ai",
-      "repository": "git+https://github.com/georgeglarson/venice-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "mcp",
-        "model-context-protocol",
-        "venice",
-        "venice-ai"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "venice-mcp"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/veo-3-1-mcp",
       "name": "Veo 3 1 Mcp",
       "publisher": "modelcontextprotocol",
@@ -75341,38 +75274,6 @@
           "args": [
             "-y",
             "@modelfetch/vercel"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/verglos",
-      "name": "Verglos",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "GitHub Actions",
-      "description": "Security scanner built for AI-generated code. Score any JS/TS repo in 40s, catch hallucinated packages, and stop coding agents from shipping vulnerabilities. Free forever.",
-      "homepage": "https://verglos.com",
-      "repository": "git+https://github.com/Top-Notchh-Solutions/verglos-cli.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "security",
-        "security-scanner",
-        "ai-security",
-        "sast"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "verglos"
           ]
         }
       ],
@@ -75696,21 +75597,21 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/vibechroma",
-      "name": "Vibechroma",
+      "id": "modelcontextprotocol/vibecipher",
+      "name": "Vibecipher",
       "publisher": "modelcontextprotocol",
       "originalPublisher": "davixavierai",
-      "description": "CHROMA — Design Tokens Agent by VibeCodes. Paletas, tokens e contraste WCAG.",
+      "description": "VibeSecurity — Auditoria de segurança para quem cria com IA. Secrets, vulnerabilidades e rotas sem auth.",
       "homepage": "https://vibecodings.com.br",
       "transports": [
         "stdio"
       ],
       "tags": [
         "npm",
-        "vibechroma",
-        "chroma",
-        "design-tokens",
-        "design-system"
+        "vibecipher",
+        "security",
+        "security-audit",
+        "vulnerability-scanner"
       ],
       "install": [
         {
@@ -75718,7 +75619,7 @@
           "command": "npx",
           "args": [
             "-y",
-            "vibechroma"
+            "vibecipher"
           ]
         }
       ],
@@ -76620,6 +76521,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/walkeros-mcp",
+      "name": "Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "walkeros",
+      "description": "MCP server for walkerOS flow development - discover packages, scaffold configs, validate, bundle, simulate, and test event pipelines",
+      "homepage": "https://github.com/elbwalker/walkerOS#readme",
+      "repository": "git+https://github.com/elbwalker/walkerOS.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "walkerOS",
+        "mcp",
+        "model-context-protocol",
+        "mcp-server"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@walkeros/mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/wall-cx-cli",
       "name": "Cli",
       "publisher": "modelcontextprotocol",
@@ -76936,6 +76869,24 @@
       ],
       "sources": [
         "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/weather-mcp-rag-assistant",
+      "name": "weather-mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Enables users to get real-time weather data and contextual natural-language insights for any city by combining OpenWeather API with a RAG pipeline and Groq LLM, and can be used via MCP clients like GitHub Copilot.",
+      "homepage": "https://glama.ai/mcp/servers/k40jgk67kn",
+      "repository": {
+        "url": "https://github.com/rudraniai/Weather-MCP-RAG-Assistant"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
       ]
     },
     {
@@ -77259,6 +77210,24 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/website-audit-mcp",
+      "name": "website-audit",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "community",
+      "description": "Enables auditing any public website, returning a scored plain-English report that flags issues costing customers, covering speed, phone experience, search visibility, contact options, writing quality, and modernity.",
+      "homepage": "https://glama.ai/mcp/servers/r06p0im2zj",
+      "repository": {
+        "url": "https://github.com/rolledoatmeals/website-audit-mcp"
+      },
+      "transports": [
+        "stdio"
+      ],
+      "tags": [],
+      "sources": [
+        "glama"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/weishaupt-wem",
       "name": "Weishaupt Wem Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -77315,38 +77284,6 @@
           "args": [
             "-y",
             "weselltours"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
-      "id": "modelcontextprotocol/whamlink-mcp",
-      "name": "Whamlink Mcp",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "billkdev",
-      "description": "MCP server for whamlink — publish a single file to a permanent, shareable link from any MCP client.",
-      "homepage": "https://whamlink.com",
-      "repository": "git+https://github.com/billkinddev/whamlink-mcp.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "ai-agents",
-        "claude",
-        "mcp",
-        "mcp-server"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "whamlink-mcp"
           ]
         }
       ],
@@ -78762,6 +78699,38 @@
       ]
     },
     {
+      "id": "modelcontextprotocol/x402engine-mcp",
+      "name": "X402engine Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "Agent-friendly MCP wrapper for x402engine with automatic capped USDC payments on Base and Solana",
+      "homepage": "https://x402engine.app",
+      "repository": "git+https://github.com/agentc22/x402engine-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "x402",
+        "http-402"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/x402engine-mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
       "id": "modelcontextprotocol/xcodebazelmcp",
       "name": "Xcodebazelmcp",
       "publisher": "modelcontextprotocol",
@@ -78850,6 +78819,38 @@
           "args": [
             "-y",
             "@xenarch/core"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/xiao-assistant",
+      "name": "Xiao Assistant",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "seeed-studio",
+      "description": "MCP server + CLI for Seeed Studio XIAO boards: verified pinouts for 17 boards (ESP32-C5, nRF54LM20A...), 64 compile-checked examples, fuzzy + Chinese search, flashing troubleshooting. Works with Claude, Cursor, or standalone.",
+      "homepage": "https://github.com/seeedstudio/xiao-assistant#readme",
+      "repository": "git+https://github.com/seeedstudio/xiao-assistant.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "xiao",
+        "seeed",
+        "seeed-studio",
+        "seeed-xiao"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@seeed-studio/xiao-assistant"
           ]
         }
       ],
@@ -79622,38 +79623,6 @@
       ]
     },
     {
-      "id": "modelcontextprotocol/zagents",
-      "name": "Zagents",
-      "publisher": "modelcontextprotocol",
-      "originalPublisher": "cvsz",
-      "description": "ZAgents — mint a custom AI agent gemini from any repo. Browser Studio + `npx zagents` CLI. Runs on Claude Code, Codex, pi.dev, Hermes, OpenClaw, RVM.",
-      "homepage": "https://github.com/cvsz/zagents-generator",
-      "repository": "git+https://github.com/cvsz/zagents-generator.git",
-      "transports": [
-        "stdio"
-      ],
-      "tags": [
-        "npm",
-        "zagents",
-        "agent-gemini",
-        "zagents-generator",
-        "ai-agent"
-      ],
-      "install": [
-        {
-          "label": "npx",
-          "command": "npx",
-          "args": [
-            "-y",
-            "zagents"
-          ]
-        }
-      ],
-      "sources": [
-        "npm"
-      ]
-    },
-    {
       "id": "modelcontextprotocol/zai",
       "name": "Zai Mcp Server",
       "publisher": "modelcontextprotocol",
@@ -80060,6 +80029,38 @@
           "args": [
             "-y",
             "@znt/mcp"
+          ]
+        }
+      ],
+      "sources": [
+        "npm"
+      ]
+    },
+    {
+      "id": "modelcontextprotocol/zoho-books-mcp",
+      "name": "Zoho Books Mcp",
+      "publisher": "modelcontextprotocol",
+      "originalPublisher": "mseep",
+      "description": "MCP server for the Zoho Books API — manage invoices, sales orders, contacts, items, taxes and more through Claude",
+      "homepage": "https://github.com/ossycodes/zoho-books-mcp#readme",
+      "repository": "git+https://github.com/ossycodes/zoho-books-mcp.git",
+      "transports": [
+        "stdio"
+      ],
+      "tags": [
+        "npm",
+        "mcp",
+        "model-context-protocol",
+        "zoho",
+        "zoho-books"
+      ],
+      "install": [
+        {
+          "label": "npx",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@mseep/zoho-books-mcp"
           ]
         }
       ],
